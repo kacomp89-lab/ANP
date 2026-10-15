@@ -287,8 +287,8 @@ body {
                 <span>I agree to the <a href="#" onclick="return false">Terms of Service</a> & <a href="#" onclick="return false">Privacy Policy</a></span>
             </label>
 
-            <!-- REGISTER BUTTON -->
-            <button class="btn" type="button" onclick="handleRegister()">
+            <!-- REGISTER BUTTON (ID added for reliable event listener binding) -->
+            <button class="btn" type="button" id="register-btn">
                 Register Now
             </button>
 
@@ -331,7 +331,8 @@ body {
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    window.handleRegister = async function() {
+    // Properly bind the click event inside the module script to avoid scope/timing issues
+    document.getElementById("register-btn").addEventListener("click", async () => {
         const fullName = document.getElementById("fullname").value.trim();
         const email = document.getElementById("email").value.trim();
         const phone = document.getElementById("phone").value.trim();
@@ -377,12 +378,14 @@ body {
                 createdAt: new Date().toISOString()
             });
 
-            alert("Registration successful! A verification email has been sent to " + email + ". Please check your inbox and verify your email before logging in.");
-            window.location.href = "ANP.HTML"; 
+            alert("Registration successful! Verification email sent to " + email + ". Redirecting to dashboard...");
+            
+            // 4. Redirect directly to index.html dashboard
+            window.location.href = "index.html"; 
         } catch (error) {
             alert("Error: " + error.message);
         }
-    }
+    });
 </script>
 </body>
 </html>
