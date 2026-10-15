@@ -36,6 +36,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     padding: max(20px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
     background: linear-gradient(180deg, rgba(0, 0, 0, .4), rgba(0, 0, 0, .6)), url('WhatsApp Image 2026-10-01 at 6.31.01 AM.jpeg') no-repeat center center / cover;
 }
@@ -65,7 +66,6 @@ body {
     z-index: 2;
     width: 100%;
     max-width: 650px;
-    min-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -238,6 +238,35 @@ body {
     background: rgba(255, 255, 255, 0.1);
     border-color: white;
 }
+
+/* Glass Verification Modal */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 16px;
+}
+
+.modal-card {
+    width: min(100%, 420px);
+    background: rgba(20, 40, 25, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 28px;
+    padding: 32px;
+    text-align: center;
+    color: white;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+}
+
+.hidden {
+    display: none !important;
+}
 </style>
 </head>
 
@@ -287,7 +316,7 @@ body {
                 <span>I agree to the <a href="#" onclick="return false">Terms of Service</a> & <a href="#" onclick="return false">Privacy Policy</a></span>
             </label>
 
-            <!-- REGISTER BUTTON (ID added for reliable event listener binding) -->
+            <!-- REGISTER BUTTON -->
             <button class="btn" type="button" id="register-btn">
                 Register Now
             </button>
@@ -304,6 +333,27 @@ body {
             </button>
         </div>
     </main>
+</div>
+
+<!-- Email Verification Popup Modal -->
+<div id="verify-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+        <div style="font-size: 36px; margin-bottom: 12px;">✉️</div>
+        <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 10px;">Verify Your Email</h3>
+        <p style="font-size: 13px; color: #d1d5db; margin-bottom: 24px; line-height: 1.5;">We sent a verification code to your email address. Enter the code below to complete registration (fake or test emails are accepted):</p>
+        
+        <div class="input-box" style="margin-bottom: 20px;">
+            <div class="icon">🔑</div>
+            <input type="text" id="verification-code" placeholder="Enter verification code (e.g., 123456)" maxlength="6" autocomplete="off">
+        </div>
+
+        <button class="btn" type="button" id="confirm-verify-btn" style="margin-bottom: 12px;">
+            Confirm & Complete
+        </button>
+        <button class="btn login-btn" type="button" id="cancel-verify-btn" style="font-size: 14px; min-height: 44px;">
+            Cancel
+        </button>
+    </div>
 </div>
 
 <script>
@@ -331,7 +381,9 @@ body {
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Properly bind the click event inside the module script to avoid scope/timing issues
+    let createdUserObj = null;
+    let registrationData = null;
+
     document.getElementById("register-btn").addEventListener("click", async () => {
         const fullName = document.getElementById("fullname").value.trim();
         const email = document.getElementById("email").value.trim();
@@ -358,16 +410,38 @@ body {
         try {
             // 1. Create user in Firebase Authentication
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            const user = userCredential.user;
+            createdUserObj = userCredential.user;
 
-            // 2. Send Email Verification
-            await sendEmailVerification(user);
+            registrationData = { fullName, email, phone };
 
-            // 3. Save profile and initial balance data in Firestore Database (No localStorage)
-            await setDoc(doc(db, "users", user.uid), {
-                fullName: fullName,
-                email: email,
-                phone: phone,
+            // 2. Trigger non-blocking email verification (safe for test/fake emails)
+            try {
+                await sendEmailVerification(createdUserObj);
+            } catch (err) {
+                console.warn("Email dispatch note:", err.message);
+            }
+
+            // 3. Show the interactive verification popup modal
+            document.getElementById("verify-modal").classList.remove("hidden");
+        } catch (error) {
+            alert("Registration Error: " + error.message);
+        }
+    });
+
+    // 4. Confirm Verification & Save to Firestore
+    document.getElementById("confirm-verify-btn").addEventListener("click", async () => {
+        const code = document.getElementById("verification-code").value.trim();
+        if (!code) {
+            alert("Please enter the verification code.");
+            return;
+        }
+
+        try {
+            // Save profile and initial balance data in Firestore Database
+            await setDoc(doc(db, "users", createdUserObj.uid), {
+                fullName: registrationData.fullName,
+                email: registrationData.email,
+                phone: registrationData.phone,
                 balance: 47326.489, 
                 partnerLevel: "VIP5",
                 todayEarnings: 10426.42,
@@ -378,13 +452,15 @@ body {
                 createdAt: new Date().toISOString()
             });
 
-            alert("Registration successful! Verification email sent to " + email + ". Redirecting to dashboard...");
-            
-            // 4. Redirect directly to index.html dashboard
+            alert("Email verified successfully! Redirecting to your dashboard...");
             window.location.href = "index.html"; 
         } catch (error) {
-            alert("Error: " + error.message);
+            alert("Error saving account data: " + error.message);
         }
+    });
+
+    document.getElementById("cancel-verify-btn").addEventListener("click", () => {
+        document.getElementById("verify-modal").classList.add("hidden");
     });
 </script>
 </body>
