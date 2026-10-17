@@ -287,19 +287,20 @@ body {
             const user = userCredential.user;
 
             // 2. Save profile and initial coin balance data in Firestore immediately
-            await setDoc(doc(db, "users", user.uid), {
-                fullName: fullName,
-                email: email,
-                phone: phone,
-                balance: 47326.489, 
-                partnerLevel: "VIP5",
-                todayEarnings: 10426.42,
-                referralRebate: 378389.92,
-                deliveryRebate: 194027.18,
-                totalRevenue: 787612.1,
-                startDate: "2026-05-28",
-                createdAt: new Date().toISOString()
-            });
+           // Save user profile and 0 initial balance to Firestore database
+await setDoc(doc(db, "users", createdUserObj.uid), {
+    fullName: registrationData.fullName,
+    email: registrationData.email,
+    phone: registrationData.phone,
+    balance: 0,             // Starts at 0
+    partnerLevel: "VIP1",   // Starts at VIP1
+    todayEarnings: 0,
+    referralRebate: 0,
+    deliveryRebate: 0,
+    totalRevenue: 0,
+    startDate: new Date().toISOString().split('T')[0],
+    createdAt: new Date().toISOString()
+});
 
             // 3. Configure action settings so Firebase redirects back to index.html after email verification click
             const actionCodeSettings = {
