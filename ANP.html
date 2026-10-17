@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ANP - Log In</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    width: 100%;
+    min-height: 100dvh;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.page {
+    position: relative;
+    width: 100%;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: linear-gradient(180deg, rgba(0, 0, 0, .4), rgba(0, 0, 0, .6)), url('WhatsApp Image 2026-10-01 at 6.31.01 AM.jpeg') no-repeat center center / cover;
+}
+.login-card {
+    width: min(100%, 480px);
+    padding: 35px;
+    border-radius: 28px;
+    background: rgba(20, 40, 25, 0.65);
+    border: 1px solid rgba(255,255,255,.20);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 20px 60px rgba(0,0,0,.3);
+    color: white;
+    text-align: center;
+}
+.brand { font-size: 60px; font-weight: 900; margin-bottom: 20px; letter-spacing: -3px; }
+.form-title { font-size: 20px; font-weight: 600; margin-bottom: 25px; letter-spacing: 1px; }
+.input-box {
+    width: 100%;
+    height: 54px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    background: rgba(255,255,255,.95);
+    border-radius: 12px;
+}
+.input-box input {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #333;
+    font-size: 16px;
+    padding-left: 10px;
+}
+.btn {
+    width: 100%;
+    height: 52px;
+    border: none;
+    border-radius: 26px;
+    background: linear-gradient(180deg, #2da45a, #299653);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    box-shadow: 0 6px 18px rgba(0,0,0,.15);
+}
+.btn:hover { background: linear-gradient(180deg, #35ad62, #238c4c); }
+.register-link { margin-top: 20px; font-size: 14px; color: #ccc; }
+.register-link a { color: #18bde9; text-decoration: none; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="page">
+    <div class="login-card">
+        <div class="brand">ANP</div>
+        <div class="form-title">Welcome Back</div>
+
+        <div class="input-box">
+            <span>✉️</span>
+            <input type="email" id="login-email" placeholder="Email Address" autocomplete="off">
+        </div>
+
+        <div class="input-box">
+            <span>🔒</span>
+            <input type="password" id="login-password" placeholder="Password" autocomplete="off">
+        </div>
+
+        <button class="btn" type="button" id="login-btn">Log In</button>
+
+        <div class="register-link">
+            Don't have an account? <a href="anpregister.html">Register Now</a>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDZb4KcR5Tvw3x_ipR2ocgdUDqh47Arz6M",
+        authDomain: "anp-money.firebaseapp.com",
+        projectId: "anp-money",
+        storageBucket: "anp-money.firebasestorage.app",
+        messagingSenderId: "581687927989",
+        appId: "1:581687927989:web:41218431483f24a18b0afc"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    document.getElementById("login-btn").addEventListener("click", async () => {
+        const email = document.getElementById("login-email").value.trim();
+        const password = document.getElementById("login-password").value;
+
+        if (!email || !password) {
+            alert("Please enter both email and password.");
+            return;
+        }
+
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            window.location.href = "index.html";
+        } catch (error) {
+            alert("Login Error: " + error.message);
+        }
+    });
+</script>
+</body>
+</html>
