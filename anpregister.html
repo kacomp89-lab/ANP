@@ -5,15 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>ANP - Register</title>
 <style>
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-html {
-    width: 100%;
-    min-height: 100%;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { width: 100%; min-height: 100%; }
 body {
     width: 100%;
     min-height: 100dvh;
@@ -151,9 +144,7 @@ body {
     box-shadow: 0 6px 18px rgba(0,0,0,.10);
     margin-top: 10px;
 }
-.btn:hover {
-    background: linear-gradient(180deg, #35ad62, #238c4c);
-}
+.btn:hover { background: linear-gradient(180deg, #35ad62, #238c4c); }
 .divider {
     width: 100%;
     display: flex;
@@ -163,16 +154,8 @@ body {
     color: white;
     font-size: 14px;
 }
-.divider span {
-    flex: 1;
-    height: 1px;
-    background: rgba(255,255,255,.35);
-}
-.login-btn {
-    background: transparent;
-    border: 2px solid rgba(255, 255, 255, 0.5);
-    margin-top: 0;
-}
+.divider span { flex: 1; height: 1px; background: rgba(255,255,255,.35); }
+.login-btn { background: transparent; border: 2px solid rgba(255, 255, 255, 0.5); margin-top: 0; }
 </style>
 </head>
 
@@ -216,9 +199,7 @@ body {
                 <span>I agree to the Terms of Service & Privacy Policy</span>
             </label>
 
-            <button class="btn" type="button" id="register-btn">
-                Register Now
-            </button>
+            <button class="btn" type="button" id="register-btn">Register Now</button>
 
             <div class="divider">
                 <span></span>
@@ -226,9 +207,7 @@ body {
                 <span></span>
             </div>
 
-            <button class="btn login-btn" type="button" onclick="window.location.href='ANP.HTML'">
-                Log In
-            </button>
+            <button class="btn login-btn" type="button" onclick="window.location.href='ANP.html'">Log In</button>
         </div>
     </main>
 </div>
@@ -282,38 +261,32 @@ body {
         }
 
         try {
-            // 1. Create user in Firebase Authentication
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
-            // 2. Save profile and initial coin balance data in Firestore immediately
-           // Save user profile and 0 initial balance to Firestore database
-await setDoc(doc(db, "users", createdUserObj.uid), {
-    fullName: registrationData.fullName,
-    email: registrationData.email,
-    phone: registrationData.phone,
-    balance: 0,             // Starts at 0
-    partnerLevel: "VIP1",   // Starts at VIP1
-    todayEarnings: 0,
-    referralRebate: 0,
-    deliveryRebate: 0,
-    totalRevenue: 0,
-    startDate: new Date().toISOString().split('T')[0],
-    createdAt: new Date().toISOString()
-});
+            // Save user to Firestore with 0 initial balance and VIP1 tier
+            await setDoc(doc(db, "users", user.uid), {
+                fullName: fullName,
+                email: email,
+                phone: phone,
+                balance: 0,
+                partnerLevel: "VIP1",
+                todayEarnings: 0,
+                referralRebate: 0,
+                deliveryRebate: 0,
+                totalRevenue: 0,
+                startDate: new Date().toISOString().split('T')[0],
+                createdAt: new Date().toISOString()
+            });
 
-            // 3. Configure action settings so Firebase redirects back to index.html after email verification click
             const actionCodeSettings = {
                 url: window.location.origin + "/index.html",
                 handleCodeInApp: false
             };
 
-            // 4. Send official Firebase verification email
             await sendEmailVerification(user, actionCodeSettings);
 
-            alert("Registration successful! A verification link has been sent to " + email + ". Once verified, you will be redirected to your dashboard.");
-            
-            // Send them straight to login or index
+            alert("Registration successful! Verification link sent. Redirecting to login...");
             window.location.href = "ANP.HTML"; 
         } catch (error) {
             alert("Registration Error: " + error.message);
