@@ -198,26 +198,56 @@
         </nav>
     </div>
 
-    <!-- Deposit / Add Amount Modal -->
-    <div id="deposit-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center hidden px-4 backdrop-blur-sm">
-        <div class="glass-modal rounded-3xl max-w-sm w-full p-7 text-center shadow-2xl text-white">
-            <div class="w-14 h-14 bg-green-500 bg-opacity-30 border border-green-400 rounded-full flex items-center justify-center mx-auto mb-4 text-green-300 text-2xl">
-                <i class="fas fa-wallet"></i>
+    <!-- Deposit / UPI Payment Modal -->
+    <div id="deposit-modal" class="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center hidden px-4 backdrop-blur-md">
+        <div class="glass-modal rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl text-white">
+            <div class="w-12 h-12 bg-green-500 bg-opacity-30 border border-green-400 rounded-full flex items-center justify-center mx-auto mb-3 text-green-300 text-xl">
+                <i class="fas fa-qrcode"></i>
             </div>
-            <h3 class="text-xl font-bold mb-2">Buy ANP Coins</h3>
-            <p class="text-xs text-gray-300 mb-6">Enter the amount you wish to pay and add to your partner coin balance:</p>
+            <h3 class="text-lg font-bold mb-1">Buy ANP Coins via UPI</h3>
+            <p class="text-[11px] text-gray-300 mb-4">Select amount to generate your secure UPI payment QR code:</p>
             
-            <div class="w-full bg-white rounded-xl flex items-center px-4 py-3 mb-5 text-gray-800">
-                <span class="text-lg font-bold mr-2 text-green-700">₹</span>
-                <input type="number" id="deposit-amount" placeholder="Enter amount (e.g. 1000)" class="w-full bg-transparent outline-none text-base font-semibold">
+            <!-- Step 1: Amount Input View -->
+            <div id="step-amount" class="block">
+                <div class="w-full bg-white rounded-xl flex items-center px-4 py-3 mb-4 text-gray-800 shadow-inner">
+                    <span class="text-lg font-bold mr-2 text-green-700">₹</span>
+                    <input type="number" id="deposit-amount" placeholder="Enter amount (e.g. 500)" class="w-full bg-transparent outline-none text-base font-semibold">
+                </div>
+                <button onclick="generateUPIQR()" class="w-full py-3.5 px-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold rounded-2xl text-sm shadow-lg mb-3">
+                    Generate UPI QR & Pay
+                </button>
+                <button onclick="closeDepositModal()" class="w-full py-2.5 px-4 bg-transparent hover:bg-white/10 text-gray-300 font-medium rounded-2xl text-xs border border-white/10">
+                    Cancel
+                </button>
             </div>
 
-            <div class="flex flex-col gap-3">
-                <button onclick="confirmDeposit()" class="w-full py-3.5 px-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold rounded-2xl text-sm transition-all shadow-lg">
-                    Confirm Payment & Add Coins
+            <!-- Step 2: QR Code & UPI App Redirect View -->
+            <div id="step-qr" class="hidden">
+                <div class="bg-white p-3 rounded-2xl inline-block mb-3 shadow-md">
+                    <img id="upi-qr-image" src="" alt="UPI QR Code" class="w-44 h-44 mx-auto object-contain">
+                </div>
+                
+                <div class="text-xs text-green-300 font-semibold mb-1">Amount: <span id="display-amount" class="text-white text-sm">₹0</span></div>
+                <p class="text-[10px] text-gray-300 mb-4">Scan with any UPI app or tap below to pay directly:</p>
+
+                <!-- Direct UPI App Buttons -->
+                <div class="grid grid-cols-3 gap-2 mb-4">
+                    <a id="gpay-btn" href="#" target="_blank" class="py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl text-[11px] flex flex-col items-center justify-center shadow-md">
+                        <i class="fab fa-google text-sm mb-1"></i> GPay
+                    </a>
+                    <a id="paytm-btn" href="#" target="_blank" class="py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white font-medium rounded-xl text-[11px] flex flex-col items-center justify-center shadow-md">
+                        <i class="fas fa-wallet text-sm mb-1"></i> Paytm
+                    </a>
+                    <a id="phonepe-btn" href="#" target="_blank" class="py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-xl text-[11px] flex flex-col items-center justify-center shadow-md">
+                        <i class="fas fa-mobile-alt text-sm mb-1"></i> PhonePe
+                    </a>
+                </div>
+
+                <button onclick="confirmPaymentReceived()" class="w-full py-3 px-4 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-bold rounded-2xl text-xs shadow-lg mb-2">
+                    I Have Paid — Add Coins Now
                 </button>
-                <button onclick="closeDepositModal()" class="w-full py-3 px-4 bg-transparent hover:bg-white/10 text-gray-300 font-medium rounded-2xl text-xs border border-white/10">
-                    Cancel
+                <button onclick="resetDepositStep()" class="w-full py-2 px-4 bg-transparent hover:bg-white/10 text-gray-400 rounded-xl text-[11px]">
+                    Back / Change Amount
                 </button>
             </div>
         </div>
@@ -267,6 +297,10 @@
         let currentUser = null;
         let userDocRef = null;
 
+        // Configure your merchant UPI details here
+        const MERCHANT_UPI = "anpmoney@paytm"; 
+        const MERCHANT_NAME = "ANP Green Ride";
+
         onAuthStateChanged(auth, async (user) => {
             currentUser = user;
             if (user) {
@@ -307,35 +341,61 @@
         }
 
         window.openDepositModal = function() {
+            resetDepositStep();
             document.getElementById("deposit-modal").classList.remove("hidden");
         }
 
         window.closeDepositModal = function() {
             document.getElementById("deposit-modal").classList.add("hidden");
+            resetDepositStep();
         }
 
-        window.confirmDeposit = async function() {
+        window.resetDepositStep = function() {
+            document.getElementById("step-amount").classList.remove("hidden");
+            document.getElementById("step-qr").classList.add("hidden");
+            document.getElementById("deposit-amount").value = "";
+        }
+
+        window.generateUPIQR = function() {
             const amountInput = document.getElementById("deposit-amount").value;
             const amount = parseFloat(amountInput);
 
             if (!amount || amount <= 0) {
-                alert("Please enter a valid amount.");
+                alert("Please enter a valid deposit amount.");
                 return;
             }
 
+            const upiString = `upi://pay?pa=${MERCHANT_UPI}&pn=${encodeURIComponent(MERCHANT_NAME)}&am=${amount.toFixed(2)}&cu=INR`;
+            const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(upiString)}`;
+            
+            document.getElementById("upi-qr-image").src = qrApiUrl;
+            document.getElementById("display-amount").innerText = `₹${amount.toLocaleString()}`;
+
+            document.getElementById("gpay-btn").href = upiString;
+            document.getElementById("paytm-btn").href = upiString;
+            document.getElementById("phonepe-btn").href = upiString;
+
+            document.getElementById("step-amount").classList.add("hidden");
+            document.getElementById("step-qr").classList.remove("hidden");
+        }
+
+        window.confirmPaymentReceived = async function() {
+            const amountInput = document.getElementById("deposit-amount").value;
+            const amount = parseFloat(amountInput);
+
+            if (!amount) return;
+
             try {
-                // Update Firestore balance securely in real-time
                 await updateDoc(userDocRef, {
                     balance: increment(amount),
                     totalRevenue: increment(amount)
                 });
 
-                alert(`Successfully added ₹${amount.toLocaleString()} to your balance!`);
-                document.getElementById("deposit-amount").value = "";
+                alert(`Payment confirmed! ₹${amount.toLocaleString()} worth of coins have been added to your balance.`);
                 closeDepositModal();
-                window.location.reload(); // Refresh to display new balance
+                window.location.reload(); 
             } catch (error) {
-                alert("Error updating balance: " + error.message);
+                alert("Error crediting coins: " + error.message);
             }
         }
 
