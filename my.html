@@ -97,7 +97,7 @@
                         </button>
                     </div>
                     
-                    <!-- Inline Edit Form (Hidden by default) -->
+                    <!-- Inline Edit Form -->
                     <div id="edit-name-box" class="hidden flex items-center gap-2 mt-2 w-3/4">
                         <input type="text" id="new-name-input" class="w-full bg-white text-gray-800 text-xs px-3 py-2 rounded-xl outline-none font-semibold shadow" placeholder="Enter new name">
                         <button onclick="saveNewName()" class="bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-2 rounded-xl font-bold shadow">Save</button>
@@ -215,4 +215,122 @@
             <div class="flex flex-col gap-3">
                 <button onclick="window.location.href='anpregister.html'" class="w-full py-3.5 px-4 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold rounded-2xl text-sm shadow-lg">
                     Register / Log In
-                </button
+                </button>
+                <button onclick="window.location.href='index.html'" class="w-full py-3 px-4 bg-transparent text-gray-300 font-medium rounded-2xl text-xs border border-white/10">
+                    Back to Home
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Scripts & Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDZb4KcR5Tvw3x_ipR2ocgdUDqh47Arz6M",
+            authDomain: "anp-money.firebaseapp.com",
+            projectId: "anp-money",
+            storageBucket: "anp-money.firebasestorage.app",
+            messagingSenderId: "581687927989",
+            appId: "1:581687927989:web:41218431483f24a18b0afc"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        let userDocRef = null;
+
+        onAuthStateChanged(auth, async (user) => {
+            currentUser = user;
+            if (!user) {
+                document.getElementById("auth-modal").classList.remove("hidden");
+                return;
+            }
+
+            userDocRef = doc(db, "users", user.uid);
+            try {
+                let userDocSnap = await getDoc(userDocRef);
+                
+                let data;
+                if (userDocSnap.exists()) {
+                    data = userDocSnap.data();
+                } else {
+                    // Fallback: if document was missing, create it automatically
+                    data = {
+                        fullName: user.email.split('@')[0],
+                        email: user.email,
+                        phone: "Not provided",
+                        balance: 0,
+                        partnerLevel: "VIP1",
+                        startDate: new Date().toISOString().split('T')[0]
+                    };
+                    await setDoc(userDocRef, data);
+                }
+
+                const fullName = data.fullName || "Partner";
+                document.getElementById("profile-name-display").innerText = fullName;
+                document.getElementById("new-name-input").value = fullName;
+                document.getElementById("avatar-initial").innerText = fullName.charAt(0).toUpperCase();
+                document.getElementById("profile-email").innerText = data.email || user.email;
+                document.getElementById("profile-phone").innerText = data.phone || "Not provided";
+                document.getElementById("profile-balance").innerText = (data.balance || 0).toLocaleString();
+                document.getElementById("profile-level-badge").innerText = `${data.partnerLevel || "VIP1"} Partner`;
+                document.getElementById("profile-start-date").innerText = data.startDate || "N/A";
+
+            } catch (error) {
+                console.error("Error loading user profile:", error);
+                alert("Error loading profile: " + error.message);
+            }
+        });
+
+        window.toggleEditName = function(show) {
+            const nameDisplay = document.getElementById("profile-name-display");
+            const editBox = document.getElementById("edit-name-box");
+            if (show) {
+                nameDisplay.classList.add("hidden");
+                editBox.classList.remove("hidden");
+            } else {
+                nameDisplay.classList.remove("hidden");
+                editBox.classList.add("hidden");
+            }
+        }
+
+        window.saveNewName = async function() {
+            const newName = document.getElementById("new-name-input").value.trim();
+            if (!newName) {
+                alert("Name cannot be empty.");
+                return;
+            }
+
+            try {
+                await updateDoc(userDocRef, {
+                    fullName: newName
+                });
+
+                document.getElementById("profile-name-display").innerText = newName;
+                document.getElementById("avatar-initial").innerText = newName.charAt(0).toUpperCase();
+                toggleEditName(false);
+                alert("Name updated successfully!");
+            } catch (error) {
+                alert("Error updating name: " + error.message);
+            }
+        }
+
+        window.handleLogout = async function() {
+            if (confirm("Are you sure you want to log out?")) {
+                try {
+                    await signOut(auth);
+                    window.location.href = "ANP.HTML";
+                } catch (error) {
+                    alert("Logout error: " + error.message);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
