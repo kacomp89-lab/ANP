@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Partner Profile - ANP</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a1f12 0%, #000000 100%);
+            -webkit-tap-highlight-color: transparent;
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: radial-gradient(circle at 20% 20%, rgba(45,164,90,0.15), transparent 40%), 
+                        radial-gradient(circle at 80% 80%, rgba(0,255,150,0.08), transparent 45%);
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .bg-wave-pattern {
+            background: linear-gradient(to bottom, #5cb45c, #3f8e43);
+            position: relative;
+        }
+        .glass-modal {
+            background: rgba(20, 40, 25, 0.90);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        .app-container {
+            width: 100%;
+            max-width: 430px;
+            height: 100dvh;
+            background: white;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        }
+        @media (min-width: 640px) {
+            .app-container {
+                height: 880px;
+                max-height: 92vh;
+                border-radius: 36px;
+                border: 8px solid rgba(255, 255, 255, 0.12);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="flex-1 overflow-y-auto hide-scrollbar pb-24">
+            
+            <!-- Header -->
+            <header class="bg-wave-pattern pt-6 px-5 pb-8 text-white relative">
+                <div class="flex items-center justify-between mb-4">
+                    <button onclick="window.location.href='index.html'" class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-white backdrop-blur-sm shadow-sm">
+                        <i class="fas fa-arrow-left text-sm"></i>
+                    </button>
+                    <h1 class="font-bold text-base tracking-wide">Partner Profile</h1>
+                    <button onclick="handleLogout()" class="w-9 h-9 rounded-full bg-red-500/30 flex items-center justify-center text-white backdrop-blur-sm shadow-sm" title="Log Out">
+                        <i class="fas fa-sign-out-alt text-sm"></i>
+                    </button>
+                </div>
+
+                <!-- Profile Avatar & Name Section -->
+                <div class="flex flex-col items-center justify-center mt-2">
+                    <div class="w-20 h-20 rounded-full bg-white text-green-700 flex items-center justify-center text-3xl font-black shadow-lg mb-3 border-4 border-green-200" id="avatar-initial">
+                        A
+                    </div>
+                    
+                    <!-- Editable Name Row -->
+                    <div class="flex items-center gap-2">
+                        <h2 id="profile-name-display" class="text-xl font-bold tracking-tight">Loading...</h2>
+                        <button onclick="toggleEditName(true)" class="w-7 h-7 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center text-white text-xs transition-colors" title="Edit Name">
+                            <i class="fas fa-pen"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Inline Edit Form (Hidden by default) -->
+                    <div id="edit-name-box" class="hidden flex items-center gap-2 mt-2 w-3/4">
+                        <input type="text" id="new-name-input" class="w-full bg-white text-gray-800 text-xs px-3 py-2 rounded-xl outline-none font-semibold shadow" placeholder="Enter new name">
+                        <button onclick="saveNewName()" class="bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-2 rounded-xl font-bold shadow">Save</button>
+                        <button onclick="toggleEditName(false)" class="bg-gray-600 hover:bg-gray-700 text-white text-xs px-3 py-2 rounded-xl font-bold shadow">Cancel</button>
+                    </div>
+
+                    <span class="bg-green-700 bg-opacity-50 text-green-100 text-[11px] font-semibold px-3 py-1 rounded-full mt-2" id="profile-level-badge">VIP1 Partner</span>
+                </div>
+            </header>
+
+            <!-- Main Details Card Section -->
+            <main class="bg-white rounded-t-[24px] -mt-4 relative z-10 px-5 pt-6 pb-8 shadow-[0_-4px_15px_rgba(0,0,0,0.05)]">
+                
+                <h3 class="text-gray-800 font-bold text-sm mb-4">Registration & Account Details</h3>
+
+                <div class="flex flex-col gap-3.5">
+                    <!-- Email Card -->
+                    <div class="bg-gray-50 border border-gray-100 rounded-2xl p-4 flex items-center justify-between shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-green-100 text-green-700 flex items-center justify-center font-bold">
+                                <i class="fas fa-envelope text-sm"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-gray-400 font-medium block">Email Address</span>
+                                <span class="text-xs font-bold text-gray-800" id="profile-email">--</span>
+                            </div>
+                        </div>
+                        <span class="text-[10px] text-green-600 bg-green-50 px-2 py-1 rounded-lg font-semibold">Verified</span>
+                    </div>
+
+                    <!-- Phone Card -->
+                    <div class="bg-gray-50 border border-gray-100 rounded-2xl p-4 flex items-center justify-between shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
+                                <i class="fas fa-phone-alt text-sm"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-gray-400 font-medium block">Phone Number</span>
+                                <span class="text-xs font-bold text-gray-800" id="profile-phone">--</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Account Balance Card -->
+                    <div class="bg-gray-50 border border-gray-100 rounded-2xl p-4 flex items-center justify-between shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-yellow-100 text-yellow-700 flex items-center justify-center font-bold">
+                                <i class="fas fa-wallet text-sm"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-gray-400 font-medium block">Coin Balance</span>
+                                <span class="text-xs font-bold text-gray-800">₹<span id="profile-balance">0.00</span></span>
+                            </div>
+                        </div>
+                        <button onclick="window.location.href='index.html'" class="text-[11px] font-bold text-green-600 hover:underline">Top Up</button>
+                    </div>
+
+                    <!-- Start Date Card -->
+                    <div class="bg-gray-50 border border-gray-100 rounded-2xl p-4 flex items-center justify-between shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold">
+                                <i class="fas fa-calendar-alt text-sm"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-gray-400 font-medium block">Account Start Date</span>
+                                <span class="text-xs font-bold text-gray-800" id="profile-start-date">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Logout Button -->
+                <button onclick="handleLogout()" class="w-full mt-6 py-3.5 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-2xl text-xs transition-colors border border-red-200 flex items-center justify-center gap-2">
+                    <i class="fas fa-sign-out-alt"></i> Log Out of Account
+                </button>
+
+            </main>
+        </div>
+
+        <!-- Bottom Navigation Bar -->
+        <nav class="absolute bottom-0 w-full bg-white border-t border-gray-100 flex justify-between items-center px-6 pt-2 pb-5 z-40">
+            <button onclick="window.location.href='index.html'" class="flex flex-col items-center text-gray-400 group hover:text-green-600 transition-colors">
+                <i class="fas fa-home text-lg mb-1"></i>
+                <span class="text-[10px] font-medium">Home</span>
+            </button>
+            <button onclick="window.location.href='delivery.html'" class="flex flex-col items-center text-gray-400 group hover:text-green-600 transition-colors">
+                <i class="fas fa-box text-lg mb-1"></i>
+                <span class="text-[10px] font-medium">Delivery</span>
+            </button>
+            <div class="relative -top-6">
+                <button onclick="window.location.href='index.html'" class="w-14 h-14 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white border-4 border-white shadow-[0_5px_15px_rgba(74,222,128,0.4)]">
+                    <i class="fas fa-bicycle text-2xl"></i>
+                </button>
+            </div>
+            <button onclick="alert('Map view coming soon!');" class="flex flex-col items-center text-gray-400 group hover:text-green-600 transition-colors">
+                <i class="fas fa-map-marked-alt text-lg mb-1"></i>
+                <span class="text-[10px] font-medium">Map</span>
+            </button>
+            <button class="flex flex-col items-center text-green-600 group">
+                <i class="fas fa-user text-lg mb-1"></i>
+                <span class="text-[10px] font-medium">My</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- Guest Mode Auth Modal -->
+    <div id="auth-modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden px-4 backdrop-blur-sm">
+        <div class="glass-modal rounded-3xl max-w-sm w-full p-7 text-center shadow-2xl text-white">
+            <div class="w-14 h-14 bg-green-500 bg-opacity-30 border border-green-400 rounded-full flex items-center justify-center mx-auto mb-4 text-green-300 text-2xl">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Authentication Required</h3>
+            <p class="text-xs text-gray-200 mb-6">Please log in or register to view your profile details.</p>
+            
+            <div class="flex flex-col gap-3">
+                <button onclick="window.location.href='anpregister.html'" class="w-full py-3.5 px-4 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold rounded-2xl text-sm shadow-lg">
+                    Register / Log In
+                </button
