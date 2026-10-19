@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ANP MONEY</title>
+    <title>ANP MONEY - Dashboard</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome for Icons -->
@@ -82,7 +82,7 @@
             <header class="bg-wave-pattern pt-6 px-5 pb-8 text-white relative">
                 
                 <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center space-x-2 cursor-pointer" onclick="handleAuthAction(() => { toggleSettings(); })">
+                    <div class="flex items-center space-x-2 cursor-pointer" onclick="handleAuthAction(() => { handleMyButton(); })">
                         <div class="w-9 h-9 rounded-full bg-pink-100 flex items-center justify-center border border-pink-200 shadow-sm">
                             <i class="fas fa-bicycle text-pink-500 text-sm"></i>
                         </div>
@@ -94,7 +94,7 @@
                         </div>
                     </div>
                     
-                    <div onclick="handleAuthAction(() => { toggleSettings(); })" class="cursor-pointer p-1" title="Account Settings">
+                    <div onclick="handleAuthAction(() => { handleMyButton(); })" class="cursor-pointer p-1" title="Account Profile">
                         <i class="fas fa-user-circle text-white opacity-90 text-xl hover:opacity-100"></i>
                     </div>
                 </div>
@@ -160,7 +160,7 @@
                             <span class="text-sm font-extrabold text-gray-900 block mb-2">₹1,299</span>
                             <span class="bg-green-700 text-white text-[9px] font-bold py-1 px-2 rounded-full inline-block">Buy Now</span>
                         </div>
-                        <!-- VIP 3 with Diwali Firecracker Skyshot Explosion Theme -->
+                        <!-- VIP 3 with Diwali Dhamaka Skyshot Explosion Theme -->
                         <div onclick="selectVIPPack(4999)" class="bg-gradient-to-br from-red-950 via-amber-900 to-yellow-950 border-2 border-yellow-400 rounded-2xl p-3 text-center cursor-pointer shadow-xl hover:shadow-2xl transition-all active:scale-95 relative overflow-hidden animate-pulse">
                             <div class="absolute -top-3 -right-3 bg-yellow-400 text-[7px] font-extrabold text-red-950 px-3 py-1 transform rotate-45 shadow flex items-center gap-0.5">
                                 <i class="fas fa-fire text-[8px]"></i> DIWALI DHAMAKA
@@ -210,25 +210,26 @@
             </main>
         </div>
 
+        <!-- Fully Linked Bottom Navigation Bar -->
         <nav class="absolute bottom-0 w-full bg-white border-t border-gray-100 flex justify-between items-center px-6 pt-2 pb-5 z-40">
-            <button class="flex flex-col items-center text-green-600 group">
+            <button onclick="window.location.href='index.html'" class="flex flex-col items-center text-green-600 group">
                 <i class="fas fa-home text-lg mb-1"></i>
                 <span class="text-[10px] font-medium">Home</span>
             </button>
-        <button onclick="window.location.href='delivery.html'" class="flex flex-col items-center text-gray-400 group hover:text-green-600 transition-colors">
-    <i class="fas fa-box text-lg mb-1"></i>
-    <span class="text-[10px] font-medium">Delivery</span>
-</button>
+            <button onclick="window.location.href='delivery.html'" class="flex flex-col items-center text-gray-400 group hover:text-green-600 transition-colors">
+                <i class="fas fa-box text-lg mb-1"></i>
+                <span class="text-[10px] font-medium">Delivery</span>
+            </button>
             <div class="relative -top-6">
-                <button onclick="handleAuthAction(() => {})" class="w-14 h-14 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white border-4 border-white shadow-[0_5px_15px_rgba(74,222,128,0.4)]">
+                <button onclick="window.location.href='index.html'" class="w-14 h-14 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white border-4 border-white shadow-[0_5px_15px_rgba(74,222,128,0.4)]">
                     <i class="fas fa-bicycle text-2xl"></i>
                 </button>
             </div>
-            <button onclick="handleAuthAction(() => {})" class="flex flex-col items-center text-gray-400 group">
+            <button onclick="alert('Map view coming soon!');" class="flex flex-col items-center text-gray-400 group hover:text-green-600 transition-colors">
                 <i class="fas fa-map-marked-alt text-lg mb-1"></i>
                 <span class="text-[10px] font-medium">Map</span>
             </button>
-            <button onclick="handleMyButton()" class="flex flex-col items-center text-gray-400 group">
+            <button onclick="handleMyButton()" class="flex flex-col items-center text-gray-400 group hover:text-green-600 transition-colors">
                 <i class="fas fa-user text-lg mb-1"></i>
                 <span class="text-[10px] font-medium" id="nav-my-label">Register</span>
             </button>
@@ -343,8 +344,10 @@
 
         onAuthStateChanged(auth, async (user) => {
             currentUser = user;
+            const myLabel = document.getElementById("nav-my-label");
+
             if (user) {
-                document.getElementById("nav-my-label").innerText = "My";
+                if (myLabel) myLabel.innerText = "My";
                 userDocRef = doc(db, "users", user.uid);
                 try {
                     const userDocSnap = await getDoc(userDocRef);
@@ -366,9 +369,9 @@
                     console.error("Error fetching user data:", error);
                 }
             } else {
+                if (myLabel) myLabel.innerText = "Register";
                 document.getElementById("user-phone").innerText = "Guest Mode";
                 document.getElementById("user-fullname").innerText = "Partner Level";
-                document.getElementById("nav-my-label").innerText = "Register";
             }
         });
 
@@ -461,27 +464,17 @@
             }
         }
 
+        // Dynamic routing for the "My / Register" navigation button
         window.handleMyButton = function() {
             if (!currentUser) {
                 window.location.href = 'anpregister.html';
             } else {
-                toggleSettings();
+                window.location.href = 'my.html';
             }
         }
 
         window.closeAuthModal = function() {
             document.getElementById("auth-modal").classList.add("hidden");
-        }
-
-        window.toggleSettings = async function() {
-            if (confirm("Do you want to log out?")) {
-                try {
-                    await signOut(auth);
-                    window.location.reload();
-                } catch (error) {
-                    alert("Error: " + error.message);
-                }
-            }
         }
     </script>
 </body>
