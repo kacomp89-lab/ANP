@@ -370,8 +370,12 @@
             }
         }
 
-        window.openDepositModal = function() {
+        // Updated to accept optional preset amount without wiping it
+        window.openDepositModal = function(presetAmount = null) {
             resetDepositStep();
+            if (presetAmount) {
+                document.getElementById("deposit-amount").value = presetAmount;
+            }
             document.getElementById("deposit-modal").classList.remove("hidden");
         }
 
@@ -387,11 +391,10 @@
             document.getElementById("utr-number").value = "";
         }
 
-        // Direct VIP Pack Selection & QR Generation
+        // Direct VIP Pack Selection & QR Generation (Fixed)
         window.selectVIPPack = function(amount, packName) {
             handleAuthAction(() => {
-                document.getElementById("deposit-amount").value = amount;
-                openDepositModal();
+                openDepositModal(amount);
                 generateUPIQR();
             });
         }
@@ -473,6 +476,6 @@
                 }
             }
         }
-    </script>
+    </script> 
 </body>
 </html>
