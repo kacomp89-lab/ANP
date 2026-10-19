@@ -148,23 +148,33 @@
                     </h3>
                     <div class="grid grid-cols-3 gap-2.5">
                         <!-- VIP 1 -->
-                        <div onclick="selectVIPPack(499, 'VIP 1')" class="bg-gradient-to-br from-green-50 to-emerald-100 border border-green-200 rounded-2xl p-3 text-center cursor-pointer shadow-sm hover:shadow-md transition-all active:scale-95">
+                        <div onclick="selectVIPPack(499)" class="bg-gradient-to-br from-green-50 to-emerald-100 border border-green-200 rounded-2xl p-3 text-center cursor-pointer shadow-sm hover:shadow-md transition-all active:scale-95">
                             <span class="text-[10px] font-bold text-green-700 block mb-1">VIP 1</span>
                             <span class="text-sm font-extrabold text-gray-900 block mb-2">₹499</span>
                             <span class="bg-green-600 text-white text-[9px] font-bold py-1 px-2 rounded-full inline-block">Buy Now</span>
                         </div>
                         <!-- VIP 2 -->
-                        <div onclick="selectVIPPack(1299, 'VIP 2')" class="bg-gradient-to-br from-emerald-100 to-green-200 border border-green-300 rounded-2xl p-3 text-center cursor-pointer shadow-sm hover:shadow-md transition-all active:scale-95 relative overflow-hidden">
+                        <div onclick="selectVIPPack(1299)" class="bg-gradient-to-br from-emerald-100 to-green-200 border border-green-300 rounded-2xl p-3 text-center cursor-pointer shadow-sm hover:shadow-md transition-all active:scale-95 relative overflow-hidden">
                             <div class="absolute -top-3 -right-3 bg-yellow-400 text-[8px] font-bold text-gray-900 px-3 py-1 transform rotate-45 shadow">HOT</div>
                             <span class="text-[10px] font-bold text-green-800 block mb-1">VIP 2</span>
                             <span class="text-sm font-extrabold text-gray-900 block mb-2">₹1,299</span>
                             <span class="bg-green-700 text-white text-[9px] font-bold py-1 px-2 rounded-full inline-block">Buy Now</span>
                         </div>
-                        <!-- VIP 3 -->
-                        <div onclick="selectVIPPack(5999, 'VIP 3')" class="bg-gradient-to-br from-green-200 to-emerald-300 border border-green-400 rounded-2xl p-3 text-center cursor-pointer shadow-sm hover:shadow-md transition-all active:scale-95">
-                            <span class="text-[10px] font-bold text-green-900 block mb-1">VIP 3</span>
-                            <span class="text-sm font-extrabold text-gray-900 block mb-2">₹5,999</span>
-                            <span class="bg-green-800 text-white text-[9px] font-bold py-1 px-2 rounded-full inline-block">Buy Now</span>
+                        <!-- VIP 3 with Diwali Firecracker Skyshot Explosion Theme -->
+                        <div onclick="selectVIPPack(4999)" class="bg-gradient-to-br from-red-950 via-amber-900 to-yellow-950 border-2 border-yellow-400 rounded-2xl p-3 text-center cursor-pointer shadow-xl hover:shadow-2xl transition-all active:scale-95 relative overflow-hidden animate-pulse">
+                            <div class="absolute -top-3 -right-3 bg-yellow-400 text-[7px] font-extrabold text-red-950 px-3 py-1 transform rotate-45 shadow flex items-center gap-0.5">
+                                <i class="fas fa-fire text-[8px]"></i> DIWALI BLAST
+                            </div>
+                            <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,215,0,0.25)_0%,transparent_70%)] pointer-events-none"></div>
+                            
+                            <span class="text-[10px] font-extrabold text-yellow-300 block mb-0.5 tracking-wider">VIP 3 SPECIAL</span>
+                            <div class="mb-1.5">
+                                <span class="line-through text-red-300 text-[10px] block">₹5,999</span>
+                                <span class="text-sm font-black text-white drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]">₹4,999</span>
+                            </div>
+                            <span class="bg-gradient-to-r from-yellow-400 to-amber-500 text-red-950 text-[8px] font-black py-0.5 px-2 rounded-full inline-block shadow uppercase tracking-wide">
+                                🎆 Skyshot
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -370,12 +380,8 @@
             }
         }
 
-        // Updated to accept optional preset amount without wiping it
-        window.openDepositModal = function(presetAmount = null) {
+        window.openDepositModal = function() {
             resetDepositStep();
-            if (presetAmount) {
-                document.getElementById("deposit-amount").value = presetAmount;
-            }
             document.getElementById("deposit-modal").classList.remove("hidden");
         }
 
@@ -391,10 +397,11 @@
             document.getElementById("utr-number").value = "";
         }
 
-        // Direct VIP Pack Selection & QR Generation (Fixed)
-        window.selectVIPPack = function(amount, packName) {
+        // Direct VIP Pack Selection & QR Generation
+        window.selectVIPPack = function(amount) {
             handleAuthAction(() => {
-                openDepositModal(amount);
+                document.getElementById("deposit-modal").classList.remove("hidden");
+                document.getElementById("deposit-amount").value = amount;
                 generateUPIQR();
             });
         }
@@ -476,6 +483,6 @@
                 }
             }
         }
-    </script> 
+    </script>
 </body>
 </html>
