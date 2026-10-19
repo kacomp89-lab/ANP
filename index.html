@@ -137,8 +137,36 @@
                     </div>
                 </div>
 
-                <div class="text-center mt-6 mb-6">
+                <div class="text-center mt-6 mb-4">
                     <span class="text-xs text-gray-500 font-medium tracking-wide" id="start-date-text">Start date: --</span>
+                </div>
+
+                <!-- VIP PACKAGES SECTION -->
+                <div class="mt-6 mb-6">
+                    <h3 class="text-gray-800 font-bold text-sm mb-3 flex items-center gap-2">
+                        <i class="fas fa-crown text-yellow-500"></i> Select VIP Partner Pack
+                    </h3>
+                    <div class="grid grid-cols-3 gap-2.5">
+                        <!-- VIP 1 -->
+                        <div onclick="selectVIPPack(499, 'VIP 1')" class="bg-gradient-to-br from-green-50 to-emerald-100 border border-green-200 rounded-2xl p-3 text-center cursor-pointer shadow-sm hover:shadow-md transition-all active:scale-95">
+                            <span class="text-[10px] font-bold text-green-700 block mb-1">VIP 1</span>
+                            <span class="text-sm font-extrabold text-gray-900 block mb-2">₹499</span>
+                            <span class="bg-green-600 text-white text-[9px] font-bold py-1 px-2 rounded-full inline-block">Buy Now</span>
+                        </div>
+                        <!-- VIP 2 -->
+                        <div onclick="selectVIPPack(1299, 'VIP 2')" class="bg-gradient-to-br from-emerald-100 to-green-200 border border-green-300 rounded-2xl p-3 text-center cursor-pointer shadow-sm hover:shadow-md transition-all active:scale-95 relative overflow-hidden">
+                            <div class="absolute -top-3 -right-3 bg-yellow-400 text-[8px] font-bold text-gray-900 px-3 py-1 transform rotate-45 shadow">HOT</div>
+                            <span class="text-[10px] font-bold text-green-800 block mb-1">VIP 2</span>
+                            <span class="text-sm font-extrabold text-gray-900 block mb-2">₹1,299</span>
+                            <span class="bg-green-700 text-white text-[9px] font-bold py-1 px-2 rounded-full inline-block">Buy Now</span>
+                        </div>
+                        <!-- VIP 3 -->
+                        <div onclick="selectVIPPack(5999, 'VIP 3')" class="bg-gradient-to-br from-green-200 to-emerald-300 border border-green-400 rounded-2xl p-3 text-center cursor-pointer shadow-sm hover:shadow-md transition-all active:scale-95">
+                            <span class="text-[10px] font-bold text-green-900 block mb-1">VIP 3</span>
+                            <span class="text-sm font-extrabold text-gray-900 block mb-2">₹5,999</span>
+                            <span class="bg-green-800 text-white text-[9px] font-bold py-1 px-2 rounded-full inline-block">Buy Now</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="banner-landscape rounded-xl h-28 w-full mt-4 relative shadow-sm border border-green-100 flex flex-col p-3">
@@ -204,13 +232,13 @@
                 <i class="fas fa-qrcode"></i>
             </div>
             <h3 class="text-lg font-bold mb-1">Buy ANP Coins via UPI</h3>
-            <p class="text-[11px] text-gray-300 mb-4">Select amount to generate your secure UPI payment QR code:</p>
+            <p class="text-[11px] text-gray-300 mb-4">Complete payment to purchase your selected VIP package:</p>
             
             <!-- Step 1: Amount Input View -->
             <div id="step-amount" class="block">
                 <div class="w-full bg-white rounded-xl flex items-center px-4 py-3 mb-4 text-gray-800 shadow-inner">
                     <span class="text-lg font-bold mr-2 text-green-700">₹</span>
-                    <input type="number" id="deposit-amount" placeholder="Enter amount (e.g. 500)" class="w-full bg-transparent outline-none text-base font-semibold">
+                    <input type="number" id="deposit-amount" placeholder="Enter amount (e.g. 499)" class="w-full bg-transparent outline-none text-base font-semibold">
                 </div>
                 <button onclick="generateUPIQR()" class="w-full py-3.5 px-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold rounded-2xl text-sm shadow-lg mb-3">
                     Generate UPI QR & Pay
@@ -263,7 +291,7 @@
                 <i class="fas fa-user-plus"></i>
             </div>
             <h3 class="text-xl font-bold mb-2">New to ANP? Register Now</h3>
-            <p class="text-xs text-gray-200 mb-6">Create an account or log in to buy coins and track your earnings.</p>
+            <p class="text-xs text-gray-200 mb-6">Create an account or log in to buy VIP packs and track your earnings.</p>
             
             <div class="flex flex-col gap-3">
                 <button onclick="window.location.href='anpregister.html'" class="w-full py-3.5 px-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold rounded-2xl text-sm shadow-lg">
@@ -359,6 +387,15 @@
             document.getElementById("utr-number").value = "";
         }
 
+        // Direct VIP Pack Selection & QR Generation
+        window.selectVIPPack = function(amount, packName) {
+            handleAuthAction(() => {
+                document.getElementById("deposit-amount").value = amount;
+                openDepositModal();
+                generateUPIQR();
+            });
+        }
+
         window.generateUPIQR = function() {
             const amountInput = document.getElementById("deposit-amount").value;
             const amount = parseFloat(amountInput);
@@ -407,7 +444,7 @@
                     createdAt: new Date().toISOString()
                 });
 
-                alert(`Payment submitted successfully! UTR: ${utrInput}. Your coins will be credited once verified.`);
+                alert(`Payment submitted successfully! UTR: ${utrInput}. Your VIP coins will be credited once verified.`);
                 closeDepositModal();
             } catch (error) {
                 alert("Error submitting payment: " + error.message);
