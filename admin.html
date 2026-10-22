@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANP Money - Admin Verification Panel</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0b1a10; color: white; }
+    </style>
+</head>
+<body class="min-h-screen p-6">
+    <div class="max-w-4xl mx-auto">
+        
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8 border-b border-green-900 pb-4">
+            <div>
+                <h1 class="text-2xl font-black tracking-tight text-green-400">ANP MONEY ADMIN</h1>
+                <p class="text-xs text-gray-400 mt-1">Pending UPI UTR Deposit Verifications</p>
+            </div>
+            <button onclick="window.location.href='index.html'" class="px-4 py-2 bg-green-800 hover:bg-green-700 text-xs font-bold rounded-xl transition-all">
+                Back to App
+            </button>
+        </div>
+
+        <!-- Pending Deposits Container -->
+        <div class="bg-gray-900 border border-green-900/60 rounded-3xl p-6 shadow-2xl">
+            <h2 class="text-sm font-bold text-green-300 mb-4 flex items-center gap-2">
+                <i class="fas fa-clock"></i> Pending Payment Requests
+            </h2>
+
+            <div id="admin-deposit-list" class="flex flex-col gap-4">
+                <div class="text-center py-12 text-gray-500 text-xs">
+                    <i class="fas fa-spinner fa-spin text-lg mb-2 text-green-500"></i>
+                    <p>Loading pending deposits...</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Admin Script Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+        import { getFirestore, collection, query, where, getDocs, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDZb4KcR5Tvw3x_ipR2ocgdUDqh47Arz6M",
+            authDomain: "anp-money.firebaseapp.com",
+            projectId: "anp-money",
+            storageBucket: "anp-money.firebasestorage.app",
+            messagingSenderId: "581687927989",
+            appId: "1:581687927989:web:41218431483f24a18b0afc"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function loadPendingDeposits() {
+            const container = document.getElementById("admin-deposit-list");
+            container.innerHTML = `<div class="text-center py-8 text-gray-500 text-xs">Fetching records...</div>`;
+
+            try {
+                // Query deposits where status is pending
+                const q = query(collection(db, "deposits"), where("status", "==", "pending"));
+                const querySnapshot = await getDocs(q);
+
+                container.innerHTML = "";
+
+                if (querySnapshot.empty) {
+                    container.innerHTML = `
+                        <div class="text-center py-12 text-gray-500 text-xs">
+                            <i class="fas fa-check-circle text-2xl text-green-600 mb-2"></i>
+                            <p>No pending payment requests right now!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                querySnapshot.forEach((docSnap) => {
+                    const deposit = docSnap.data();
+                    const depositId = docSnap.id;
+                    const dateStr = deposit.createdAt ? new Date(deposit.createdAt).toLocaleString('en-IN') : 'Recent';
+
+                    const card = `
+                        <div class="bg-black/40 border border-green-900/40 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-xs font-bold text-white">${deposit.email || 'Partner'}</span>
+                                    <span class="bg-yellow-500/20 text-yellow-300 text-[9px] font-bold px-2 py-0.5 rounded-full">Pending Verification</span>
+                                </div>
+                                <p class="text-xs text-gray-300">Amount: <span class="font-extrabold text-green-400">₹${(deposit.amount || 0).toLocaleString()}</span></p>
+                                <p class="text-xs text-gray-300">UTR Reference: <span class="font-mono text-yellow-300 font-bold bg-black/60 px-2 py-0.5 rounded">${deposit.utr}</span></p>
+                                <p class="text-[10px] text-gray-500 mt-1">${dateStr}</p>
+                            </div>
+                            <button onclick="approveDeposit('${depositId}', '${deposit.uid}', ${deposit.amount})" class="w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl text-xs shadow-lg transition-all">
+                                <i class="fas fa-check mr-1"></i> Verify & Credit Coins
+                            </button>
+                        </div>
+                    `;
+                    container.innerHTML += card;
+                });
+
+            } catch (error) {
+                console.error("Error loading pending deposits:", error);
+                container.innerHTML = `<p class="text-red-400 text-xs text-center py-4">Error loading deposits: ${error.message}</p>`;
+            }
+        }
+
+        // The Approval function you asked about:
+        window.approveDeposit = async function(depositId, userId, depositAmount) {
+            if (!confirm(`Are you sure you want to approve ₹${depositAmount} for this user? This will instantly credit their balance.`)) {
+                return;
+            }
+
+            try {
+                // 1. Reference to the user's document
+                const userRef = doc(db, "users", userId);
+
+                // 2. Safely increment the user's balance and total revenue in real-time
+                await updateDoc(userRef, {
+                    balance: increment(depositAmount),
+                    totalRevenue: increment(depositAmount)
+                });
+
+                // 3. Mark the deposit request as approved
+                const depositRef = doc(db, "deposits", depositId);
+                await updateDoc(depositRef, {
+                    status: "approved"
+                });
+
+                alert(`Successfully approved ₹${depositAmount}! Coins have been credited to the partner.`);
+                loadPendingDeposits(); // Refresh the list
+            } catch (error) {
+                alert("Error approving payment: " + error.message);
+            }
+        };
+
+        // Load list on startup
+        loadPendingDeposits();
+    </script>
+</body>
+</html>
