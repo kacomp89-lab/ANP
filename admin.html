@@ -22,13 +22,28 @@
                 <h1 class="text-2xl font-black tracking-tight text-green-400">ANP MONEY ADMIN</h1>
                 <p class="text-xs text-gray-400 mt-1">Pending UPI UTR Deposit Verifications</p>
             </div>
-            <button onclick="window.location.href='index.html'" class="px-4 py-2 bg-green-800 hover:bg-green-700 text-xs font-bold rounded-xl transition-all">
-                Back to App
+            <div class="flex items-center gap-3">
+                <span id="admin-user-email" class="text-xs text-gray-300 hidden sm:inline">Checking auth...</span>
+                <button onclick="window.location.href='index.html'" class="px-4 py-2 bg-green-800 hover:bg-green-700 text-xs font-bold rounded-xl transition-all">
+                    Back to App
+                </button>
+            </div>
+        </div>
+
+        <!-- Login Card (Shown if not logged in) -->
+        <div id="admin-login-card" class="bg-gray-900 border border-green-900/60 rounded-3xl p-6 shadow-2xl max-w-md mx-auto hidden text-center">
+            <div class="w-12 h-12 bg-green-500/20 border border-green-500 rounded-full flex items-center justify-center mx-auto mb-3 text-green-400 text-lg">
+                <i class="fas fa-lock"></i>
+            </div>
+            <h2 class="text-lg font-bold text-white mb-1">Admin Authentication Required</h2>
+            <p class="text-xs text-gray-400 mb-4">Please log in with your account to view and verify pending deposits.</p>
+            <button onclick="window.location.href='index.html'" class="w-full py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded-xl text-xs shadow-lg">
+                Go to Main App & Log In
             </button>
         </div>
 
         <!-- Pending Deposits Container -->
-        <div class="bg-gray-900 border border-green-900/60 rounded-3xl p-6 shadow-2xl">
+        <div id="admin-dashboard-container" class="bg-gray-900 border border-green-900/60 rounded-3xl p-6 shadow-2xl hidden">
             <h2 class="text-sm font-bold text-green-300 mb-4 flex items-center gap-2">
                 <i class="fas fa-clock"></i> Pending Payment Requests
             </h2>
@@ -46,6 +61,7 @@
     <!-- Admin Script Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
         import { getFirestore, collection, query, where, getDocs, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -58,14 +74,29 @@
         };
 
         const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
         const db = getFirestore(app);
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                document.getElementById("admin-login-card").classList.remove("hidden");
+                document.getElementById("admin-dashboard-container").classList.add("hidden");
+                document.getElementById("admin-user-email").innerText = "Not Logged In";
+                return;
+            }
+
+            document.getElementById("admin-login-card").classList.add("hidden");
+            document.getElementById("admin-dashboard-container").classList.remove("hidden");
+            document.getElementById("admin-user-email").innerText = user.email;
+
+            loadPendingDeposits();
+        });
 
         async function loadPendingDeposits() {
             const container = document.getElementById("admin-deposit-list");
             container.innerHTML = `<div class="text-center py-8 text-gray-500 text-xs">Fetching records...</div>`;
 
             try {
-                // Query deposits where status is pending
                 const q = query(collection(db, "deposits"), where("status", "==", "pending"));
                 const querySnapshot = await getDocs(q);
 
@@ -111,37 +142,29 @@
             }
         }
 
-        // The Approval function you asked about:
         window.approveDeposit = async function(depositId, userId, depositAmount) {
             if (!confirm(`Are you sure you want to approve ₹${depositAmount} for this user? This will instantly credit their balance.`)) {
                 return;
             }
 
             try {
-                // 1. Reference to the user's document
                 const userRef = doc(db, "users", userId);
-
-                // 2. Safely increment the user's balance and total revenue in real-time
                 await updateDoc(userRef, {
                     balance: increment(depositAmount),
                     totalRevenue: increment(depositAmount)
                 });
 
-                // 3. Mark the deposit request as approved
                 const depositRef = doc(db, "deposits", depositId);
                 await updateDoc(depositRef, {
                     status: "approved"
                 });
 
                 alert(`Successfully approved ₹${depositAmount}! Coins have been credited to the partner.`);
-                loadPendingDeposits(); // Refresh the list
+                loadPendingDeposits();
             } catch (error) {
                 alert("Error approving payment: " + error.message);
             }
         };
-
-        // Load list on startup
-        loadPendingDeposits();
     </script>
 </body>
 </html>
