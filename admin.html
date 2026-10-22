@@ -124,12 +124,12 @@
                                     <span class="text-xs font-bold text-white">${deposit.email || 'Partner'}</span>
                                     <span class="bg-yellow-500/20 text-yellow-300 text-[9px] font-bold px-2 py-0.5 rounded-full">Pending Verification</span>
                                 </div>
-                                <p class="text-xs text-gray-300">Amount: <span class="font-extrabold text-green-400">₹${(deposit.amount || 0).toLocaleString()}</span></p>
+                                <p class="text-xs text-gray-300">Package Price: <span class="font-extrabold text-green-400">₹${(deposit.amount || 0).toLocaleString()}</span></p>
                                 <p class="text-xs text-gray-300">UTR Reference: <span class="font-mono text-yellow-300 font-bold bg-black/60 px-2 py-0.5 rounded">${deposit.utr}</span></p>
                                 <p class="text-[10px] text-gray-500 mt-1">${dateStr}</p>
                             </div>
                             <button onclick="approveDeposit('${depositId}', '${deposit.uid}', ${deposit.amount})" class="w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl text-xs shadow-lg transition-all">
-                                <i class="fas fa-check mr-1"></i> Verify & Credit Coins
+                                <i class="fas fa-check mr-1"></i> Verify & Activate VIP Pack
                             </button>
                         </div>
                     `;
@@ -142,24 +142,49 @@
             }
         }
 
+        // Updated Approval Logic: Sets Partner Level and Credits Daily Reward instead of pack cost
         window.approveDeposit = async function(depositId, userId, depositAmount) {
-            if (!confirm(`Are you sure you want to approve ₹${depositAmount} for this user? This will instantly credit their balance.`)) {
+            let vipLevel = "VIP1";
+            let dailyReward = 50;
+
+            if (depositAmount >= 20000) {
+                vipLevel = "VIP4";
+                dailyReward = 2000;
+            } else if (depositAmount >= 4999) {
+                vipLevel = "VIP3";
+                dailyReward = 500;
+            } else if (depositAmount >= 1299) {
+                vipLevel = "VIP2";
+                dailyReward = 130;
+            } else if (depositAmount >= 499) {
+                vipLevel = "VIP1";
+                dailyReward = 50;
+            }
+
+            if (!confirm(`Verify payment of ₹${depositAmount}?\n\nThis will activate partner tier [${vipLevel}] and credit daily reward of ₹${dailyReward} to their balance.`)) {
                 return;
             }
 
             try {
                 const userRef = doc(db, "users", userId);
+                
+                // Update user level and credit daily reward (Pack price is NOT added to spendable balance)
                 await updateDoc(userRef, {
-                    balance: increment(depositAmount),
-                    totalRevenue: increment(depositAmount)
+                    partnerLevel: vipLevel,
+                    balance: increment(dailyReward),
+                    todayEarnings: increment(dailyReward),
+                    totalRevenue: increment(dailyReward)
                 });
 
+                // Mark deposit as approved
                 const depositRef = doc(db, "deposits", depositId);
                 await updateDoc(depositRef, {
-                    status: "approved"
+                    status: "approved",
+                    activatedLevel: vipLevel,
+                    rewardCredited: dailyReward
                 });
 
-                alert(`Successfully approved ₹${depositAmount}! Coins have been credited to the partner.`);
+                alert(`Successfully activated ${vipLevel}! Daily reward of ₹${dailyReward} credited to partner balance.`);
                 loadPendingDeposits();
             } catch (error) {
                 alert("Error approving payment: " + error.message);
