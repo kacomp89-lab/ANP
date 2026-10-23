@@ -90,6 +90,13 @@
         .elite-pulse {
             animation: goldenPulse 1.2s ease-out;
         }
+        @keyframes scaleUpModal {
+            0% { transform: scale(0.85); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-modal-pop {
+            animation: scaleUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
     </style>
 </head>
 <body>
@@ -284,7 +291,7 @@
 
     <!-- VIP Package Details Modal -->
     <div id="vip-details-modal" class="fixed inset-0 bg-black bg-opacity-85 z-50 flex items-center justify-center hidden px-4 backdrop-blur-md">
-        <div class="glass-modal rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl text-white">
+        <div class="glass-modal rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl text-white animate-modal-pop">
             <div class="w-14 h-14 bg-yellow-500 bg-opacity-25 border border-yellow-400 rounded-full flex items-center justify-center mx-auto mb-3 text-yellow-300 text-2xl">
                 <i class="fas fa-award"></i>
             </div>
@@ -309,19 +316,18 @@
         </div>
     </div>
 
-    <!-- Deposit / UPI Payment Modal with qrimg.jpg & UTR Verification -->
+    <!-- Deposit / UPI Payment Modal with Dynamic QR & Pre-filled Amount -->
     <div id="deposit-modal" class="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center hidden px-4 backdrop-blur-md">
-        <div class="glass-modal rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl text-white">
+        <div class="glass-modal rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl text-white animate-modal-pop">
             <div class="w-12 h-12 bg-green-500 bg-opacity-30 border border-green-400 rounded-full flex items-center justify-center mx-auto mb-3 text-green-300 text-xl">
                 <i class="fas fa-qrcode"></i>
             </div>
             <h3 class="text-lg font-bold mb-1">Buy ANP Coins via UPI</h3>
-            <p class="text-[11px] text-gray-300 mb-4">Scan QR code or click apps below (amount pre-filled):</p>
+            <p class="text-[11px] text-gray-300 mb-3">Scan QR or click apps (Amount pre-filled):</p>
             
-            <!-- QR Code & UTR Verification View -->
             <div id="step-qr" class="block">
                 <div class="bg-white p-3 rounded-2xl inline-block mb-3 shadow-md">
-                    <img src="qrimg.jpg" alt="UPI QR Code" class="w-40 h-40 mx-auto object-contain">
+                    <img id="dynamic-upi-qr" src="" alt="Dynamic UPI QR Code" class="w-40 h-40 mx-auto object-contain">
                 </div>
                 
                 <div class="text-xs text-green-300 font-semibold mb-1">Amount to Pay: <span id="display-amount" class="text-white text-sm font-bold">₹0</span></div>
@@ -354,9 +360,20 @@
         </div>
     </div>
 
+    <!-- Success Tick Animation Modal -->
+    <div id="success-animation-modal" class="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center hidden px-4 backdrop-blur-md">
+        <div class="glass-modal rounded-3xl max-w-sm w-full p-8 text-center shadow-2xl text-white animate-modal-pop">
+            <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4 text-white text-3xl shadow-[0_0_35px_rgba(34,197,94,0.7)] animate-bounce">
+                <i class="fas fa-check"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Payment Submitted!</h3>
+            <p class="text-xs text-gray-200 leading-relaxed font-medium">We are verifying your payment soon.</p>
+        </div>
+    </div>
+
     <!-- Guest Mode Auth Modal -->
     <div id="auth-modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden px-4 backdrop-blur-sm">
-        <div class="glass-modal rounded-3xl max-w-sm w-full p-7 text-center shadow-2xl text-white">
+        <div class="glass-modal rounded-3xl max-w-sm w-full p-7 text-center shadow-2xl text-white animate-modal-pop">
             <div class="w-14 h-14 bg-green-500 bg-opacity-30 border border-green-400 rounded-full flex items-center justify-center mx-auto mb-4 text-green-300 text-2xl">
                 <i class="fas fa-user-plus"></i>
             </div>
@@ -399,7 +416,7 @@
         let userDocRef = null;
         let selectedVIPAmount = 0;
 
-        // Updated with your official merchant UPI ID
+        // Official Merchant UPI ID
         const MERCHANT_UPI = "6386084198@fam"; 
         const MERCHANT_NAME = "ANP Green Ride";
 
@@ -444,7 +461,6 @@
             }
         }
 
-        // Handle VIP Click to Show Details Modal First
         window.handleVIPClick = function(amount, title, description) {
             handleAuthAction(() => {
                 selectedVIPAmount = amount;
@@ -452,7 +468,6 @@
                 document.getElementById("modal-vip-price").innerText = `Package Price: ₹${amount.toLocaleString()}`;
                 document.getElementById("modal-vip-desc").innerText = description;
 
-                // Elite animation for VIP 3 & 4
                 const cardId = amount >= 20000 ? 'vip-card-4' : (amount >= 4999 ? 'vip-card-3' : null);
                 if (cardId) {
                     const card = document.getElementById(cardId);
@@ -480,9 +495,13 @@
             document.getElementById("deposit-modal").classList.remove("hidden");
             document.getElementById("display-amount").innerText = `₹${selectedVIPAmount.toLocaleString()}`;
 
-            // Construct exact UPI deep link with prefilled amount and merchant handle
+            // Build UPI string with pre-filled exact amount
             const upiString = `upi://pay?pa=${MERCHANT_UPI}&pn=${encodeURIComponent(MERCHANT_NAME)}&am=${selectedVIPAmount.toFixed(2)}&cu=INR`;
             
+            // Dynamically generate QR code with the pre-filled amount encoded inside it
+            const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(upiString)}`;
+            document.getElementById("dynamic-upi-qr").src = qrApiUrl;
+
             document.getElementById("gpay-btn").href = upiString;
             document.getElementById("paytm-btn").href = upiString;
             document.getElementById("phonepe-btn").href = upiString;
@@ -511,8 +530,17 @@
                     createdAt: new Date().toISOString()
                 });
 
-                alert(`Payment submitted successfully! UTR: ${utrInput}. Your VIP package will be activated once verified.`);
                 closeDepositModal();
+
+                // Show fintech-style success tick animation modal
+                const successModal = document.getElementById("success-animation-modal");
+                successModal.classList.remove("hidden");
+
+                setTimeout(() => {
+                    successModal.classList.add("hidden");
+                    window.location.href = "delivery.html"; // Redirect to transaction log to view pending status
+                }, 2500);
+
             } catch (error) {
                 alert("Error submitting payment: " + error.message);
             }
