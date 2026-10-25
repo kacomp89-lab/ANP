@@ -169,7 +169,7 @@
 
     <div class="app-container">
         
-        <!-- Intro Video Modal (Guaranteed autoplay with muted attribute) -->
+        <!-- Intro Video Modal -->
         <div id="intro-video-modal" class="fixed inset-0 z-[9999] bg-black flex items-center justify-center hidden">
             <video id="ad-intro-element" src="ad.mp4" autoplay muted playsinline class="w-full h-full object-cover"></video>
             <button onclick="closeIntroVideo()" class="absolute top-6 right-6 bg-black/60 hover:bg-black/80 text-white font-bold px-5 py-2.5 rounded-full text-xs backdrop-blur-md border border-white/30 transition-all shadow-2xl flex items-center gap-2 z-[10000]">
@@ -559,9 +559,8 @@
                 
                 videoModal.classList.remove("hidden");
                 videoEl.currentTime = 0;
-                videoEl.load();
                 videoEl.play().catch(e => {
-                    console.log("Autoplay error, attempting fallback:", e);
+                    console.log("Autoplay error:", e);
                 });
 
                 videoEl.onended = function() {
