@@ -60,7 +60,7 @@
                     <i class="fas fa-home"></i>
                 </button>
             </div>
-            <p class="text-xs text-green-100">Your approved deposits & paid withdrawals.</p>
+            <p class="text-xs text-green-100">Your deposits, payouts, and request status.</p>
         </header>
 
         <!-- Main Content List -->
@@ -131,7 +131,6 @@
             }
 
             try {
-                // Fetch approved deposits & paid withdrawals
                 const depositsQuery = query(collection(db, "deposits"), where("uid", "==", user.uid));
                 const withdrawalsQuery = query(collection(db, "withdrawals"), where("uid", "==", user.uid));
 
@@ -147,9 +146,10 @@
                     items.push({
                         type: 'Deposit (VIP Pack)',
                         amount: data.amount,
-                        status: data.status, // approved, pending
+                        status: data.status, // approved, pending, rejected
                         date: data.createdAt ? new Date(data.createdAt) : new Date(0),
-                        meta: `UTR: ${data.utr}`
+                        meta: `UTR: ${data.utr}`,
+                        adminNote: data.adminNote || null
                     });
                 });
 
@@ -158,13 +158,13 @@
                     items.push({
                         type: 'Withdrawal Payout',
                         amount: data.amount,
-                        status: data.status, // pending, verified, paid
+                        status: data.status, // pending, verified, paid, rejected
                         date: data.createdAt ? new Date(data.createdAt) : new Date(0),
-                        meta: `Bank A/C: ${data.bankAccount}`
+                        meta: `Bank A/C: ${data.bankAccount}`,
+                        adminNote: data.adminNote || null
                     });
                 });
 
-                // Sort newest first
                 items.sort((a, b) => b.date - a.date);
 
                 listContainer.innerHTML = "";
@@ -185,23 +185,32 @@
                         badgeColor = "bg-green-500/10 text-green-700 border-green-200";
                     } else if (item.status === "verified") {
                         badgeColor = "bg-blue-500/10 text-blue-700 border-blue-200";
+                    } else if (item.status === "rejected") {
+                        badgeColor = "bg-red-500/10 text-red-700 border-red-200";
                     }
 
                     const card = `
-                        <div class="bg-gray-50 border border-gray-100 rounded-2xl p-4 flex justify-between items-center shadow-sm">
-                            <div>
-                                <div class="flex items-center gap-2 mb-1">
-                                    <span class="text-xs font-bold text-gray-900">${item.type}</span>
-                                    <span class="text-[9px] font-bold px-2 py-0.5 rounded-full uppercase border ${badgeColor}">${item.status}</span>
+                        <div class="bg-gray-50 border border-gray-100 rounded-2xl p-4 flex flex-col gap-2 shadow-sm">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="text-xs font-bold text-gray-900">${item.type}</span>
+                                        <span class="text-[9px] font-bold px-2 py-0.5 rounded-full uppercase border ${badgeColor}">${item.status}</span>
+                                    </div>
+                                    <p class="text-[11px] text-gray-500">${item.meta}</p>
                                 </div>
-                                <p class="text-[11px] text-gray-500">${item.meta}</p>
-                                <p class="text-[10px] text-gray-400 mt-1">${item.date.toLocaleString('en-IN')}</p>
+                                <div class="text-right">
+                                    <span class="text-sm font-black ${item.type.includes('Withdrawal') ? 'text-red-600' : 'text-green-600'}">
+                                        ${item.type.includes('Withdrawal') ? '-' : '+'}₹${(item.amount || 0).toLocaleString()}
+                                    </span>
+                                </div>
                             </div>
-                            <div class="text-right">
-                                <span class="text-sm font-black ${item.type.includes('Withdrawal') ? 'text-red-600' : 'text-green-600'}">
-                                    ${item.type.includes('Withdrawal') ? '-' : '+'}₹${(item.amount || 0).toLocaleString()}
-                                </span>
-                            </div>
+                            ${item.adminNote ? `
+                                <div class="bg-red-50 border border-red-200 rounded-xl p-2.5 text-[10px] text-red-600 font-medium">
+                                    <i class="fas fa-exclamation-circle mr-1"></i> Note from Admin: ${item.adminNote}
+                                </div>
+                            ` : ''}
+                            <div class="text-[10px] text-gray-400 text-right">${item.date.toLocaleString('en-IN')}</div>
                         </div>
                     `;
                     listContainer.innerHTML += card;
