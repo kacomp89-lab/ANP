@@ -561,7 +561,12 @@
                 
                 videoModal.classList.remove("hidden");
                 videoEl.currentTime = 0;
-                videoEl.play().catch(e => console.log("Autoplay blocked:", e));
+                videoEl.load();
+                videoEl.play().catch(e => {
+                    console.log("Autoplay error, attempting muted fallback:", e);
+                    videoEl.muted = true;
+                    videoEl.play();
+                });
 
                 videoEl.onended = function() {
                     finishIntroVideoAndShowVIP();
