@@ -156,7 +156,7 @@
             animation: popCheck 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
-        /* Intro Video Styling (No timeline controls) */
+        /* Intro Video Styling (Fixed mobile zoom using object-contain) */
         #intro-video-modal {
             background: #000000;
         }
@@ -169,9 +169,9 @@
 
     <div class="app-container">
         
-        <!-- Intro Video Modal -->
+        <!-- Intro Video Modal (Fixed with object-contain for mobile responsiveness) -->
         <div id="intro-video-modal" class="fixed inset-0 z-[9999] bg-black flex items-center justify-center hidden">
-            <video id="ad-intro-element" src="ad.mp4" autoplay muted playsinline class="w-full h-full object-cover"></video>
+            <video id="ad-intro-element" src="ad.mp4" autoplay muted playsinline class="w-full h-full max-h-[85vh] object-contain"></video>
             <button onclick="closeIntroVideo()" class="absolute top-6 right-6 bg-black/60 hover:bg-black/80 text-white font-bold px-5 py-2.5 rounded-full text-xs backdrop-blur-md border border-white/30 transition-all shadow-2xl flex items-center gap-2 z-[10000]">
                 Skip <i class="fas fa-arrow-right"></i>
             </button>
@@ -225,8 +225,12 @@
                         <span class="text-3xl font-bold tracking-tight" id="user-balance">0.00</span>
                         <span class="text-xs text-green-100 mt-1">Balance(₹) / Coins</span>
                     </div>
-                    <div class="flex flex-col items-end">
+                    <div class="flex flex-col items-end gap-2">
                         <span class="text-xs text-green-100 font-semibold bg-green-700 bg-opacity-40 px-3 py-1 rounded-full" id="partner-level">VIP1</span>
+                        <!-- Withdrawal Button -->
+                        <button onclick="openWithdrawalModal()" class="bg-white text-green-800 font-bold text-xs px-3.5 py-1.5 rounded-xl shadow hover:bg-green-50 transition-all">
+                            <i class="fas fa-wallet mr-1"></i> Withdraw
+                        </button>
                     </div>
                 </div>
             </header>
@@ -393,6 +397,42 @@
         </div>
     </div>
 
+    <!-- Withdrawal Modal with Bank/UPI Form & Security Warning -->
+    <div id="withdrawal-modal" class="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center hidden px-4 backdrop-blur-md">
+        <div class="glass-modal rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl text-white animate-modal-pop">
+            <div class="w-12 h-12 bg-green-500 bg-opacity-30 border border-green-400 rounded-full flex items-center justify-center mx-auto mb-3 text-green-300 text-xl">
+                <i class="fas fa-university"></i>
+            </div>
+            <h3 class="text-lg font-bold mb-1">Withdraw Funds</h3>
+            <p class="text-[11px] text-gray-300 mb-4">Enter your bank account or UPI details below:</p>
+            
+            <div class="flex flex-col gap-3 text-left mb-4">
+                <div>
+                    <label class="text-[10px] text-green-300 font-semibold mb-1 block">Withdrawal Amount (₹)</label>
+                    <input type="number" id="withdraw-amount" placeholder="Enter amount" class="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2.5 text-xs text-white outline-none focus:border-green-400">
+                </div>
+                <div>
+                    <label class="text-[10px] text-green-300 font-semibold mb-1 block">Bank Account / UPI ID</label>
+                    <input type="text" id="withdraw-destination" placeholder="Enter UPI ID or Bank A/C & IFSC" class="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2.5 text-xs text-white outline-none focus:border-green-400">
+                </div>
+            </div>
+
+            <!-- Fraud & Security Warning -->
+            <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-2xl p-3 mb-4 text-left">
+                <p class="text-[10px] text-yellow-300 font-medium leading-relaxed">
+                    <i class="fas fa-shield-alt mr-1"></i> Fraudsters usually ask you pin or otp beware of them we are safe and trustworthy.
+                </p>
+            </div>
+
+            <button onclick="submitWithdrawalRequest()" class="w-full py-3 px-4 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold rounded-2xl text-xs shadow-lg mb-2">
+                Submit Withdrawal Request
+            </button>
+            <button onclick="closeWithdrawalModal()" class="w-full py-2 px-4 bg-transparent hover:bg-white/10 text-gray-400 rounded-xl text-[11px]">
+                Cancel
+            </button>
+        </div>
+    </div>
+
     <!-- Deposit / UPI Payment Modal with qrimg.jpg Restored -->
     <div id="deposit-modal" class="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center hidden px-4 backdrop-blur-md">
         <div class="glass-modal rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl text-white animate-modal-pop">
@@ -404,7 +444,6 @@
             
             <div id="step-qr" class="block">
                 <div class="bg-white p-3 rounded-2xl inline-block mb-3 shadow-md">
-                    <!-- Real uploaded qrimg.jpg image -->
                     <img src="qrimg.jpg" alt="UPI QR Code" class="w-40 h-40 mx-auto object-contain">
                 </div>
                 
@@ -449,11 +488,11 @@
                 </div>
             </div>
 
-            <h3 class="text-xl font-extrabold mb-1 tracking-tight">Payment Submitted!</h3>
-            <p class="text-[12px] text-emerald-300 font-semibold mb-4">UTR Verification Queue</p>
+            <h3 class="text-xl font-extrabold mb-1 tracking-tight">Success!</h3>
+            <p class="text-[12px] text-emerald-300 font-semibold mb-4">Request Processed</p>
             
             <div class="bg-white/10 border border-white/10 rounded-2xl p-4 shadow-inner">
-                <p class="text-xs text-gray-200 leading-relaxed font-medium">We are verifying your payment soon.</p>
+                <p class="text-xs text-gray-200 leading-relaxed font-medium">Your request has been submitted successfully.</p>
             </div>
         </div>
     </div>
@@ -546,6 +585,56 @@
                 document.getElementById("auth-modal").classList.remove("hidden");
             } else {
                 if (callback) callback();
+            }
+        }
+
+        // Withdrawal Modal Triggers
+        window.openWithdrawalModal = function() {
+            handleAuthAction(() => {
+                document.getElementById("withdrawal-modal").classList.remove("hidden");
+            });
+        }
+
+        window.closeWithdrawalModal = function() {
+            document.getElementById("withdrawal-modal").classList.add("hidden");
+            document.getElementById("withdraw-amount").value = "";
+            document.getElementById("withdraw-destination").value = "";
+        }
+
+        window.submitWithdrawalRequest = async function() {
+            const amount = parseFloat(document.getElementById("withdraw-amount").value);
+            const destination = document.getElementById("withdraw-destination").value.trim();
+
+            if (!amount || amount <= 0) {
+                alert("Please enter a valid withdrawal amount.");
+                return;
+            }
+            if (!destination) {
+                alert("Please enter your bank account or UPI ID.");
+                return;
+            }
+
+            try {
+                await addDoc(collection(db, "withdrawals"), {
+                    uid: currentUser.uid,
+                    email: currentUser.email,
+                    amount: amount,
+                    destination: destination,
+                    status: "pending",
+                    createdAt: new Date().toISOString()
+                });
+
+                closeWithdrawalModal();
+
+                const successModal = document.getElementById("success-animation-modal");
+                successModal.classList.remove("hidden");
+
+                setTimeout(() => {
+                    successModal.classList.add("hidden");
+                }, 2600);
+
+            } catch (error) {
+                alert("Error submitting withdrawal: " + error.message);
             }
         }
 
