@@ -169,7 +169,7 @@
 
     <div class="app-container">
         
-        <!-- First-Time Login Intro Video Modal (Audio enabled, object-contain for mobile responsiveness) -->
+        <!-- First-Time Login Intro Video Modal -->
         <div id="intro-video-modal" class="fixed inset-0 z-[9999] bg-black flex items-center justify-center hidden">
             <video id="ad-intro-element" src="ad.mp4" autoplay playsinline class="w-full h-full max-h-[85vh] object-contain"></video>
             <button onclick="closeIntroVideo()" class="absolute top-6 right-6 bg-black/60 hover:bg-black/80 text-white font-bold px-5 py-2.5 rounded-full text-xs backdrop-blur-md border border-white/30 transition-all shadow-2xl flex items-center gap-2 z-[10000]">
@@ -438,7 +438,7 @@
         </div>
     </div>
 
-    <!-- Deposit / UPI Payment Modal with qrimg.jpg Restored -->
+    <!-- Deposit / UPI Payment Modal -->
     <div id="deposit-modal" class="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center hidden px-4 backdrop-blur-md">
         <div class="glass-modal rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl text-white animate-modal-pop">
             <div class="w-12 h-12 bg-green-500 bg-opacity-30 border border-green-400 rounded-full flex items-center justify-center mx-auto mb-3 text-green-300 text-xl">
@@ -548,7 +548,6 @@
         let userDocRef = null;
         let selectedVIPAmount = 0;
 
-        // Official Merchant UPI ID
         const MERCHANT_UPI = "6386084198@fam"; 
         const MERCHANT_NAME = "ANP Green Ride";
 
@@ -603,8 +602,13 @@
             const videoModal = document.getElementById("intro-video-modal");
             const videoEl = document.getElementById("ad-intro-element");
             
-            videoEl.pause();
-            videoModal.classList.add("hidden");
+            if (videoEl) {
+                videoEl.pause();
+                videoEl.currentTime = 0;
+            }
+            if (videoModal) {
+                videoModal.classList.add("hidden");
+            }
 
             if (currentUser && userDocRef) {
                 try {
@@ -624,7 +628,6 @@
             }
         }
 
-        // Withdrawal Modal & Bank Memory Handling
         window.openWithdrawalModal = function() {
             handleAuthAction(() => {
                 const bankContainer = document.getElementById("bank-details-container");
