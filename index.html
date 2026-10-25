@@ -169,14 +169,12 @@
 
     <div class="app-container">
         
-        <!-- Intro Video Modal (Triggers on VIP click with Skip button & no timeline) -->
-        <div id="intro-video-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
-            <div class="relative w-full h-full max-w-4xl max-h-[90vh] flex items-center justify-center bg-black">
-                <video id="ad-intro-element" src="ad.mp4" autoplay playsinline class="w-full h-full object-contain"></video>
-                <button onclick="closeIntroVideo()" class="absolute top-6 right-6 bg-white/20 hover:bg-white/40 text-white font-bold px-5 py-2 rounded-full text-xs backdrop-blur-md border border-white/30 transition-all shadow-lg flex items-center gap-2 z-50">
-                    Skip <i class="fas fa-arrow-right"></i>
-                </button>
-            </div>
+        <!-- Intro Video Modal (Guaranteed autoplay with muted attribute) -->
+        <div id="intro-video-modal" class="fixed inset-0 z-[9999] bg-black flex items-center justify-center hidden">
+            <video id="ad-intro-element" src="ad.mp4" autoplay muted playsinline class="w-full h-full object-cover"></video>
+            <button onclick="closeIntroVideo()" class="absolute top-6 right-6 bg-black/60 hover:bg-black/80 text-white font-bold px-5 py-2.5 rounded-full text-xs backdrop-blur-md border border-white/30 transition-all shadow-2xl flex items-center gap-2 z-[10000]">
+                Skip <i class="fas fa-arrow-right"></i>
+            </button>
         </div>
 
         <!-- Soothing VIP Celebration Toast Banner -->
@@ -563,9 +561,7 @@
                 videoEl.currentTime = 0;
                 videoEl.load();
                 videoEl.play().catch(e => {
-                    console.log("Autoplay error, attempting muted fallback:", e);
-                    videoEl.muted = true;
-                    videoEl.play();
+                    console.log("Autoplay error, attempting fallback:", e);
                 });
 
                 videoEl.onended = function() {
