@@ -156,7 +156,7 @@
             animation: popCheck 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
-        /* Intro Video Styling (Fixed mobile zoom using object-contain) */
+        /* Intro Video Styling */
         #intro-video-modal {
             background: #000000;
         }
@@ -169,7 +169,7 @@
 
     <div class="app-container">
         
-        <!-- Intro Video Modal (Audio enabled, object-contain for mobile responsiveness) -->
+        <!-- First-Time Login Intro Video Modal (Audio enabled, object-contain for mobile responsiveness) -->
         <div id="intro-video-modal" class="fixed inset-0 z-[9999] bg-black flex items-center justify-center hidden">
             <video id="ad-intro-element" src="ad.mp4" autoplay playsinline class="w-full h-full max-h-[85vh] object-contain"></video>
             <button onclick="closeIntroVideo()" class="absolute top-6 right-6 bg-black/60 hover:bg-black/80 text-white font-bold px-5 py-2.5 rounded-full text-xs backdrop-blur-md border border-white/30 transition-all shadow-2xl flex items-center gap-2 z-[10000]">
@@ -547,7 +547,6 @@
         let currentUserData = null;
         let userDocRef = null;
         let selectedVIPAmount = 0;
-        let pendingVIP = null;
 
         // Official Merchant UPI ID
         const MERCHANT_UPI = "6386084198@fam"; 
@@ -559,24 +558,6 @@
 
             if (user) {
                 if (myLabel) myLabel.innerText = "My";
-
-                // Play intro ad.mp4 video on first login
-                const seenKey = `anp_seen_intro_${user.uid}`;
-                const hasSeenIntro = localStorage.getItem(seenKey);
-
-                if (!hasSeenIntro) {
-                    const videoModal = document.getElementById("intro-video-modal");
-                    const videoEl = document.getElementById("ad-intro-element");
-                    
-                    videoModal.classList.remove("hidden");
-                    videoEl.currentTime = 0;
-                    videoEl.play().catch(e => console.log("Login autoplay blocked:", e));
-
-                    videoEl.onended = function() {
-                        closeIntroVideo();
-                    };
-                }
-
                 userDocRef = doc(db, "users", user.uid);
                 try {
                     const userDocSnap = await getDoc(userDocRef);
@@ -593,6 +574,20 @@
                         if (currentUserData.startDate) {
                             document.getElementById("start-date-text").innerText = `Start date: ${currentUserData.startDate}`;
                         }
+
+                        // Play intro ad.mp4 video ONLY ONCE (persisted permanently in Firestore)
+                        if (!currentUserData.hasSeenIntro) {
+                            const videoModal = document.getElementById("intro-video-modal");
+                            const videoEl = document.getElementById("ad-intro-element");
+                            
+                            videoModal.classList.remove("hidden");
+                            videoEl.currentTime = 0;
+                            videoEl.play().catch(e => console.log("Login autoplay blocked:", e));
+
+                            videoEl.onended = function() {
+                                closeIntroVideo();
+                            };
+                        }
                     }
                 } catch (error) {
                     console.error("Error fetching user data:", error);
@@ -604,19 +599,20 @@
             }
         });
 
-        window.closeIntroVideo = function() {
-            if (currentUser) {
-                const seenKey = `anp_seen_intro_${currentUser.uid}`;
-                localStorage.setItem(seenKey, "true");
-            }
+        window.closeIntroVideo = async function() {
             const videoModal = document.getElementById("intro-video-modal");
             const videoEl = document.getElementById("ad-intro-element");
             
             videoEl.pause();
             videoModal.classList.add("hidden");
 
-            if (pendingVIP) {
-                finishIntroVideoAndShowVIP();
+            if (currentUser && userDocRef) {
+                try {
+                    await updateDoc(userDocRef, { hasSeenIntro: true });
+                    currentUserData.hasSeenIntro = true;
+                } catch (e) {
+                    console.error("Error updating hasSeenIntro:", e);
+                }
             }
         }
 
@@ -663,14 +659,10 @@
             const val = parseFloat(input.value);
             const errNote = document.getElementById("withdraw-error-note");
             
-            if (val > 500) {
-                errNote.innerText = "Amount is invalid. We can only process amount upto 200 , dont exceed limit if you want your money be safe .";
-                errNote.classList.remove("hidden");
-                input.style.borderColor = "red";
-            } else if (val > 200) {
+            if (val > 200) {
                 errNote.innerText = "We can only process amount upto 200 , dont exceed limit if you want your money be safe .";
                 errNote.classList.remove("hidden");
-                input.style.borderColor = "orange";
+                input.style.borderColor = "red";
             } else {
                 errNote.classList.add("hidden");
                 input.style.borderColor = "rgba(255,255,255,0.2)";
@@ -706,7 +698,6 @@
                     return;
                 }
 
-                // Save bank account to user profile so it never asks again
                 await updateDoc(userDocRef, {
                     bankAccount: bankAccount,
                     ifsc: ifsc
@@ -740,60 +731,26 @@
             }
         }
 
-        // When user clicks ANY VIP pack, play ad.mp4 video first
         window.handleVIPClick = function(amount, title, description) {
             handleAuthAction(() => {
-                pendingVIP = { amount, title, description };
+                selectedVIPAmount = amount;
+                document.getElementById("modal-vip-title").innerText = title;
+                document.getElementById("modal-vip-price").innerText = `Package Price: ₹${amount.toLocaleString()}`;
+                document.getElementById("modal-vip-desc").innerText = description;
 
-                const videoModal = document.getElementById("intro-video-modal");
-                const videoEl = document.getElementById("ad-intro-element");
-                
-                videoModal.classList.remove("hidden");
-                videoEl.currentTime = 0;
-                videoEl.play().catch(e => {
-                    console.log("Autoplay error:", e);
-                });
+                const cardId = amount >= 20000 ? 'vip-card-4' : (amount >= 4999 ? 'vip-card-3' : null);
+                if (cardId) {
+                    const toast = document.getElementById("vip-celebration-toast");
+                    toast.classList.remove("hidden");
 
-                videoEl.onended = function() {
-                    finishIntroVideoAndShowVIP();
-                };
-            });
-        }
-
-        window.closeIntroVideo = function() {
-            const videoModal = document.getElementById("intro-video-modal");
-            const videoEl = document.getElementById("ad-intro-element");
-            
-            videoEl.pause();
-            videoModal.classList.add("hidden");
-
-            if (pendingVIP) {
-                finishIntroVideoAndShowVIP();
-            }
-        }
-
-        function finishIntroVideoAndShowVIP() {
-            if (!pendingVIP) return;
-            const { amount, title, description } = pendingVIP;
-            pendingVIP = null;
-
-            selectedVIPAmount = amount;
-            document.getElementById("modal-vip-title").innerText = title;
-            document.getElementById("modal-vip-price").innerText = `Package Price: ₹${amount.toLocaleString()}`;
-            document.getElementById("modal-vip-desc").innerText = description;
-
-            const cardId = amount >= 20000 ? 'vip-card-4' : (amount >= 4999 ? 'vip-card-3' : null);
-            if (cardId) {
-                const toast = document.getElementById("vip-celebration-toast");
-                toast.classList.remove("hidden");
-
-                setTimeout(() => {
-                    toast.classList.add("hidden");
+                    setTimeout(() => {
+                        toast.classList.add("hidden");
+                        document.getElementById("vip-details-modal").classList.remove("hidden");
+                    }, 1200);
+                } else {
                     document.getElementById("vip-details-modal").classList.remove("hidden");
-                }, 1200);
-            } else {
-                document.getElementById("vip-details-modal").classList.remove("hidden");
-            }
+                }
+            });
         }
 
         window.closeVIPDetailsModal = function() {
