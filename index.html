@@ -397,7 +397,7 @@
         </div>
     </div>
 
-    <!-- Withdrawal Modal with Bank Details, IFSC, Edit & Delete Options -->
+    <!-- Withdrawal Modal with Validated Bank Account & IFSC -->
     <div id="withdrawal-modal" class="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center hidden px-4 backdrop-blur-md">
         <div class="glass-modal rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl text-white animate-modal-pop">
             <div class="w-12 h-12 bg-green-500 bg-opacity-30 border border-green-400 rounded-full flex items-center justify-center mx-auto mb-3 text-green-300 text-xl">
@@ -412,11 +412,9 @@
                     <input type="number" id="withdraw-amount" oninput="validateWithdrawalAmount(this)" placeholder="Enter amount" class="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2.5 text-xs text-white outline-none focus:border-green-400">
                     <p id="withdraw-error-note" class="text-[10px] text-red-400 font-semibold mt-1 hidden"></p>
                 </div>
-                <!-- Dynamic Bank Details Container with Edit & Delete support -->
                 <div id="bank-details-container"></div>
             </div>
 
-            <!-- Fraud & Security Warning -->
             <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-2xl p-3 mb-4 text-left">
                 <p class="text-[10px] text-yellow-300 font-medium leading-relaxed">
                     <i class="fas fa-shield-alt mr-1"></i> Fraudsters usually ask you pin or otp beware of them we are safe and trustworthy.
@@ -476,7 +474,7 @@
         </div>
     </div>
 
-    <!-- UPI-Style Success Ripple & Tick Animation Modal -->
+    <!-- Success Ripple & Tick Animation Modal -->
     <div id="success-animation-modal" class="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center hidden px-4 backdrop-blur-md">
         <div class="glass-modal rounded-3xl max-w-sm w-full p-8 text-center shadow-2xl text-white animate-modal-pop relative overflow-hidden">
             <div class="relative w-24 h-24 mx-auto mb-5 flex items-center justify-center">
@@ -568,7 +566,6 @@
                             document.getElementById("start-date-text").innerText = `Start date: ${currentUserData.startDate}`;
                         }
 
-                        // Play intro ad.mp4 video ONLY ONCE (persisted permanently in Firestore)
                         if (!currentUserData.hasSeenIntro) {
                             const videoModal = document.getElementById("intro-video-modal");
                             const videoEl = document.getElementById("ad-intro-element");
@@ -622,65 +619,28 @@
             }
         }
 
-        // Withdrawal Modal & Bank Memory Handling with Edit & Delete support
         window.openWithdrawalModal = function() {
             handleAuthAction(() => {
-                renderBankDetailsView();
-                document.getElementById("withdrawal-modal").classList.remove("hidden");
-            });
-        }
-
-        window.renderBankDetailsView = function() {
-            const bankContainer = document.getElementById("bank-details-container");
-            if (currentUserData && currentUserData.bankAccount) {
-                bankContainer.innerHTML = `
-                    <div class="bg-black/40 border border-green-900/40 rounded-xl p-3 text-xs text-gray-300 flex justify-between items-center">
-                        <div>
+                const bankContainer = document.getElementById("bank-details-container");
+                if (currentUserData && currentUserData.bankAccount) {
+                    bankContainer.innerHTML = `
+                        <div class="bg-black/40 border border-green-900/40 rounded-xl p-3 text-xs text-gray-300">
                             <p class="text-green-400 font-bold mb-1"><i class="fas fa-check-circle mr-1"></i> Saved Bank Account:</p>
                             <p>A/C: <span class="text-white font-mono">${currentUserData.bankAccount}</span></p>
                             <p>IFSC: <span class="text-white font-mono">${currentUserData.ifsc || 'N/A'}</span></p>
                         </div>
-                        <div class="flex flex-col gap-1.5">
-                            <button onclick="enableBankEdit()" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-[10px] shadow">Edit</button>
-                            <button onclick="deleteBankDetails()" class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg text-[10px] shadow">Delete</button>
-                        </div>
-                    </div>
-                `;
-            } else {
-                bankContainer.innerHTML = `
-                    <label class="text-[10px] text-green-300 font-semibold mb-1 block">Bank Account Number</label>
-                    <input type="text" id="withdraw-account-num" placeholder="Enter Bank Account Number" class="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2.5 text-xs text-white outline-none focus:border-green-400 mb-2">
-                    
-                    <label class="text-[10px] text-green-300 font-semibold mb-1 block">IFSC Code</label>
-                    <input type="text" id="withdraw-ifsc" placeholder="Enter IFSC Code" class="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2.5 text-xs text-white outline-none focus:border-green-400">
-                `;
-            }
-        }
-
-        window.enableBankEdit = function() {
-            const bankContainer = document.getElementById("bank-details-container");
-            bankContainer.innerHTML = `
-                <label class="text-[10px] text-green-300 font-semibold mb-1 block">Bank Account Number</label>
-                <input type="text" id="withdraw-account-num" value="${currentUserData.bankAccount || ''}" placeholder="Enter Bank Account Number" class="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2.5 text-xs text-white outline-none focus:border-green-400 mb-2">
-                
-                <label class="text-[10px] text-green-300 font-semibold mb-1 block">IFSC Code</label>
-                <input type="text" id="withdraw-ifsc" value="${currentUserData.ifsc || ''}" placeholder="Enter IFSC Code" class="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2.5 text-xs text-white outline-none focus:border-green-400">
-            `;
-        }
-
-        window.deleteBankDetails = async function() {
-            if (!confirm("Are you sure you want to delete your saved bank details?")) return;
-            try {
-                await updateDoc(userDocRef, {
-                    bankAccount: null,
-                    ifsc: null
-                });
-                currentUserData.bankAccount = null;
-                currentUserData.ifsc = null;
-                renderBankDetailsView();
-            } catch (e) {
-                alert("Error deleting bank details: " + e.message);
-            }
+                    `;
+                } else {
+                    bankContainer.innerHTML = `
+                        <label class="text-[10px] text-green-300 font-semibold mb-1 block">Bank Account Number</label>
+                        <input type="text" id="withdraw-account-num" placeholder="Enter 9 to 18 digit A/C No" class="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2.5 text-xs text-white outline-none focus:border-green-400 mb-2">
+                        
+                        <label class="text-[10px] text-green-300 font-semibold mb-1 block">IFSC Code</label>
+                        <input type="text" id="withdraw-ifsc" placeholder="e.g. SBIN0001234" class="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2.5 text-xs text-white outline-none focus:border-green-400 uppercase">
+                    `;
+                }
+                document.getElementById("withdrawal-modal").classList.remove("hidden");
+            });
         }
 
         window.closeWithdrawalModal = function() {
@@ -725,10 +685,18 @@
 
             if (accInput && ifscInput) {
                 bankAccount = accInput.value.trim();
-                ifsc = ifscInput.value.trim();
+                ifsc = ifscInput.value.trim().toUpperCase();
 
-                if (!bankAccount || !ifsc) {
-                    alert("Please enter both Bank Account Number and IFSC Code.");
+                // Strict Bank & IFSC Validation
+                const accountRegex = /^\d{9,18}$/;
+                const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
+
+                if (!accountRegex.test(bankAccount)) {
+                    alert("Invalid Bank Account Number! Please enter a valid 9 to 18 digit account number.");
+                    return;
+                }
+                if (!ifscRegex.test(ifsc)) {
+                    alert("Invalid IFSC Code! Format should be 4 letters, '0', and 6 alphanumeric chars (e.g. SBIN0001234).");
                     return;
                 }
 
