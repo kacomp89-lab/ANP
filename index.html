@@ -395,7 +395,7 @@
         </div>
     </div>
 
-    <!-- Deposit / UPI Payment Modal with Dynamic QR & Pre-filled Amount -->
+    <!-- Deposit / UPI Payment Modal with Dynamic QR & Pre-filled Amount + Fallback -->
     <div id="deposit-modal" class="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center hidden px-4 backdrop-blur-md">
         <div class="glass-modal rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl text-white animate-modal-pop">
             <div class="w-12 h-12 bg-green-500 bg-opacity-30 border border-green-400 rounded-full flex items-center justify-center mx-auto mb-3 text-green-300 text-xl">
@@ -406,7 +406,8 @@
             
             <div id="step-qr" class="block">
                 <div class="bg-white p-3 rounded-2xl inline-block mb-3 shadow-md">
-                    <img id="dynamic-upi-qr" src="" alt="Dynamic UPI QR Code" class="w-40 h-40 mx-auto object-contain">
+                    <!-- Added onerror fallback to qrimg.jpg so it always displays an image -->
+                    <img id="dynamic-upi-qr" src="" alt="Dynamic UPI QR Code" class="w-40 h-40 mx-auto object-contain" onerror="this.onerror=null; this.src='qrimg.jpg';">
                 </div>
                 
                 <div class="text-xs text-green-300 font-semibold mb-1">Amount to Pay: <span id="display-amount" class="text-white text-sm font-bold">₹0</span></div>
@@ -611,7 +612,8 @@
 
             const upiString = `upi://pay?pa=${MERCHANT_UPI}&pn=${encodeURIComponent(MERCHANT_NAME)}&am=${selectedVIPAmount.toFixed(2)}&cu=INR`;
             
-            const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(upiString)}`;
+            // Using QuickChart QR API for fast, reliable generation
+            const qrApiUrl = `https://quickchart.io/qr?text=${encodeURIComponent(upiString)}&size=200`;
             document.getElementById("dynamic-upi-qr").src = qrApiUrl;
 
             document.getElementById("gpay-btn").href = upiString;
