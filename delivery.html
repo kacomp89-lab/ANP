@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Transaction History - ANP</title>
+    <title>ANP MONEY - Transaction History</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -23,27 +22,10 @@
             justify-content: center;
             overflow-x: hidden;
         }
-        body::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            background: radial-gradient(circle at 20% 20%, rgba(45,164,90,0.15), transparent 40%), 
-                        radial-gradient(circle at 80% 80%, rgba(0,255,150,0.08), transparent 45%);
-        }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
         .bg-wave-pattern {
             background: linear-gradient(to bottom, #5cb45c, #3f8e43);
-            position: relative;
-        }
-        .glass-modal {
-            background: rgba(20, 40, 25, 0.90);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
         }
         .app-container {
             width: 100%;
@@ -69,47 +51,41 @@
 <body>
 
     <div class="app-container">
-        <div class="flex-1 overflow-y-auto hide-scrollbar pb-24">
+        
+        <!-- Header -->
+        <header class="bg-wave-pattern pt-6 px-5 pb-6 text-white">
+            <div class="flex items-center justify-between mb-2">
+                <h1 class="text-lg font-black tracking-tight">Transaction History</h1>
+                <button onclick="window.location.href='index.html'" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white text-xs">
+                    <i class="fas fa-home"></i>
+                </button>
+            </div>
+            <p class="text-xs text-green-100">Your approved deposits & paid withdrawals.</p>
+        </header>
+
+        <!-- Main Content List -->
+        <main class="flex-1 bg-white rounded-t-[24px] -mt-3 relative z-10 px-5 pt-6 pb-24 overflow-y-auto hide-scrollbar">
             
-            <!-- Header -->
-            <header class="bg-wave-pattern pt-6 px-5 pb-6 text-white relative">
-                <div class="flex items-center justify-between mb-2">
-                    <button onclick="window.location.href='index.html'" class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-white backdrop-blur-sm shadow-sm">
-                        <i class="fas fa-arrow-left text-sm"></i>
-                    </button>
-                    <h1 class="font-bold text-base tracking-wide">Transaction & Delivery Log</h1>
-                    <div class="w-9"></div> <!-- Spacer -->
-                </div>
-                <p class="text-xs text-green-100 text-center mt-1">Track all your coin purchases, payments, and payouts</p>
-            </header>
+            <h3 class="text-gray-800 font-bold text-xs mb-3 flex items-center gap-2">
+                <i class="fas fa-history text-green-600"></i> History Log
+            </h3>
 
-            <!-- Main Transaction List Section -->
-            <main class="bg-white rounded-t-[24px] -mt-3 relative z-10 px-5 pt-6 pb-8 shadow-[0_-4px_15px_rgba(0,0,0,0.05)] min-h-[500px]">
-                
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-gray-800 font-bold text-sm">Activity History</h3>
-                    <span class="text-[11px] text-green-600 font-medium bg-green-50 px-2.5 py-1 rounded-full border border-green-200">Live Sync</span>
+            <div id="history-list" class="flex flex-col gap-3">
+                <div class="text-center py-12 text-gray-400 text-xs">
+                    <i class="fas fa-spinner fa-spin text-lg mb-2 text-green-500"></i>
+                    <p>Loading history...</p>
                 </div>
+            </div>
 
-                <!-- Transaction Container -->
-                <div id="transaction-list" class="flex flex-col gap-3">
-                    <!-- Loading state -->
-                    <div class="text-center py-12 text-gray-400 text-xs">
-                        <i class="fas fa-spinner fa-spin text-lg mb-2 text-green-600"></i>
-                        <p>Loading transactions...</p>
-                    </div>
-                </div>
-
-            </main>
-        </div>
+        </main>
 
         <!-- Bottom Navigation Bar -->
         <nav class="absolute bottom-0 w-full bg-white border-t border-gray-100 flex justify-between items-center px-6 pt-2 pb-5 z-40">
-            <button onclick="window.location.href='index.html'" class="flex flex-col items-center text-gray-400 group hover:text-green-600 transition-colors">
+            <button onclick="window.location.href='index.html'" class="flex flex-col items-center text-gray-400 group hover:text-green-600">
                 <i class="fas fa-home text-lg mb-1"></i>
                 <span class="text-[10px] font-medium">Home</span>
             </button>
-            <button class="flex flex-col items-center text-green-600 group">
+            <button onclick="window.location.href='delivery.html'" class="flex flex-col items-center text-green-600 group">
                 <i class="fas fa-box text-lg mb-1"></i>
                 <span class="text-[10px] font-medium">Delivery</span>
             </button>
@@ -118,38 +94,17 @@
                     <i class="fas fa-bicycle text-2xl"></i>
                 </button>
             </div>
-            <button onclick="alert('Map view coming soon!');" class="flex flex-col items-center text-gray-400 group hover:text-green-600 transition-colors">
+            <button onclick="alert('Map view coming soon!');" class="flex flex-col items-center text-gray-400 group hover:text-green-600">
                 <i class="fas fa-map-marked-alt text-lg mb-1"></i>
                 <span class="text-[10px] font-medium">Map</span>
             </button>
-            <button onclick="window.location.href='index.html'" class="flex flex-col items-center text-gray-400 group hover:text-green-600 transition-colors">
+            <button onclick="window.location.href='my.html'" class="flex flex-col items-center text-gray-400 group hover:text-green-600">
                 <i class="fas fa-user text-lg mb-1"></i>
                 <span class="text-[10px] font-medium">My</span>
             </button>
         </nav>
     </div>
 
-    <!-- Guest Mode Auth Modal -->
-    <div id="auth-modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden px-4 backdrop-blur-sm">
-        <div class="glass-modal rounded-3xl max-w-sm w-full p-7 text-center shadow-2xl text-white">
-            <div class="w-14 h-14 bg-green-500 bg-opacity-30 border border-green-400 rounded-full flex items-center justify-center mx-auto mb-4 text-green-300 text-2xl">
-                <i class="fas fa-user-plus"></i>
-            </div>
-            <h3 class="text-xl font-bold mb-2">Authentication Required</h3>
-            <p class="text-xs text-gray-200 mb-6">Please log in or register to view your transaction history.</p>
-            
-            <div class="flex flex-col gap-3">
-                <button onclick="window.location.href='anpregister.html'" class="w-full py-3.5 px-4 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold rounded-2xl text-sm shadow-lg">
-                    Register / Log In
-                </button>
-                <button onclick="window.location.href='index.html'" class="w-full py-3 px-4 bg-transparent text-gray-300 font-medium rounded-2xl text-xs border border-white/10">
-                    Back to Home
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Firebase Scripts & Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
@@ -169,73 +124,92 @@
         const db = getFirestore(app);
 
         onAuthStateChanged(auth, async (user) => {
-            const listContainer = document.getElementById("transaction-list");
-
+            const listContainer = document.getElementById("history-list");
             if (!user) {
-                document.getElementById("auth-modal").classList.remove("hidden");
+                listContainer.innerHTML = `<p class="text-center text-xs text-gray-500 py-8">Please log in to view your history.</p>`;
                 return;
             }
 
             try {
-                // Fetch deposits belonging to the current user
-                const q = query(collection(db, "deposits"), where("uid", "==", user.uid));
-                const querySnapshot = await getDocs(q);
+                // Fetch approved deposits & paid withdrawals
+                const depositsQuery = query(collection(db, "deposits"), where("uid", "==", user.uid));
+                const withdrawalsQuery = query(collection(db, "withdrawals"), where("uid", "==", user.uid));
+
+                const [depositsSnap, withdrawalsSnap] = await Promise.all([
+                    getDocs(depositsQuery),
+                    getDocs(withdrawalsQuery)
+                ]);
+
+                let items = [];
+
+                depositsSnap.forEach(doc => {
+                    const data = doc.data();
+                    items.push({
+                        type: 'Deposit (VIP Pack)',
+                        amount: data.amount,
+                        status: data.status, // approved, pending
+                        date: data.createdAt ? new Date(data.createdAt) : new Date(0),
+                        meta: `UTR: ${data.utr}`
+                    });
+                });
+
+                withdrawalsSnap.forEach(doc => {
+                    const data = doc.data();
+                    items.push({
+                        type: 'Withdrawal Payout',
+                        amount: data.amount,
+                        status: data.status, // pending, verified, paid
+                        date: data.createdAt ? new Date(data.createdAt) : new Date(0),
+                        meta: `Bank A/C: ${data.bankAccount}`
+                    });
+                });
+
+                // Sort newest first
+                items.sort((a, b) => b.date - a.date);
 
                 listContainer.innerHTML = "";
 
-                if (querySnapshot.empty) {
+                if (items.length === 0) {
                     listContainer.innerHTML = `
-                        <div class="text-center py-16 text-gray-400">
-                            <i class="fas fa-receipt text-3xl mb-3 text-gray-300"></i>
-                            <p class="text-xs font-medium text-gray-500">No transactions found yet.</p>
-                            <p class="text-[10px] text-gray-400 mt-1">Purchase a VIP pack from home to see your records here.</p>
+                        <div class="text-center py-12 text-gray-400 text-xs">
+                            <i class="fas fa-file-invoice-dollar text-2xl text-green-300 mb-2"></i>
+                            <p>No transaction history found yet.</p>
                         </div>
                     `;
                     return;
                 }
 
-                // Render each transaction card
-                querySnapshot.forEach((docSnap) => {
-                    const tx = docSnap.data();
-                    const dateStr = tx.createdAt ? new Date(tx.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Recent';
-                    
-                    let statusBadge = '';
-                    if (tx.status === 'pending') {
-                        statusBadge = `<span class="bg-yellow-100 text-yellow-800 text-[9px] font-bold px-2 py-0.5 rounded-full">Pending Verification</span>`;
-                    } else if (tx.status === 'approved' || tx.status === 'completed') {
-                        statusBadge = `<span class="bg-green-100 text-green-800 text-[9px] font-bold px-2 py-0.5 rounded-full">Successful</span>`;
-                    } else {
-                        statusBadge = `<span class="bg-red-100 text-red-800 text-[9px] font-bold px-2 py-0.5 rounded-full">${tx.status || 'Processing'}</span>`;
+                items.forEach(item => {
+                    let badgeColor = "bg-yellow-500/10 text-yellow-600 border-yellow-200";
+                    if (item.status === "approved" || item.status === "paid") {
+                        badgeColor = "bg-green-500/10 text-green-700 border-green-200";
+                    } else if (item.status === "verified") {
+                        badgeColor = "bg-blue-500/10 text-blue-700 border-blue-200";
                     }
 
-                    const cardHTML = `
-                        <div class="bg-gray-50 border border-gray-100 rounded-2xl p-3.5 flex items-center justify-between shadow-sm">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-xl bg-green-100 text-green-700 flex items-center justify-center font-bold">
-                                    <i class="fas fa-wallet text-sm"></i>
+                    const card = `
+                        <div class="bg-gray-50 border border-gray-100 rounded-2xl p-4 flex justify-between items-center shadow-sm">
+                            <div>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-xs font-bold text-gray-900">${item.type}</span>
+                                    <span class="text-[9px] font-bold px-2 py-0.5 rounded-full uppercase border ${badgeColor}">${item.status}</span>
                                 </div>
-                                <div>
-                                    <h4 class="text-xs font-bold text-gray-800">VIP Coin Deposit</h4>
-                                    <p class="text-[10px] text-gray-400 mt-0.5">UTR: <span class="font-mono font-semibold text-gray-600">${tx.utr}</span></p>
-                                    <p class="text-[9px] text-gray-400">${dateStr}</p>
-                                </div>
+                                <p class="text-[11px] text-gray-500">${item.meta}</p>
+                                <p class="text-[10px] text-gray-400 mt-1">${item.date.toLocaleString('en-IN')}</p>
                             </div>
                             <div class="text-right">
-                                <span class="text-sm font-extrabold text-green-700 block">+₹${(tx.amount || 0).toLocaleString()}</span>
-                                <div class="mt-1">${statusBadge}</div>
+                                <span class="text-sm font-black ${item.type.includes('Withdrawal') ? 'text-red-600' : 'text-green-600'}">
+                                    ${item.type.includes('Withdrawal') ? '-' : '+'}₹${(item.amount || 0).toLocaleString()}
+                                </span>
                             </div>
                         </div>
                     `;
-                    listContainer.innerHTML += cardHTML;
+                    listContainer.innerHTML += card;
                 });
 
             } catch (error) {
-                console.error("Error fetching transactions:", error);
-                listContainer.innerHTML = `
-                    <div class="text-center py-10 text-red-500 text-xs">
-                        <p>Failed to load transaction history.</p>
-                    </div>
-                `;
+                console.error("Error loading history:", error);
+                listContainer.innerHTML = `<p class="text-red-500 text-xs text-center py-4">Error loading history: ${error.message}</p>`;
             }
         });
     </script>
