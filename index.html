@@ -530,7 +530,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, updateDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDZb4KcR5Tvw3x_ipR2ocgdUDqh47Arz6M",
@@ -561,40 +561,59 @@
                 if (myLabel) myLabel.innerText = "My";
                 userDocRef = doc(db, "users", user.uid);
                 try {
-                    const userDocSnap = await getDoc(userDocRef);
-                    if (userDocSnap.exists()) {
+                    let userDocSnap = await getDoc(userDocRef);
+                    
+                    // Auto-create user document if it doesn't exist yet in Firestore
+                    if (!userDocSnap.exists()) {
+                        currentUserData = {
+                            fullName: user.displayName || "Partner",
+                            phone: user.phoneNumber || "",
+                            email: user.email || "",
+                            balance: 0,
+                            partnerLevel: "VIP1",
+                            todayEarnings: 0,
+                            referralRebate: 0,
+                            deliveryRebate: 0,
+                            totalRevenue: 0,
+                            totalDeposits: 0,
+                            hasSeenIntro: false,
+                            startDate: new Date().toLocaleDateString('en-IN')
+                        };
+                        await setDoc(userDocRef, currentUserData);
+                    } else {
                         currentUserData = userDocSnap.data();
-                        document.getElementById("user-fullname").innerText = currentUserData.fullName || "Partner";
-                        document.getElementById("user-phone").innerText = currentUserData.phone ? currentUserData.phone.slice(-4).padStart(currentUserData.phone.length, '*') : user.email;
-                        document.getElementById("user-balance").innerText = (currentUserData.balance || 0).toLocaleString();
-                        document.getElementById("partner-level").innerText = currentUserData.partnerLevel || "VIP1";
-                        document.getElementById("stat-today").innerText = (currentUserData.todayEarnings || 0).toLocaleString();
-                        document.getElementById("stat-referral").innerText = (currentUserData.referralRebate || 0).toLocaleString();
-                        document.getElementById("stat-delivery").innerText = (currentUserData.deliveryRebate || 0).toLocaleString();
-                        document.getElementById("stat-revenue").innerText = (currentUserData.totalRevenue || 0).toLocaleString();
-                        if (currentUserData.startDate) {
-                            document.getElementById("start-date-text").innerText = `Start date: ${currentUserData.startDate}`;
-                        }
+                    }
 
-                        // ANP Level Progress Bar Calculation (₹1,00,000 = 100 ANP Level)
-                        const totalRecharge = currentUserData.totalDeposits || 0;
-                        const anpLevelPercent = Math.min(100, (totalRecharge / 100000) * 100);
-                        document.getElementById("anp-level-fill").style.width = anpLevelPercent + "%";
-                        document.getElementById("anp-level-badge").innerText = Math.floor(anpLevelPercent) + " Level";
-                        document.getElementById("anp-total-recharge").innerText = `Total Recharge: ₹${totalRecharge.toLocaleString()}`;
+                    document.getElementById("user-fullname").innerText = currentUserData.fullName || "Partner";
+                    document.getElementById("user-phone").innerText = currentUserData.phone ? currentUserData.phone.slice(-4).padStart(currentUserData.phone.length, '*') : (user.email || "Partner");
+                    document.getElementById("user-balance").innerText = (currentUserData.balance || 0).toLocaleString();
+                    document.getElementById("partner-level").innerText = currentUserData.partnerLevel || "VIP1";
+                    document.getElementById("stat-today").innerText = (currentUserData.todayEarnings || 0).toLocaleString();
+                    document.getElementById("stat-referral").innerText = (currentUserData.referralRebate || 0).toLocaleString();
+                    document.getElementById("stat-delivery").innerText = (currentUserData.deliveryRebate || 0).toLocaleString();
+                    document.getElementById("stat-revenue").innerText = (currentUserData.totalRevenue || 0).toLocaleString();
+                    if (currentUserData.startDate) {
+                        document.getElementById("start-date-text").innerText = `Start date: ${currentUserData.startDate}`;
+                    }
 
-                        if (!currentUserData.hasSeenIntro) {
-                            const videoModal = document.getElementById("intro-video-modal");
-                            const videoEl = document.getElementById("ad-intro-element");
-                            
-                            videoModal.classList.remove("hidden");
-                            videoEl.currentTime = 0;
-                            videoEl.play().catch(e => console.log("Login autoplay blocked:", e));
+                    // ANP Level Progress Bar Calculation (₹1,00,000 = 100 ANP Level)
+                    const totalRecharge = currentUserData.totalDeposits || 0;
+                    const anpLevelPercent = Math.min(100, (totalRecharge / 100000) * 100);
+                    document.getElementById("anp-level-fill").style.width = anpLevelPercent + "%";
+                    document.getElementById("anp-level-badge").innerText = Math.floor(anpLevelPercent) + " Level";
+                    document.getElementById("anp-total-recharge").innerText = `Total Recharge: ₹${totalRecharge.toLocaleString()}`;
 
-                            videoEl.onended = function() {
-                                closeIntroVideo();
-                            };
-                        }
+                    if (!currentUserData.hasSeenIntro) {
+                        const videoModal = document.getElementById("intro-video-modal");
+                        const videoEl = document.getElementById("ad-intro-element");
+                        
+                        videoModal.classList.remove("hidden");
+                        videoEl.currentTime = 0;
+                        videoEl.play().catch(e => console.log("Login autoplay blocked:", e));
+
+                        videoEl.onended = function() {
+                            closeIntroVideo();
+                        };
                     }
                 } catch (error) {
                     console.error("Error fetching user data:", error);
