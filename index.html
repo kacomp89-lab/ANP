@@ -263,29 +263,8 @@
                     <span class="text-xs text-gray-500 font-medium tracking-wide" id="start-date-text">Start date: --</span>
                 </div>
 
-                <!-- ANP Level Progress Bar Section -->
-                <div class="anp-banner rounded-2xl w-full mt-2 mb-6 relative p-4 shadow-sm border border-green-200">
-                    <div class="flex justify-between items-center mb-1.5">
-                        <h3 class="text-green-800 font-bold text-xs flex items-center gap-1.5">
-                            <i class="fas fa-chart-line text-green-600"></i> ANP Level Status
-                        </h3>
-                        <span id="anp-level-badge" class="bg-green-600 text-white font-black text-[11px] px-2.5 py-0.5 rounded-full shadow">0 Level</span>
-                    </div>
-                    <p class="text-[10px] text-green-700 mb-2">Deposit up to ₹1,00,000 to reach 100 ANP Level</p>
-                    
-                    <!-- Progress Bar Track -->
-                    <div class="w-full bg-green-200/80 rounded-full h-3 overflow-hidden p-0.5 shadow-inner">
-                        <div id="anp-level-fill" class="bg-gradient-to-r from-green-500 to-emerald-600 h-full rounded-full transition-all duration-1000" style="width: 0%;"></div>
-                    </div>
-                    
-                    <div class="flex justify-between items-center mt-2 text-[10px] text-green-800 font-semibold">
-                        <span id="anp-total-recharge">Total Recharge: ₹0</span>
-                        <span>Target: ₹1,00,000 (100 Level)</span>
-                    </div>
-                </div>
-
                 <!-- VIP PACKAGES SECTION -->
-                <div class="mt-4 mb-6">
+                <div class="mt-6 mb-6">
                     <h3 class="text-gray-800 font-bold text-sm mb-3 flex items-center gap-2">
                         <i class="fas fa-crown text-yellow-500"></i> Select VIP Partner Pack
                     </h3>
@@ -351,6 +330,17 @@
                     </div>
                 </div>
 
+                <div class="anp-banner rounded-xl w-full mt-5 relative p-4 shadow-sm border border-green-200">
+                    <h3 class="text-green-700 font-bold text-base mb-3" id="user-fullname">My ANP Level</h3>
+                    <div class="flex justify-between items-end px-2 mt-2 relative z-10">
+                        <div class="absolute bottom-2 left-4 right-4 h-0.5 bg-green-300 -z-10"></div>
+                        <div class="flex flex-col items-center"><i class="fas fa-bicycle text-green-400 text-sm mb-1 opacity-60"></i><div class="w-1.5 h-1.5 bg-green-400 rounded-full"></div></div>
+                        <div class="flex flex-col items-center"><i class="fas fa-bicycle text-green-500 text-base mb-1 opacity-80"></i><div class="w-1.5 h-1.5 bg-green-500 rounded-full"></div></div>
+                        <div class="flex flex-col items-center"><i class="fas fa-bicycle text-green-600 text-lg mb-1"></i><div class="w-1.5 h-1.5 bg-green-600 rounded-full"></div></div>
+                        <div class="flex flex-col items-center"><i class="fas fa-bicycle text-green-700 text-xl mb-1 transform scale-110"></i><div class="w-2 h-2 bg-green-700 rounded-full"></div></div>
+                    </div>
+                </div>
+
             </main>
         </div>
 
@@ -407,7 +397,7 @@
         </div>
     </div>
 
-    <!-- Withdrawal Modal with Bank Details & IFSC Validation -->
+    <!-- Withdrawal Modal with Validated Bank Account & IFSC -->
     <div id="withdrawal-modal" class="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center hidden px-4 backdrop-blur-md">
         <div class="glass-modal rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl text-white animate-modal-pop">
             <div class="w-12 h-12 bg-green-500 bg-opacity-30 border border-green-400 rounded-full flex items-center justify-center mx-auto mb-3 text-green-300 text-xl">
@@ -530,7 +520,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDZb4KcR5Tvw3x_ipR2ocgdUDqh47Arz6M",
@@ -561,59 +551,33 @@
                 if (myLabel) myLabel.innerText = "My";
                 userDocRef = doc(db, "users", user.uid);
                 try {
-                    let userDocSnap = await getDoc(userDocRef);
-                    
-                    // Auto-create user document if it doesn't exist yet in Firestore
-                    if (!userDocSnap.exists()) {
-                        currentUserData = {
-                            fullName: user.displayName || "Partner",
-                            phone: user.phoneNumber || "",
-                            email: user.email || "",
-                            balance: 0,
-                            partnerLevel: "VIP1",
-                            todayEarnings: 0,
-                            referralRebate: 0,
-                            deliveryRebate: 0,
-                            totalRevenue: 0,
-                            totalDeposits: 0,
-                            hasSeenIntro: false,
-                            startDate: new Date().toLocaleDateString('en-IN')
-                        };
-                        await setDoc(userDocRef, currentUserData);
-                    } else {
+                    const userDocSnap = await getDoc(userDocRef);
+                    if (userDocSnap.exists()) {
                         currentUserData = userDocSnap.data();
-                    }
+                        document.getElementById("user-fullname").innerText = currentUserData.fullName || "Partner";
+                        document.getElementById("user-phone").innerText = currentUserData.phone ? currentUserData.phone.slice(-4).padStart(currentUserData.phone.length, '*') : user.email;
+                        document.getElementById("user-balance").innerText = (currentUserData.balance || 0).toLocaleString();
+                        document.getElementById("partner-level").innerText = currentUserData.partnerLevel || "VIP1";
+                        document.getElementById("stat-today").innerText = (currentUserData.todayEarnings || 0).toLocaleString();
+                        document.getElementById("stat-referral").innerText = (currentUserData.referralRebate || 0).toLocaleString();
+                        document.getElementById("stat-delivery").innerText = (currentUserData.deliveryRebate || 0).toLocaleString();
+                        document.getElementById("stat-revenue").innerText = (currentUserData.totalRevenue || 0).toLocaleString();
+                        if (currentUserData.startDate) {
+                            document.getElementById("start-date-text").innerText = `Start date: ${currentUserData.startDate}`;
+                        }
 
-                    document.getElementById("user-fullname").innerText = currentUserData.fullName || "Partner";
-                    document.getElementById("user-phone").innerText = currentUserData.phone ? currentUserData.phone.slice(-4).padStart(currentUserData.phone.length, '*') : (user.email || "Partner");
-                    document.getElementById("user-balance").innerText = (currentUserData.balance || 0).toLocaleString();
-                    document.getElementById("partner-level").innerText = currentUserData.partnerLevel || "VIP1";
-                    document.getElementById("stat-today").innerText = (currentUserData.todayEarnings || 0).toLocaleString();
-                    document.getElementById("stat-referral").innerText = (currentUserData.referralRebate || 0).toLocaleString();
-                    document.getElementById("stat-delivery").innerText = (currentUserData.deliveryRebate || 0).toLocaleString();
-                    document.getElementById("stat-revenue").innerText = (currentUserData.totalRevenue || 0).toLocaleString();
-                    if (currentUserData.startDate) {
-                        document.getElementById("start-date-text").innerText = `Start date: ${currentUserData.startDate}`;
-                    }
+                        if (!currentUserData.hasSeenIntro) {
+                            const videoModal = document.getElementById("intro-video-modal");
+                            const videoEl = document.getElementById("ad-intro-element");
+                            
+                            videoModal.classList.remove("hidden");
+                            videoEl.currentTime = 0;
+                            videoEl.play().catch(e => console.log("Login autoplay blocked:", e));
 
-                    // ANP Level Progress Bar Calculation (₹1,00,000 = 100 ANP Level)
-                    const totalRecharge = currentUserData.totalDeposits || 0;
-                    const anpLevelPercent = Math.min(100, (totalRecharge / 100000) * 100);
-                    document.getElementById("anp-level-fill").style.width = anpLevelPercent + "%";
-                    document.getElementById("anp-level-badge").innerText = Math.floor(anpLevelPercent) + " Level";
-                    document.getElementById("anp-total-recharge").innerText = `Total Recharge: ₹${totalRecharge.toLocaleString()}`;
-
-                    if (!currentUserData.hasSeenIntro) {
-                        const videoModal = document.getElementById("intro-video-modal");
-                        const videoEl = document.getElementById("ad-intro-element");
-                        
-                        videoModal.classList.remove("hidden");
-                        videoEl.currentTime = 0;
-                        videoEl.play().catch(e => console.log("Login autoplay blocked:", e));
-
-                        videoEl.onended = function() {
-                            closeIntroVideo();
-                        };
+                            videoEl.onended = function() {
+                                closeIntroVideo();
+                            };
+                        }
                     }
                 } catch (error) {
                     console.error("Error fetching user data:", error);
@@ -723,6 +687,7 @@
                 bankAccount = accInput.value.trim();
                 ifsc = ifscInput.value.trim().toUpperCase();
 
+                // Strict Bank & IFSC Validation
                 const accountRegex = /^\d{9,18}$/;
                 const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
 
