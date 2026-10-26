@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ANP MONEY - Live Customer Care</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a1f12 0%, #000000 100%);
+            -webkit-tap-highlight-color: transparent;
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .bg-wave-pattern {
+            background: linear-gradient(to bottom, #5cb45c, #3f8e43);
+        }
+        .app-container {
+            width: 100%;
+            max-width: 430px;
+            height: 100dvh;
+            background: white;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        }
+        @media (min-width: 640px) {
+            .app-container {
+                height: 880px;
+                max-height: 92vh;
+                border-radius: 36px;
+                border: 8px solid rgba(255, 255, 255, 0.12);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- Header -->
+        <header class="bg-wave-pattern pt-5 px-5 pb-5 text-white flex items-center justify-between shadow-md z-20">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white text-base">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <div>
+                    <h1 class="text-sm font-black tracking-tight">ANP Customer Care</h1>
+                    <p class="text-[10px] text-green-100 flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-emerald-300 animate-pulse"></span> Online Support Team
+                    </p>
+                </div>
+            </div>
+            <button onclick="window.location.href='index.html'" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white text-xs">
+                <i class="fas fa-home"></i>
+            </button>
+        </header>
+
+        <!-- Chat Messages Area -->
+        <main id="chat-messages-container" class="flex-1 bg-gray-50 px-4 py-4 overflow-y-auto hide-scrollbar flex flex-col gap-3">
+            <div class="text-center py-6 text-gray-400 text-xs">
+                <i class="fas fa-spinner fa-spin text-green-600 text-base mb-1"></i>
+                <p>Connecting to support...</p>
+            </div>
+        </main>
+
+        <!-- Input Box Area -->
+        <div class="bg-white border-t border-gray-100 p-3 flex items-center gap-2 z-30">
+            <input type="text" id="user-message-input" placeholder="Type your problem here..." class="flex-1 bg-gray-100 border border-gray-200 rounded-full px-4 py-2.5 text-xs text-gray-800 outline-none focus:border-green-500">
+            <button onclick="sendSupportMessage()" class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-full flex items-center justify-center shadow transition-transform active:scale-95">
+                <i class="fas fa-paper-plane text-xs"></i>
+            </button>
+        </div>
+
+        <!-- Bottom Navigation Bar -->
+        <nav class="w-full bg-white border-t border-gray-100 flex justify-between items-center px-6 pt-2 pb-5 z-40">
+            <button onclick="window.location.href='index.html'" class="flex flex-col items-center text-gray-400 group hover:text-green-600">
+                <i class="fas fa-home text-lg mb-1"></i>
+                <span class="text-[10px] font-medium">Home</span>
+            </button>
+            <button onclick="window.location.href='delivery.html'" class="flex flex-col items-center text-gray-400 group hover:text-green-600">
+                <i class="fas fa-box text-lg mb-1"></i>
+                <span class="text-[10px] font-medium">Delivery</span>
+            </button>
+            <div class="relative -top-6">
+                <button onclick="window.location.href='index.html'" class="w-14 h-14 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white border-4 border-white shadow-[0_5px_15px_rgba(74,222,128,0.4)]">
+                    <i class="fas fa-bicycle text-2xl"></i>
+                </button>
+            </div>
+            <button onclick="window.location.href='map.html'" class="flex flex-col items-center text-green-600 group">
+                <i class="fas fa-map-marked-alt text-lg mb-1"></i>
+                <span class="text-[10px] font-medium">Map</span>
+            </button>
+            <button onclick="window.location.href='my.html'" class="flex flex-col items-center text-gray-400 group hover:text-green-600">
+                <i class="fas fa-user text-lg mb-1"></i>
+                <span class="text-[10px] font-medium">My</span>
+            </button>
+        </nav>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
+        import { getFirestore, collection, query, where, getDocs, addDoc, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDZb4KcR5Tvw3x_ipR2ocgdUDqh47Arz6M",
+            authDomain: "anp-money.firebaseapp.com",
+            projectId: "anp-money",
+            storageBucket: "anp-money.firebasestorage.app",
+            messagingSenderId: "581687927989",
+            appId: "1:581687927989:web:41218431483f24a18b0afc"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                alert("Please log in to chat with Customer Care.");
+                window.location.href = "ANP.HTML";
+                return;
+            }
+            currentUser = user;
+            loadUserMessages(user.uid);
+        });
+
+        function loadUserMessages(uid) {
+            const container = document.getElementById("chat-messages-container");
+            const q = query(collection(db, "support_messages"), where("uid", "==", uid));
+
+            onSnapshot(q, (snapshot) => {
+                let messages = [];
+                snapshot.forEach((doc) => {
+                    messages.push({ id: doc.id, ...doc.data() });
+                });
+
+                // Sort by timestamp
+                messages.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+                container.innerHTML = "";
+
+                if (messages.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center my-auto text-gray-400 text-xs p-6">
+                            <i class="fas fa-comments text-3xl text-green-300 mb-2"></i>
+                            <p class="font-semibold text-gray-700">Welcome to ANP Support!</p>
+                            <p class="text-[11px] text-gray-500 mt-1">Send your problem or question below, and our admin team will reply shortly.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                messages.forEach((msg) => {
+                    // User bubble
+                    const userBubble = `
+                        <div class="flex flex-col items-end max-w-[85%] self-end">
+                            <div class="bg-green-600 text-white rounded-2xl rounded-tr-none px-4 py-2.5 text-xs shadow-sm leading-relaxed">
+                                ${msg.message}
+                            </div>
+                            <span class="text-[9px] text-gray-400 mt-0.5 mr-1">${new Date(msg.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                        </div>
+                    `;
+                    container.innerHTML += userBubble;
+
+                    // Admin Reply bubble (if any)
+                    if (msg.adminReply) {
+                        const adminBubble = `
+                            <div class="flex flex-col items-start max-w-[85%] self-start">
+                                <span class="text-[9px] text-green-700 font-bold ml-1 mb-0.5"><i class="fas fa-headset mr-1"></i> ANP Support</span>
+                                <div class="bg-white border border-gray-200 text-gray-800 rounded-2xl rounded-tl-none px-4 py-2.5 text-xs shadow-sm leading-relaxed">
+                                    ${msg.adminReply}
+                                </div>
+                                <span class="text-[9px] text-gray-400 mt-0.5 ml-1">Replied</span>
+                            </div>
+                        `;
+                        container.innerHTML += adminBubble;
+                    }
+                });
+
+                container.scrollTop = container.scrollHeight;
+            });
+        }
+
+        window.sendSupportMessage = async function() {
+            const input = document.getElementById("user-message-input");
+            const text = input.value.trim();
+
+            if (!text) return;
+
+            try {
+                await addDoc(collection(db, "support_messages"), {
+                    uid: currentUser.uid,
+                    email: currentUser.email || "Partner",
+                    message: text,
+                    adminReply: "",
+                    status: "pending",
+                    createdAt: new Date().toISOString()
+                });
+
+                input.value = "";
+            } catch (error) {
+                alert("Error sending message: " + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
