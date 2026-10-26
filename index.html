@@ -207,7 +207,7 @@
                         <div class="w-9 h-9 rounded-full bg-pink-100 flex items-center justify-center border border-pink-200 shadow-sm">
                             <i class="fas fa-bicycle text-pink-500 text-sm"></i>
                         </div>
-                        <span class="font-semibold text-sm" id="user-phone">Partner</span>
+                        <span class="font-semibold text-sm" id="user-phone">Loading...</span>
                         
                         <div class="w-8 h-8 rounded-full bg-yellow-300 flex items-center justify-center shadow-sm ml-2 relative">
                             <div class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 border-2 border-white rounded-full"></div>
@@ -327,6 +327,17 @@
                     
                     <div onclick="window.open('https://whatsapp.com', '_blank')" class="absolute right-3 top-3 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white shadow-lg border-2 border-white z-20 cursor-pointer animate-pulse hover:bg-green-600">
                         <i class="fab fa-whatsapp text-lg"></i>
+                    </div>
+                </div>
+
+                <div class="anp-banner rounded-xl w-full mt-5 relative p-4 shadow-sm border border-green-200">
+                    <h3 class="text-green-700 font-bold text-base mb-3" id="user-fullname">My ANP Level</h3>
+                    <div class="flex justify-between items-end px-2 mt-2 relative z-10">
+                        <div class="absolute bottom-2 left-4 right-4 h-0.5 bg-green-300 -z-10"></div>
+                        <div class="flex flex-col items-center"><i class="fas fa-bicycle text-green-400 text-sm mb-1 opacity-60"></i><div class="w-1.5 h-1.5 bg-green-400 rounded-full"></div></div>
+                        <div class="flex flex-col items-center"><i class="fas fa-bicycle text-green-500 text-base mb-1 opacity-80"></i><div class="w-1.5 h-1.5 bg-green-500 rounded-full"></div></div>
+                        <div class="flex flex-col items-center"><i class="fas fa-bicycle text-green-600 text-lg mb-1"></i><div class="w-1.5 h-1.5 bg-green-600 rounded-full"></div></div>
+                        <div class="flex flex-col items-center"><i class="fas fa-bicycle text-green-700 text-xl mb-1 transform scale-110"></i><div class="w-2 h-2 bg-green-700 rounded-full"></div></div>
                     </div>
                 </div>
 
@@ -533,15 +544,15 @@
         const MERCHANT_UPI = "6386084198@fam"; 
         const MERCHANT_NAME = "ANP Green Ride";
 
-        // Function to automatically process daily earnings (skipping Monday & Tuesday)
+        // Auto-process daily earnings (skipping Monday & Tuesday)
         async function checkAndProcessDailyEarnings(userData, docRef) {
             const todayStr = new Date().toISOString().split('T')[0];
             const lastEarned = userData.lastEarnedDate || todayStr;
 
-            if (lastEarned === todayStr) return; // Already credited today
+            if (lastEarned === todayStr) return;
 
             let currentDate = new Date(lastEarned);
-            currentDate.setDate(currentDate.getDate() + 1); // Start from day after lastEarned
+            currentDate.setDate(currentDate.getDate() + 1);
 
             const todayDate = new Date(todayStr);
             let earnedToday = 0;
@@ -582,7 +593,6 @@
                 userData.todayEarnings = newTodayEarnings;
                 userData.lastEarnedDate = todayStr;
             } else {
-                // Even if Monday/Tuesday, update lastEarnedDate so it doesn't loop forever
                 await updateDoc(docRef, { lastEarnedDate: todayStr });
             }
         }
@@ -615,7 +625,6 @@
                         await setDoc(userDocRef, currentUserData);
                     } else {
                         currentUserData = userDocSnap.data();
-                        // Run daily earnings check
                         await checkAndProcessDailyEarnings(currentUserData, userDocRef);
                     }
 
