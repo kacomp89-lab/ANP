@@ -54,12 +54,15 @@
         <div id="admin-dashboard-container" class="bg-gray-900 border border-green-900/60 rounded-3xl p-6 shadow-2xl hidden">
             
             <!-- Tab Buttons -->
-            <div class="flex gap-2 mb-6 border-b border-green-900 pb-4">
+            <div class="flex flex-wrap gap-2 mb-6 border-b border-green-900 pb-4">
                 <button onclick="switchAdminTab('deposits')" id="tab-btn-deposits" class="px-4 py-2 bg-green-600 text-white font-bold rounded-xl text-xs transition-all">
                     <i class="fas fa-coins mr-1"></i> Deposit Verifications
                 </button>
                 <button onclick="switchAdminTab('withdrawals')" id="tab-btn-withdrawals" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all">
                     <i class="fas fa-wallet mr-1"></i> Withdrawal & Payouts
+                </button>
+                <button onclick="switchAdminTab('customercare')" id="tab-btn-customercare" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all">
+                    <i class="fas fa-headset mr-1"></i> Customer Care
                 </button>
             </div>
 
@@ -80,6 +83,16 @@
                 </h2>
                 <div id="admin-withdrawal-list" class="flex flex-col gap-4">
                     <div class="text-center py-12 text-gray-500 text-xs">Loading withdrawal requests...</div>
+                </div>
+            </div>
+
+            <!-- Customer Care Section -->
+            <div id="section-customercare" class="hidden">
+                <h2 class="text-sm font-bold text-green-300 mb-4 flex items-center gap-2">
+                    <i class="fas fa-comments"></i> User Support Messages & Inquiries
+                </h2>
+                <div id="admin-support-list" class="flex flex-col gap-4">
+                    <div class="text-center py-12 text-gray-500 text-xs">Loading support messages...</div>
                 </div>
             </div>
 
@@ -147,6 +160,7 @@
 
             loadPendingDeposits();
             loadWithdrawalRequests();
+            loadSupportMessages();
         }
 
         window.lockAdminSession = function() {
@@ -157,19 +171,30 @@
         window.switchAdminTab = function(tab) {
             const depBtn = document.getElementById("tab-btn-deposits");
             const wdrBtn = document.getElementById("tab-btn-withdrawals");
+            const ccBtn = document.getElementById("tab-btn-customercare");
+
             const depSec = document.getElementById("section-deposits");
             const wdrSec = document.getElementById("section-withdrawals");
+            const ccSec = document.getElementById("section-customercare");
+
+            depBtn.className = "px-4 py-2 bg-gray-850 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all";
+            wdrBtn.className = "px-4 py-2 bg-gray-850 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all";
+            ccBtn.className = "px-4 py-2 bg-gray-850 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all";
+
+            depSec.classList.add("hidden");
+            wdrSec.classList.add("hidden");
+            ccSec.classList.add("hidden");
 
             if (tab === 'deposits') {
                 depBtn.className = "px-4 py-2 bg-green-600 text-white font-bold rounded-xl text-xs transition-all";
-                wdrBtn.className = "px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all";
                 depSec.classList.remove("hidden");
-                wdrSec.classList.add("hidden");
-            } else {
+            } else if (tab === 'withdrawals') {
                 wdrBtn.className = "px-4 py-2 bg-green-600 text-white font-bold rounded-xl text-xs transition-all";
-                depBtn.className = "px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all";
                 wdrSec.classList.remove("hidden");
-                depSec.classList.add("hidden");
+            } else if (tab === 'customercare') {
+                ccBtn.className = "px-4 py-2 bg-green-600 text-white font-bold rounded-xl text-xs transition-all";
+                ccSec.classList.remove("hidden");
+                loadSupportMessages();
             }
         }
 
@@ -288,6 +313,77 @@
             } catch (error) {
                 console.error("Error loading withdrawals:", error);
                 container.innerHTML = `<p class="text-red-400 text-xs text-center py-4">Error: ${error.message}</p>`;
+            }
+        }
+
+        async function loadSupportMessages() {
+            const container = document.getElementById("admin-support-list");
+            container.innerHTML = `<div class="text-center py-8 text-gray-500 text-xs">Fetching support tickets...</div>`;
+
+            try {
+                const querySnapshot = await getDocs(collection(db, "support_messages"));
+                container.innerHTML = "";
+
+                if (querySnapshot.empty) {
+                    container.innerHTML = `
+                        <div class="text-center py-12 text-gray-500 text-xs">
+                            <i class="fas fa-check-circle text-2xl text-green-600 mb-2"></i>
+                            <p>No customer support inquiries right now!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let tickets = [];
+                querySnapshot.forEach((docSnap) => {
+                    tickets.push({ id: docSnap.id, ...docSnap.data() });
+                });
+
+                // Sort newest first
+                tickets.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+                tickets.forEach((ticket) => {
+                    const dateStr = ticket.createdAt ? new Date(ticket.createdAt).toLocaleString('en-IN') : 'Recent';
+                    const hasReplied = !!ticket.adminReply;
+
+                    const card = `
+                        <div class="bg-black/40 border border-green-900/40 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-xs font-bold text-white">${ticket.email || 'Partner'}</span>
+                                    <span class="${hasReplied ? 'bg-green-500/20 text-green-300' : 'bg-yellow-500/20 text-yellow-300'} text-[9px] font-bold px-2 py-0.5 rounded-full uppercase">${hasReplied ? 'Replied' : 'Pending'}</span>
+                                </div>
+                                <p class="text-xs text-gray-200 mt-1"><strong class="text-green-400">Problem:</strong> ${ticket.message}</p>
+                                ${hasReplied ? `<p class="text-xs text-gray-300 mt-1"><strong class="text-emerald-400">Your Reply:</strong> ${ticket.adminReply}</p>` : ''}
+                                <p class="text-[10px] text-gray-500 mt-1">${dateStr}</p>
+                            </div>
+                            <button onclick="replySupportMessage('${ticket.id}')" class="w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl text-xs shadow-lg transition-all">
+                                <i class="fas fa-reply mr-1"></i> ${hasReplied ? 'Edit Reply' : 'Reply'}
+                            </button>
+                        </div>
+                    `;
+                    container.innerHTML += card;
+                });
+
+            } catch (error) {
+                console.error("Error loading support messages:", error);
+                container.innerHTML = `<p class="text-red-400 text-xs text-center py-4">Error: ${error.message}</p>`;
+            }
+        }
+
+        window.replySupportMessage = async function(ticketId) {
+            const replyText = prompt("Type your reply to the user:");
+            if (!replyText || replyText.trim() === "") return;
+
+            try {
+                await updateDoc(doc(db, "support_messages", ticketId), {
+                    adminReply: replyText.trim(),
+                    status: "replied"
+                });
+                alert("Reply sent successfully to user!");
+                loadSupportMessages();
+            } catch (error) {
+                alert("Error sending reply: " + error.message);
             }
         }
 
