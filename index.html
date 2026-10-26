@@ -207,7 +207,7 @@
                         <div class="w-9 h-9 rounded-full bg-pink-100 flex items-center justify-center border border-pink-200 shadow-sm">
                             <i class="fas fa-bicycle text-pink-500 text-sm"></i>
                         </div>
-                        <span class="font-semibold text-sm" id="user-phone">Loading...</span>
+                        <span class="font-semibold text-sm" id="user-phone">Partner</span>
                         
                         <div class="w-8 h-8 rounded-full bg-yellow-300 flex items-center justify-center shadow-sm ml-2 relative">
                             <div class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 border-2 border-white rounded-full"></div>
@@ -521,7 +521,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDZb4KcR5Tvw3x_ipR2ocgdUDqh47Arz6M",
@@ -603,6 +603,11 @@
 
             if (user) {
                 if (myLabel) myLabel.innerText = "My";
+                
+                // Immediate safe default UI to prevent "Loading..." hanging bug
+                document.getElementById("user-phone").innerText = user.email ? user.email.split('@')[0] : "Partner";
+                document.getElementById("user-balance").innerText = "0.00";
+
                 userDocRef = doc(db, "users", user.uid);
                 try {
                     let userDocSnap = await getDoc(userDocRef);
@@ -629,7 +634,7 @@
                     }
 
                     document.getElementById("user-fullname").innerText = currentUserData.fullName || "Partner";
-                    document.getElementById("user-phone").innerText = currentUserData.phone ? currentUserData.phone.slice(-4).padStart(currentUserData.phone.length, '*') : (user.email || "Partner");
+                    document.getElementById("user-phone").innerText = currentUserData.phone ? currentUserData.phone.slice(-4).padStart(currentUserData.phone.length, '*') : (currentUserData.email ? currentUserData.email.split('@')[0] : "Partner");
                     document.getElementById("user-balance").innerText = (currentUserData.balance || 0).toLocaleString();
                     document.getElementById("partner-level").innerText = currentUserData.partnerLevel || "VIP1";
                     document.getElementById("stat-today").innerText = (currentUserData.todayEarnings || 0).toLocaleString();
@@ -654,8 +659,6 @@
                     }
                 } catch (error) {
                     console.error("Error fetching user data:", error);
-                    document.getElementById("user-phone").innerText = "Partner";
-                    document.getElementById("user-balance").innerText = "0.00";
                 }
             } else {
                 if (myLabel) myLabel.innerText = "Register";
@@ -751,6 +754,38 @@
                 errNote.innerText = "We can only process amount upto 200 , dont exceed limit if you want your money be safe .";
                 errNote.classList.remove("hidden");
                 return;
+            }
+
+            // Check if user has zero balance or insufficient balance
+            const currentBalance = currentUserData && currentUserData.balance ? currentUserData.balance : 0;
+            if (currentBalance <= 0) {
+                alert("Your balance is 0.00! You cannot make a withdrawal request.");
+                return;
+            }
+            if (amount > currentBalance) {
+                alert(`Insufficient balance! Your available balance is ₹${currentBalance.toLocaleString()}.`);
+                return;
+            }
+
+            // Check daily withdrawal limit (Max 3 per day)
+            try {
+                const todayDateStr = new Date().toISOString().split('T')[0];
+                const wdrQuery = query(collection(db, "withdrawals"), where("uid", "==", currentUser.uid));
+                const wdrSnap = await getDocs(wdrQuery);
+                let todayCount = 0;
+                wdrSnap.forEach(docSnap => {
+                    const data = docSnap.data();
+                    if (data.createdAt && data.createdAt.startsWith(todayDateStr)) {
+                        todayCount++;
+                    }
+                });
+
+                if (todayCount >= 3) {
+                    alert("Daily withdrawal limit reached! You can only submit up to 3 withdrawal requests per day.");
+                    return;
+                }
+            } catch (e) {
+                console.error("Error checking daily withdrawal limit:", e);
             }
 
             let bankAccount = "";
