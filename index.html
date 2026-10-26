@@ -330,17 +330,6 @@
                     </div>
                 </div>
 
-                <div class="anp-banner rounded-xl w-full mt-5 relative p-4 shadow-sm border border-green-200">
-                    <h3 class="text-green-700 font-bold text-base mb-3" id="user-fullname">My ANP Level</h3>
-                    <div class="flex justify-between items-end px-2 mt-2 relative z-10">
-                        <div class="absolute bottom-2 left-4 right-4 h-0.5 bg-green-300 -z-10"></div>
-                        <div class="flex flex-col items-center"><i class="fas fa-bicycle text-green-400 text-sm mb-1 opacity-60"></i><div class="w-1.5 h-1.5 bg-green-400 rounded-full"></div></div>
-                        <div class="flex flex-col items-center"><i class="fas fa-bicycle text-green-500 text-base mb-1 opacity-80"></i><div class="w-1.5 h-1.5 bg-green-500 rounded-full"></div></div>
-                        <div class="flex flex-col items-center"><i class="fas fa-bicycle text-green-600 text-lg mb-1"></i><div class="w-1.5 h-1.5 bg-green-600 rounded-full"></div></div>
-                        <div class="flex flex-col items-center"><i class="fas fa-bicycle text-green-700 text-xl mb-1 transform scale-110"></i><div class="w-2 h-2 bg-green-700 rounded-full"></div></div>
-                    </div>
-                </div>
-
             </main>
         </div>
 
@@ -421,7 +410,7 @@
                 </p>
             </div>
 
-            <button onclick="submitWithdrawalRequest()" class="w-full py-3 px-4 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-bold rounded-2xl text-xs shadow-lg mb-2">
+            <button onclick="submitWithdrawalRequest()" class="w-full py-3 px-4 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold rounded-2xl text-xs shadow-lg mb-2">
                 Submit Withdrawal Request
             </button>
             <button onclick="closeWithdrawalModal()" class="w-full py-2 px-4 bg-transparent hover:bg-white/10 text-gray-400 rounded-xl text-[11px]">
@@ -521,7 +510,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, updateDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDZb4KcR5Tvw3x_ipR2ocgdUDqh47Arz6M",
@@ -544,6 +533,60 @@
         const MERCHANT_UPI = "6386084198@fam"; 
         const MERCHANT_NAME = "ANP Green Ride";
 
+        // Function to automatically process daily earnings (skipping Monday & Tuesday)
+        async function checkAndProcessDailyEarnings(userData, docRef) {
+            const todayStr = new Date().toISOString().split('T')[0];
+            const lastEarned = userData.lastEarnedDate || todayStr;
+
+            if (lastEarned === todayStr) return; // Already credited today
+
+            let currentDate = new Date(lastEarned);
+            currentDate.setDate(currentDate.getDate() + 1); // Start from day after lastEarned
+
+            const todayDate = new Date(todayStr);
+            let earnedToday = 0;
+            let totalAdded = 0;
+
+            const level = userData.partnerLevel || "VIP1";
+            let dailyRate = 50;
+            if (level === "VIP2") dailyRate = 130;
+            if (level === "VIP3") dailyRate = 500;
+            if (level === "VIP4") dailyRate = 2000;
+
+            while (currentDate <= todayDate) {
+                const dayOfWeek = currentDate.getDay(); // 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
+                // Skip Monday (1) and Tuesday (2)
+                if (dayOfWeek !== 1 && dayOfWeek !== 2) {
+                    totalAdded += dailyRate;
+                    if (currentDate.toISOString().split('T')[0] === todayStr) {
+                        earnedToday += dailyRate;
+                    }
+                }
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+
+            if (totalAdded > 0) {
+                const newBalance = (userData.balance || 0) + totalAdded;
+                const newRevenue = (userData.totalRevenue || 0) + totalAdded;
+                const newTodayEarnings = (userData.todayEarnings || 0) + earnedToday;
+
+                await updateDoc(docRef, {
+                    balance: newBalance,
+                    totalRevenue: newRevenue,
+                    todayEarnings: newTodayEarnings,
+                    lastEarnedDate: todayStr
+                });
+
+                userData.balance = newBalance;
+                userData.totalRevenue = newRevenue;
+                userData.todayEarnings = newTodayEarnings;
+                userData.lastEarnedDate = todayStr;
+            } else {
+                // Even if Monday/Tuesday, update lastEarnedDate so it doesn't loop forever
+                await updateDoc(docRef, { lastEarnedDate: todayStr });
+            }
+        }
+
         onAuthStateChanged(auth, async (user) => {
             currentUser = user;
             const myLabel = document.getElementById("nav-my-label");
@@ -552,42 +595,53 @@
                 if (myLabel) myLabel.innerText = "My";
                 userDocRef = doc(db, "users", user.uid);
                 try {
-                    const userDocSnap = await getDoc(userDocRef);
-                    if (userDocSnap.exists()) {
-                        currentUserData = userDocSnap.data();
-                        document.getElementById("user-fullname").innerText = currentUserData.fullName || "Partner";
-                        document.getElementById("user-phone").innerText = currentUserData.phone ? currentUserData.phone.slice(-4).padStart(currentUserData.phone.length, '*') : (user.email || "Partner");
-                        document.getElementById("user-balance").innerText = (currentUserData.balance || 0).toLocaleString();
-                        document.getElementById("partner-level").innerText = currentUserData.partnerLevel || "VIP1";
-                        document.getElementById("stat-today").innerText = (currentUserData.todayEarnings || 0).toLocaleString();
-                        document.getElementById("stat-referral").innerText = (currentUserData.referralRebate || 0).toLocaleString();
-                        document.getElementById("stat-delivery").innerText = (currentUserData.deliveryRebate || 0).toLocaleString();
-                        document.getElementById("stat-revenue").innerText = (currentUserData.totalRevenue || 0).toLocaleString();
-                        if (currentUserData.startDate) {
-                            document.getElementById("start-date-text").innerText = `Start date: ${currentUserData.startDate}`;
-                        }
-
-                        if (!currentUserData.hasSeenIntro) {
-                            const videoModal = document.getElementById("intro-video-modal");
-                            const videoEl = document.getElementById("ad-intro-element");
-                            
-                            videoModal.classList.remove("hidden");
-                            videoEl.currentTime = 0;
-                            videoEl.play().catch(e => console.log("Login autoplay blocked:", e));
-
-                            videoEl.onended = function() {
-                                closeIntroVideo();
-                            };
-                        }
+                    let userDocSnap = await getDoc(userDocRef);
+                    
+                    if (!userDocSnap.exists()) {
+                        currentUserData = {
+                            fullName: user.displayName || "Partner",
+                            phone: user.phoneNumber || "",
+                            email: user.email || "",
+                            balance: 0,
+                            partnerLevel: "VIP1",
+                            todayEarnings: 0,
+                            referralRebate: 0,
+                            deliveryRebate: 0,
+                            totalRevenue: 0,
+                            hasSeenIntro: false,
+                            lastEarnedDate: new Date().toISOString().split('T')[0],
+                            startDate: new Date().toLocaleDateString('en-IN')
+                        };
+                        await setDoc(userDocRef, currentUserData);
                     } else {
-                        // Fallback defaults if document doesn't exist yet
-                        document.getElementById("user-phone").innerText = user.email ? user.email.split('@')[0] : "Partner";
-                        document.getElementById("user-balance").innerText = "0.00";
-                        document.getElementById("partner-level").innerText = "VIP1";
-                        document.getElementById("stat-today").innerText = "0.00";
-                        document.getElementById("stat-referral").innerText = "0.00";
-                        document.getElementById("stat-delivery").innerText = "0.00";
-                        document.getElementById("stat-revenue").innerText = "0.00";
+                        currentUserData = userDocSnap.data();
+                        // Run daily earnings check
+                        await checkAndProcessDailyEarnings(currentUserData, userDocRef);
+                    }
+
+                    document.getElementById("user-fullname").innerText = currentUserData.fullName || "Partner";
+                    document.getElementById("user-phone").innerText = currentUserData.phone ? currentUserData.phone.slice(-4).padStart(currentUserData.phone.length, '*') : (user.email || "Partner");
+                    document.getElementById("user-balance").innerText = (currentUserData.balance || 0).toLocaleString();
+                    document.getElementById("partner-level").innerText = currentUserData.partnerLevel || "VIP1";
+                    document.getElementById("stat-today").innerText = (currentUserData.todayEarnings || 0).toLocaleString();
+                    document.getElementById("stat-referral").innerText = (currentUserData.referralRebate || 0).toLocaleString();
+                    document.getElementById("stat-delivery").innerText = (currentUserData.deliveryRebate || 0).toLocaleString();
+                    document.getElementById("stat-revenue").innerText = (currentUserData.totalRevenue || 0).toLocaleString();
+                    if (currentUserData.startDate) {
+                        document.getElementById("start-date-text").innerText = `Start date: ${currentUserData.startDate}`;
+                    }
+
+                    if (!currentUserData.hasSeenIntro) {
+                        const videoModal = document.getElementById("intro-video-modal");
+                        const videoEl = document.getElementById("ad-intro-element");
+                        
+                        videoModal.classList.remove("hidden");
+                        videoEl.currentTime = 0;
+                        videoEl.play().catch(e => console.log("Login autoplay blocked:", e));
+
+                        videoEl.onended = function() {
+                            closeIntroVideo();
+                        };
                     }
                 } catch (error) {
                     console.error("Error fetching user data:", error);
