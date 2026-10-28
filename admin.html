@@ -107,7 +107,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
-        import { getFirestore, collection, query, where, getDocs, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+        import { getFirestore, collection, query, where, getDocs, doc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDZb4KcR5Tvw3x_ipR2ocgdUDqh47Arz6M",
@@ -177,9 +177,9 @@
             const wdrSec = document.getElementById("section-withdrawals");
             const ccSec = document.getElementById("section-customercare");
 
-            depBtn.className = "px-4 py-2 bg-gray-850 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all";
-            wdrBtn.className = "px-4 py-2 bg-gray-850 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all";
-            ccBtn.className = "px-4 py-2 bg-gray-850 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all";
+            depBtn.className = "px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all";
+            wdrBtn.className = "px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all";
+            ccBtn.className = "px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all";
 
             depSec.classList.add("hidden");
             wdrSec.classList.add("hidden");
@@ -339,7 +339,6 @@
                     tickets.push({ id: docSnap.id, ...docSnap.data() });
                 });
 
-                // Sort newest first
                 tickets.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
                 tickets.forEach((ticket) => {
@@ -471,19 +470,37 @@
                 dailyReward = 50;
             }
 
-            if (!confirm(`Verify payment of ₹${depositAmount}?\n\nThis will activate partner tier [${vipLevel}] and credit daily reward of ₹${dailyReward} to their balance.`)) {
+            if (!confirm(`Verify payment of ₹${depositAmount}?\n\nThis will activate partner tier [${vipLevel}], credit daily reward of ₹${dailyReward}, and process any referral cashback.`)) {
                 return;
             }
 
             try {
                 const userRef = doc(db, "users", userId);
-                
+                const userSnap = await getDoc(userRef);
+                const userData = userSnap.data();
+
+                // Credit user
                 await updateDoc(userRef, {
                     partnerLevel: vipLevel,
                     balance: increment(dailyReward),
                     todayEarnings: increment(dailyReward),
                     totalRevenue: increment(dailyReward)
                 });
+
+                // If user was referred by someone, give referrer a 10% cashback bonus
+                if (userData && userData.referredBy) {
+                    const refCodeQuery = query(collection(db, "users"), where("referralCode", "==", userData.referredBy));
+                    const refSnap = await getDocs(refCodeQuery);
+                    if (!refSnap.empty) {
+                        const referrerDoc = refSnap.docs[0];
+                        const cashbackAmount = Math.round(depositAmount * 0.10);
+                        await updateDoc(doc(db, "users", referrerDoc.id), {
+                            balance: increment(cashbackAmount),
+                            referralRebate: increment(cashbackAmount),
+                            totalRevenue: increment(cashbackAmount)
+                        });
+                    }
+                }
 
                 const depositRef = doc(db, "deposits", depositId);
                 await updateDoc(depositRef, {
@@ -492,7 +509,7 @@
                     rewardCredited: dailyReward
                 });
 
-                alert(`Successfully activated ${vipLevel}! Daily reward of ₹${dailyReward} credited to partner balance.`);
+                alert(`Successfully activated ${vipLevel}!`);
                 loadPendingDeposits();
             } catch (error) {
                 alert("Error approving payment: " + error.message);
