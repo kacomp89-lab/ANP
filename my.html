@@ -88,18 +88,32 @@
                 </div>
             </div>
 
+            <!-- Referral Code Card -->
+            <div class="bg-gradient-to-br from-green-50 to-emerald-100 border border-green-200 rounded-2xl p-4 mb-6 shadow-sm">
+                <h3 class="text-xs font-bold text-green-800 mb-2 flex items-center gap-2">
+                    <i class="fas fa-share-alt text-green-600"></i> Your Referral Code
+                </h3>
+                <p class="text-[10px] text-green-700 mb-3 leading-relaxed">Share this code with friends. When they register and recharge a VIP pack, you earn cashback!</p>
+                
+                <div class="flex items-center justify-between bg-white border border-green-300 rounded-xl px-3 py-2 shadow-inner">
+                    <span id="display-ref-code" class="font-mono font-bold text-sm text-green-900 tracking-wider">Loading...</span>
+                    <button onclick="copyReferralCode()" class="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-bold shadow">
+                        <i class="fas fa-copy mr-1"></i> Copy
+                    </button>
+                </div>
+            </div>
+
             <!-- Saved Bank Account Section -->
             <div class="bg-gray-50 border border-gray-100 rounded-2xl p-4 mb-6 shadow-sm">
                 <h3 class="text-xs font-bold text-gray-800 mb-3 flex items-center gap-2">
                     <i class="fas fa-university text-green-600"></i> Saved Bank Account Details
                 </h3>
-                
                 <div id="bank-info-box">
                     <p class="text-xs text-gray-400">Loading bank details...</p>
                 </div>
             </div>
 
-            <!-- Quick Links / Actions -->
+            <!-- Quick Links -->
             <div class="flex flex-col gap-2.5">
                 <button onclick="window.location.href='delivery.html'" class="w-full py-3 px-4 bg-gray-50 hover:bg-gray-100 text-gray-800 font-semibold rounded-xl text-xs flex justify-between items-center border border-gray-100 transition-all">
                     <span class="flex items-center gap-2"><i class="fas fa-history text-green-600"></i> Transaction History</span>
@@ -113,7 +127,7 @@
 
         </main>
 
-        <!-- Edit Bank Modal with Strict Validation -->
+        <!-- Edit Bank Modal -->
         <div id="edit-bank-modal" class="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center hidden px-4 backdrop-blur-md">
             <div class="bg-gray-900 border border-green-900 rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl text-white">
                 <h3 class="text-lg font-bold mb-1">Edit Bank Account</h3>
@@ -131,12 +145,8 @@
                 </div>
 
                 <div class="flex flex-col gap-2">
-                    <button onclick="saveBankDetails()" class="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl text-xs shadow-lg">
-                        Save Changes
-                    </button>
-                    <button onclick="closeEditBankModal()" class="w-full py-2 bg-transparent hover:bg-white/10 text-gray-400 rounded-xl text-[11px]">
-                        Cancel
-                    </button>
+                    <button onclick="saveBankDetails()" class="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl text-xs shadow-lg">Save Changes</button>
+                    <button onclick="closeEditBankModal()" class="w-full py-2 bg-transparent text-gray-400 rounded-xl text-[11px]">Cancel</button>
                 </div>
             </div>
         </div>
@@ -156,7 +166,7 @@
                     <i class="fas fa-bicycle text-2xl"></i>
                 </button>
             </div>
-            <button onclick="alert('Map view coming soon!');" class="flex flex-col items-center text-gray-400 group hover:text-green-600">
+            <button onclick="window.location.href='map.html'" class="flex flex-col items-center text-gray-400 group hover:text-green-600">
                 <i class="fas fa-map-marked-alt text-lg mb-1"></i>
                 <span class="text-[10px] font-medium">Map</span>
             </button>
@@ -209,6 +219,13 @@
                     document.getElementById("profile-level").innerText = currentUserData.partnerLevel || "VIP1";
                     document.getElementById("profile-balance").innerText = `₹${(currentUserData.balance || 0).toLocaleString()}`;
                     document.getElementById("profile-revenue").innerText = `₹${(currentUserData.totalRevenue || 0).toLocaleString()}`;
+                    
+                    let refCode = currentUserData.referralCode;
+                    if (!refCode) {
+                        refCode = "ANP" + user.uid.substring(0, 6).toUpperCase();
+                        await updateDoc(userDocRef, { referralCode: refCode });
+                    }
+                    document.getElementById("display-ref-code").innerText = refCode;
 
                     renderBankDetails();
                 }
@@ -216,6 +233,13 @@
                 console.error("Error loading profile:", e);
             }
         });
+
+        window.copyReferralCode = function() {
+            const code = document.getElementById("display-ref-code").innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                alert("Referral code copied to clipboard: " + code);
+            });
+        }
 
         window.renderBankDetails = function() {
             const box = document.getElementById("bank-info-box");
@@ -260,7 +284,6 @@
             const accNum = document.getElementById("edit-account-num").value.trim();
             const ifscCode = document.getElementById("edit-ifsc").value.trim().toUpperCase();
 
-            // Strict Validation
             const accountRegex = /^\d{9,18}$/;
             const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
 
