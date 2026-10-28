@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ANP MONEY - Register</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>body { font-family: 'Inter', sans-serif; background: #0b1a10; color: white; }</style>
@@ -25,7 +27,12 @@
             </div>
             <div>
                 <label class="text-[10px] text-green-300 font-semibold mb-1 block">Password</label>
-                <input type="password" id="reg-password" placeholder="Create password" class="w-full bg-black/50 border border-green-800 rounded-xl px-3 py-2.5 text-xs text-white outline-none focus:border-green-400">
+                <div class="relative">
+                    <input type="password" id="reg-password" placeholder="Create password" class="w-full bg-black/50 border border-green-800 rounded-xl px-3 py-2.5 pr-10 text-xs text-white outline-none focus:border-green-400">
+                    <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xs">
+                        <i id="eye-icon" class="fas fa-eye"></i>
+                    </button>
+                </div>
             </div>
             <div>
                 <label class="text-[10px] text-green-300 font-semibold mb-1 block">Referral Code (Optional)</label>
@@ -39,7 +46,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -55,6 +62,40 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // Auto-fill referral code if `?ref=CODE` is present in the URL
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const refParam = urlParams.get('ref');
+            if (refParam) {
+                const refInput = document.getElementById("reg-ref-code");
+                if (refInput) {
+                    refInput.value = refParam.toUpperCase();
+                }
+            }
+        });
+
+        // Toggle password show/hide
+        window.togglePasswordVisibility = function() {
+            const pwdInput = document.getElementById("reg-password");
+            const eyeIcon = document.getElementById("eye-icon");
+            if (pwdInput.type === "password") {
+                pwdInput.type = "text";
+                eyeIcon.className = "fas fa-eye-slash";
+            } else {
+                pwdInput.type = "password";
+                eyeIcon.className = "fas fa-eye";
+            }
+        }
+
+        // Local IST date helper
+        function getLocalDateStr() {
+            const date = new Date();
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
         window.handleRegister = async function() {
             const name = document.getElementById("reg-name").value.trim();
             const email = document.getElementById("reg-email").value.trim();
@@ -67,12 +108,16 @@
             }
 
             try {
+                // 1. Create account
                 const creds = await createUserWithEmailAndPassword(auth, email, password);
                 const user = creds.user;
                 await updateProfile(user, { displayName: name });
 
-                const uniqueRefCode = "ANP" + user.uid.substring(0, 6).toUpperCase();
+                // 2. Send email verification link
+                await sendEmailVerification(user);
 
+                // 3. Save user profile in Firestore
+                const uniqueRefCode = "ANP" + user.uid.substring(0, 6).toUpperCase();
                 await setDoc(doc(db, "users", user.uid), {
                     fullName: name,
                     email: email,
@@ -84,12 +129,15 @@
                     totalRevenue: 0,
                     referralCode: uniqueRefCode,
                     referredBy: refCode || "",
-                    lastEarnedDate: new Date().toISOString().split('T')[0],
+                    lastEarnedDate: getLocalDateStr(),
                     startDate: new Date().toLocaleDateString('en-IN')
                 });
 
-                alert("Registration successful!");
-                window.location.href = "index.html";
+                // 4. Sign out immediately so unverified users can't access dashboard
+                await signOut(auth);
+
+                alert("Registration successful! A verification link has been sent to your email. Please verify your email before logging in.");
+                window.location.href = "ANP.HTML"; 
             } catch (e) {
                 alert("Registration error: " + e.message);
             }
