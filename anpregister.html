@@ -1,297 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>ANP - Register</title>
-<style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html { width: 100%; min-height: 100%; }
-body {
-    width: 100%;
-    min-height: 100dvh;
-    font-family: Arial, Helvetica, sans-serif;
-    background: #000;
-    overflow-x: hidden;
-}
-.page {
-    position: relative;
-    width: 100%;
-    min-height: 100dvh;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: max(20px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
-    background: linear-gradient(180deg, rgba(0, 0, 0, .4), rgba(0, 0, 0, .6)), url('WhatsApp Image 2026-10-01 at 6.31.01 AM.jpeg') no-repeat center center / cover;
-}
-.road {
-    position: absolute;
-    width: 160%;
-    height: 50%;
-    left: -30%;
-    bottom: -10%;
-    transform: rotate(-3deg);
-    background: linear-gradient(165deg, transparent 30%, rgba(0,0,0,.16) 31%, rgba(0,0,0,.16) 65%, transparent 66%);
-    opacity: .7;
-    pointer-events: none;
-}
-.content {
-    position: relative;
-    z-index: 2;
-    width: 100%;
-    max-width: 650px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-.brand {
-    width: 100%;
-    text-align: center;
-    color: white;
-    font-size: clamp(40px, 8vw, 80px);
-    line-height: .9;
-    font-weight: 900;
-    letter-spacing: clamp(-3px, -0.5vw, -6px);
-    margin-bottom: clamp(15px, 3vh, 30px);
-    text-shadow: 0 4px 8px rgba(0,0,0,.25);
-}
-.form-title {
-    color: white;
-    font-size: 20px;
-    font-weight: 600;
-    margin-bottom: 20px;
-    text-align: center;
-    letter-spacing: 1px;
-}
-.login-card {
-    width: min(100%, 520px);
-    padding: clamp(20px, 4vw, 38px);
-    border-radius: clamp(15px, 2.5vw, 28px);
-    background: rgba(20, 40, 25, 0.55);
-    border: 1px solid rgba(255,255,255,.20);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    box-shadow: 0 20px 60px rgba(0,0,0,.25);
-}
-.input-box {
-    width: 100%;
-    min-height: clamp(48px, 6vw, 56px);
-    margin-bottom: clamp(12px, 2vw, 18px);
-    display: flex;
-    align-items: center;
-    padding: 0 clamp(12px, 2vw, 18px);
-    background: rgba(255,255,255,.95);
-    border-radius: clamp(8px, 1.5vw, 13px);
-    box-shadow: 0 4px 15px rgba(0,0,0,.08);
-}
-.icon {
-    flex: 0 0 28px;
-    width: 28px;
-    font-size: clamp(16px, 2vw, 20px);
-    text-align: center;
-    color: #43805b;
-}
-.input-box input {
-    width: 100%;
-    border: none;
-    outline: none;
-    background: transparent;
-    color: #333;
-    font-size: clamp(13px, 1.5vw, 17px);
-    padding-left: 10px;
-}
-.eye {
-    cursor: pointer;
-    color: #777;
-    font-size: clamp(15px, 2vw, 19px);
-    padding: 5px;
-}
-.option {
-    width: 100%;
-    display: flex;
-    align-items: flex-start;
-    color: rgba(255,255,255,.95);
-    font-size: clamp(11px, 1.5vw, 15px);
-    margin: clamp(10px, 1.7vw, 17px) 0;
-}
-.option input {
-    appearance: none;
-    width: 18px;
-    height: 18px;
-    margin-right: 9px;
-    border: 2px solid rgba(255,255,255,.55);
-    border-radius: 50%;
-    cursor: pointer;
-}
-.option input:checked {
-    background: #24a95c;
-    border-color: white;
-    box-shadow: inset 0 0 0 4px white;
-}
-.btn {
-    width: 100%;
-    min-height: clamp(48px, 6vw, 56px);
-    border: none;
-    border-radius: clamp(24px, 4vw, 32px);
-    background: linear-gradient(180deg, #2da45a, #299653);
-    color: white;
-    font-size: clamp(14px, 1.8vw, 18px);
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 6px 18px rgba(0,0,0,.10);
-    margin-top: 10px;
-}
-.btn:hover { background: linear-gradient(180deg, #35ad62, #238c4c); }
-.divider {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin: 20px 0;
-    color: white;
-    font-size: 14px;
-}
-.divider span { flex: 1; height: 1px; background: rgba(255,255,255,.35); }
-.login-btn { background: transparent; border: 2px solid rgba(255, 255, 255, 0.5); margin-top: 0; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANP MONEY - Register</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; background: #0b1a10; color: white; }</style>
 </head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    <div class="bg-gray-900 border border-green-900/60 rounded-3xl p-8 max-w-sm w-full shadow-2xl">
+        <h2 class="text-xl font-black text-green-400 mb-1">Partner Registration</h2>
+        <p class="text-xs text-gray-400 mb-6">Create your ANP Green Ride account</p>
 
-<body>
-<div class="page">
-    <div class="road"></div>
-    <main class="content">
-        <div class="brand">ANP</div>
-        <div class="login-card">
-            <div class="form-title">Create an Account</div>
-
-            <div class="input-box">
-                <div class="icon">👤</div>
-                <input type="text" id="fullname" placeholder="Full Name" autocomplete="off">
+        <div class="flex flex-col gap-3 mb-5">
+            <div>
+                <label class="text-[10px] text-green-300 font-semibold mb-1 block">Full Name</label>
+                <input type="text" id="reg-name" placeholder="Enter full name" class="w-full bg-black/50 border border-green-800 rounded-xl px-3 py-2.5 text-xs text-white outline-none focus:border-green-400">
             </div>
-
-            <div class="input-box">
-                <div class="icon">✉️</div>
-                <input type="email" id="email" inputmode="email" placeholder="Email Address" autocomplete="off">
+            <div>
+                <label class="text-[10px] text-green-300 font-semibold mb-1 block">Email Address</label>
+                <input type="email" id="reg-email" placeholder="Enter email" class="w-full bg-black/50 border border-green-800 rounded-xl px-3 py-2.5 text-xs text-white outline-none focus:border-green-400">
             </div>
-
-            <div class="input-box">
-                <div class="icon">📱</div>
-                <input type="tel" id="phone" inputmode="tel" placeholder="Phone Number" autocomplete="off">
+            <div>
+                <label class="text-[10px] text-green-300 font-semibold mb-1 block">Password</label>
+                <input type="password" id="reg-password" placeholder="Create password" class="w-full bg-black/50 border border-green-800 rounded-xl px-3 py-2.5 text-xs text-white outline-none focus:border-green-400">
             </div>
-
-            <div class="input-box">
-                <div class="icon">🔒</div>
-                <input id="password" type="password" placeholder="Create Password" autocomplete="off">
-                <div class="eye" onclick="togglePassword('password')">👁</div>
+            <div>
+                <label class="text-[10px] text-green-300 font-semibold mb-1 block">Referral Code (Optional)</label>
+                <input type="text" id="reg-ref-code" placeholder="Enter friend's referral code" class="w-full bg-black/50 border border-green-800 rounded-xl px-3 py-2.5 text-xs text-white uppercase outline-none focus:border-green-400">
             </div>
-
-            <div class="input-box">
-                <div class="icon">🔒</div>
-                <input id="confirm-password" type="password" placeholder="Confirm Password" autocomplete="off">
-                <div class="eye" onclick="togglePassword('confirm-password')">👁</div>
-            </div>
-
-            <label class="option">
-                <input type="checkbox" id="terms">
-                <span>I agree to the Terms of Service & Privacy Policy</span>
-            </label>
-
-            <button class="btn" type="button" id="register-btn">Register Now</button>
-
-            <div class="divider">
-                <span></span>
-                <div>Already have an account?</div>
-                <span></span>
-            </div>
-
-            <button class="btn login-btn" type="button" onclick="window.location.href='ANP.html'">Log In</button>
         </div>
-    </main>
-</div>
 
-<script>
-    function togglePassword(fieldId) {
-        const pwdInput = document.getElementById(fieldId);
-        pwdInput.type = pwdInput.type === "password" ? "text" : "password";
-    }
-</script>
+        <button onclick="handleRegister()" class="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl text-xs shadow-lg mb-3">Register Account</button>
+        <p class="text-center text-xs text-gray-400">Already registered? <a href="ANP.HTML" class="text-green-400 font-bold hover:underline">Log In</a></p>
+    </div>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyDZb4KcR5Tvw3x_ipR2ocgdUDqh47Arz6M",
-        authDomain: "anp-money.firebaseapp.com",
-        projectId: "anp-money",
-        storageBucket: "anp-money.firebasestorage.app",
-        messagingSenderId: "581687927989",
-        appId: "1:581687927989:web:41218431483f24a18b0afc"
-    };
+        const firebaseConfig = {
+            apiKey: "AIzaSyDZb4KcR5Tvw3x_ipR2ocgdUDqh47Arz6M",
+            authDomain: "anp-money.firebaseapp.com",
+            projectId: "anp-money",
+            storageBucket: "anp-money.firebasestorage.app",
+            messagingSenderId: "581687927989",
+            appId: "1:581687927989:web:41218431483f24a18b0afc"
+        };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-    document.getElementById("register-btn").addEventListener("click", async () => {
-        const fullName = document.getElementById("fullname").value.trim();
-        const email = document.getElementById("email").value.trim();
-        const phone = document.getElementById("phone").value.trim();
-        const password = document.getElementById("password").value;
-        const confirmPassword = document.getElementById("confirm-password").value;
-        const termsChecked = document.getElementById("terms").checked;
+        window.handleRegister = async function() {
+            const name = document.getElementById("reg-name").value.trim();
+            const email = document.getElementById("reg-email").value.trim();
+            const password = document.getElementById("reg-password").value.trim();
+            const refCode = document.getElementById("reg-ref-code").value.trim().toUpperCase();
 
-        if (!fullName || !email || !phone || !password) {
-            alert("Please fill out all required fields.");
-            return;
+            if (!name || !email || !password) {
+                alert("Please fill in all required fields.");
+                return;
+            }
+
+            try {
+                const creds = await createUserWithEmailAndPassword(auth, email, password);
+                const user = creds.user;
+                await updateProfile(user, { displayName: name });
+
+                const uniqueRefCode = "ANP" + user.uid.substring(0, 6).toUpperCase();
+
+                await setDoc(doc(db, "users", user.uid), {
+                    fullName: name,
+                    email: email,
+                    balance: 0,
+                    partnerLevel: "VIP1",
+                    todayEarnings: 0,
+                    referralRebate: 0,
+                    deliveryRebate: 0,
+                    totalRevenue: 0,
+                    referralCode: uniqueRefCode,
+                    referredBy: refCode || "",
+                    lastEarnedDate: new Date().toISOString().split('T')[0],
+                    startDate: new Date().toLocaleDateString('en-IN')
+                });
+
+                alert("Registration successful!");
+                window.location.href = "index.html";
+            } catch (e) {
+                alert("Registration error: " + e.message);
+            }
         }
-
-        if (!termsChecked) {
-            alert("You must agree to the Terms of Service & Privacy Policy.");
-            return;
-        }
-
-        if (password !== confirmPassword) {
-            alert("Passwords do not match!");
-            return;
-        }
-
-        try {
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            const user = userCredential.user;
-
-            // Save user to Firestore with 0 initial balance and VIP1 tier
-            await setDoc(doc(db, "users", user.uid), {
-                fullName: fullName,
-                email: email,
-                phone: phone,
-                balance: 0,
-                partnerLevel: "VIP1",
-                todayEarnings: 0,
-                referralRebate: 0,
-                deliveryRebate: 0,
-                totalRevenue: 0,
-                startDate: new Date().toISOString().split('T')[0],
-                createdAt: new Date().toISOString()
-            });
-
-            const actionCodeSettings = {
-                url: window.location.origin + "/index.html",
-                handleCodeInApp: false
-            };
-
-            await sendEmailVerification(user, actionCodeSettings);
-
-            alert("Registration successful! Verification link sent. Redirecting to login...");
-            window.location.href = "ANP.HTML"; 
-        } catch (error) {
-            alert("Registration Error: " + error.message);
-        }
-    });
-</script>
+    </script>
 </body>
 </html>
