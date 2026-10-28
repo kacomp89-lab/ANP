@@ -155,41 +155,12 @@
         .animate-pop-check {
             animation: popCheck 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
-
-        /* Intro Video Styling */
-        #intro-video-modal {
-            background: #000000;
-        }
-        #ad-intro-element::-webkit-media-controls {
-            display: none !important;
-        }
     </style>
 </head>
 <body>
 
     <div class="app-container">
         
-        <!-- First-Time Login Intro Video Modal -->
-        <div id="intro-video-modal" class="fixed inset-0 z-[9999] bg-black flex items-center justify-center hidden">
-            <video id="ad-intro-element" src="ad.mp4" autoplay playsinline class="w-full h-full max-h-[85vh] object-contain"></video>
-            <button onclick="closeIntroVideo()" class="absolute top-6 right-6 bg-black/60 hover:bg-black/80 text-white font-bold px-5 py-2.5 rounded-full text-xs backdrop-blur-md border border-white/30 transition-all shadow-2xl flex items-center gap-2 z-[10000]">
-                Skip <i class="fas fa-arrow-right"></i>
-            </button>
-        </div>
-
-        <!-- Soothing VIP Celebration Toast Banner -->
-        <div id="vip-celebration-toast" class="fixed inset-x-0 top-1/3 z-50 flex items-center justify-center pointer-events-none hidden px-6">
-            <div class="bg-gradient-to-r from-yellow-400 via-amber-300 to-yellow-500 text-gray-950 font-black px-6 py-4 rounded-3xl shadow-2xl border-2 border-white text-xs sm:text-sm flex items-center gap-3 animate-vip-toast backdrop-blur-md">
-                <div class="w-8 h-8 rounded-full bg-gray-950 text-yellow-400 flex items-center justify-center text-sm shadow">
-                    <i class="fas fa-crown"></i>
-                </div>
-                <div class="flex flex-col text-left">
-                    <span class="tracking-wider uppercase text-[9px] font-extrabold text-amber-900">Exclusive Status</span>
-                    <span>Elite VIP Tier Unlocked! Proud Partner 🌟</span>
-                </div>
-            </div>
-        </div>
-
         <!-- Floating Telegram Widget Button -->
         <a href="https://t.me/anpmoney" target="_blank" class="fixed bottom-20 right-5 w-12 h-12 bg-sky-500 hover:bg-sky-600 rounded-full flex items-center justify-center text-white shadow-lg border-2 border-white z-40 transition-transform active:scale-95" title="Join Telegram Channel">
             <i class="fab fa-telegram-plane text-xl"></i>
@@ -441,7 +412,6 @@
             
             <div id="step-qr" class="block">
                 <div class="bg-white p-3 rounded-2xl inline-block mb-3 shadow-md">
-                    <!-- Dynamic UPI QR Code Image with pre-filled amount -->
                     <img id="upi-qr-img" src="qrimg.jpg" alt="UPI QR Code" class="w-40 h-40 mx-auto object-contain">
                 </div>
                 
@@ -541,7 +511,7 @@
         let userDocRef = null;
         let selectedVIPAmount = 0;
 
-        const MERCHANT_UPI = "6386084198@fam"; 
+        const MERCHANT_UPI = "anpadarshanp@fam"; 
         const MERCHANT_NAME = "ANP Green Ride";
 
         // Auto-process daily earnings (skipping Monday & Tuesday)
@@ -566,7 +536,7 @@
 
             while (currentDate <= todayDate) {
                 const dayOfWeek = currentDate.getDay(); // 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
-                // Skip Monday (1) and Tuesday (2)
+                // Strictly skip Monday (1) and Tuesday (2)
                 if (dayOfWeek !== 1 && dayOfWeek !== 2) {
                     totalAdded += dailyRate;
                     if (currentDate.toISOString().split('T')[0] === todayStr) {
@@ -579,7 +549,7 @@
             if (totalAdded > 0) {
                 const newBalance = (userData.balance || 0) + totalAdded;
                 const newRevenue = (userData.totalRevenue || 0) + totalAdded;
-                const newTodayEarnings = (userData.todayEarnings || 0) + earnedToday;
+                const newTodayEarnings = earnedToday;
 
                 await updateDoc(docRef, {
                     balance: newBalance,
@@ -604,7 +574,7 @@
             if (user) {
                 if (myLabel) myLabel.innerText = "My";
                 
-                // Immediate safe default UI to prevent "Loading..." hanging bug
+                // Immediate safe default UI to prevent loading hanging
                 document.getElementById("user-phone").innerText = user.email ? user.email.split('@')[0] : "Partner";
                 document.getElementById("user-balance").innerText = "0.00";
 
@@ -613,6 +583,7 @@
                     let userDocSnap = await getDoc(userDocRef);
                     
                     if (!userDocSnap.exists()) {
+                        const uniqueRefCode = "ANP" + user.uid.substring(0, 6).toUpperCase();
                         currentUserData = {
                             fullName: user.displayName || "Partner",
                             phone: user.phoneNumber || "",
@@ -623,7 +594,8 @@
                             referralRebate: 0,
                             deliveryRebate: 0,
                             totalRevenue: 0,
-                            hasSeenIntro: false,
+                            referralCode: uniqueRefCode,
+                            referredBy: "",
                             lastEarnedDate: new Date().toISOString().split('T')[0],
                             startDate: new Date().toLocaleDateString('en-IN')
                         };
@@ -644,19 +616,6 @@
                     if (currentUserData.startDate) {
                         document.getElementById("start-date-text").innerText = `Start date: ${currentUserData.startDate}`;
                     }
-
-                    if (!currentUserData.hasSeenIntro) {
-                        const videoModal = document.getElementById("intro-video-modal");
-                        const videoEl = document.getElementById("ad-intro-element");
-                        
-                        videoModal.classList.remove("hidden");
-                        videoEl.currentTime = 0;
-                        videoEl.play().catch(e => console.log("Login autoplay blocked:", e));
-
-                        videoEl.onended = function() {
-                            closeIntroVideo();
-                        };
-                    }
                 } catch (error) {
                     console.error("Error fetching user data:", error);
                 }
@@ -667,28 +626,6 @@
                 document.getElementById("partner-level").innerText = "VIP1";
             }
         });
-
-        window.closeIntroVideo = async function() {
-            const videoModal = document.getElementById("intro-video-modal");
-            const videoEl = document.getElementById("ad-intro-element");
-            
-            if (videoEl) {
-                videoEl.pause();
-                videoEl.currentTime = 0;
-            }
-            if (videoModal) {
-                videoModal.classList.add("hidden");
-            }
-
-            if (currentUser && userDocRef) {
-                try {
-                    await updateDoc(userDocRef, { hasSeenIntro: true });
-                    currentUserData.hasSeenIntro = true;
-                } catch (e) {
-                    console.error("Error updating hasSeenIntro:", e);
-                }
-            }
-        }
 
         window.handleAuthAction = function(callback) {
             if (!currentUser) {
@@ -756,7 +693,7 @@
                 return;
             }
 
-            // Check if user has zero balance or insufficient balance
+            // Check if user has zero or insufficient balance
             const currentBalance = currentUserData && currentUserData.balance ? currentUserData.balance : 0;
             if (currentBalance <= 0) {
                 alert("Your balance is 0.00! You cannot make a withdrawal request.");
