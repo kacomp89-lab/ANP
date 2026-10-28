@@ -478,13 +478,17 @@
                 const userRef = doc(db, "users", userId);
                 const userSnap = await getDoc(userRef);
                 const userData = userSnap.data();
+                
+                // IST safe date string
+                const todayStr = new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0];
 
-                // Credit user
+                // Credit user & initialize lastEarnedDate to today
                 await updateDoc(userRef, {
                     partnerLevel: vipLevel,
                     balance: increment(dailyReward),
                     todayEarnings: increment(dailyReward),
-                    totalRevenue: increment(dailyReward)
+                    totalRevenue: increment(dailyReward),
+                    lastEarnedDate: todayStr
                 });
 
                 // If user was referred by someone, give referrer a 10% cashback bonus
