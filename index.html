@@ -403,7 +403,6 @@
             
             <div id="step-qr" class="block">
                 <div class="bg-white p-3 rounded-2xl inline-block mb-3 shadow-md">
-                    <!-- Dynamic UPI QR Code Image with pre-filled amount -->
                     <img id="upi-qr-img" src="qrimg.jpg" alt="UPI QR Code" class="w-40 h-40 mx-auto object-contain">
                 </div>
                 
@@ -506,9 +505,14 @@
         const MERCHANT_UPI = "anpadarshanp@fam"; 
         const MERCHANT_NAME = "ANP Green Ride";
 
-        // Auto-process daily earnings (skipping Monday & Tuesday)
+        // Helper to get local date in YYYY-MM-DD (IST safe)
+        function getLocalDateString(date = new Date()) {
+            return new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+        }
+
+        // Auto-process daily earnings (Strictly skipping Monday & Tuesday)
         async function checkAndProcessDailyEarnings(userData, docRef) {
-            const todayStr = new Date().toISOString().split('T')[0];
+            const todayStr = getLocalDateString();
             const lastEarned = userData.lastEarnedDate || todayStr;
 
             if (lastEarned === todayStr) return;
@@ -531,7 +535,7 @@
                 // Strictly skip Monday (1) and Tuesday (2)
                 if (dayOfWeek !== 1 && dayOfWeek !== 2) {
                     totalAdded += dailyRate;
-                    if (currentDate.toISOString().split('T')[0] === todayStr) {
+                    if (getLocalDateString(currentDate) === todayStr) {
                         earnedToday += dailyRate;
                     }
                 }
@@ -566,7 +570,6 @@
             if (user) {
                 if (myLabel) myLabel.innerText = "My";
                 
-                // Immediate safe default UI to prevent loading hanging
                 document.getElementById("user-phone").innerText = user.email ? user.email.split('@')[0] : "Partner";
                 document.getElementById("user-balance").innerText = "0.00";
 
@@ -588,7 +591,7 @@
                             totalRevenue: 0,
                             referralCode: uniqueRefCode,
                             referredBy: "",
-                            lastEarnedDate: new Date().toISOString().split('T')[0],
+                            lastEarnedDate: getLocalDateString(),
                             startDate: new Date().toLocaleDateString('en-IN')
                         };
                         await setDoc(userDocRef, currentUserData);
@@ -696,7 +699,7 @@
             }
 
             try {
-                const todayDateStr = new Date().toISOString().split('T')[0];
+                const todayDateStr = getLocalDateString();
                 const wdrQuery = query(collection(db, "withdrawals"), where("uid", "==", currentUser.uid));
                 const wdrSnap = await getDocs(wdrQuery);
                 let todayCount = 0;
