@@ -505,22 +505,30 @@
         const MERCHANT_UPI = "anpadarshanp@fam"; 
         const MERCHANT_NAME = "ANP Green Ride";
 
-        // Helper to get local date in YYYY-MM-DD (IST safe)
-        function getLocalDateString(date = new Date()) {
-            return new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+        // Bulletproof local date helpers (IST timezone safe)
+        function getLocalDateStr(date = new Date()) {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
         }
 
-        // Auto-process daily earnings (Strictly skipping Monday & Tuesday)
+        function parseLocalDate(dateStr) {
+            const [y, m, d] = dateStr.split('-').map(Number);
+            return new Date(y, m - 1, d);
+        }
+
+        // Auto-process daily earnings (Catching up missed days, strictly skipping Monday & Tuesday)
         async function checkAndProcessDailyEarnings(userData, docRef) {
-            const todayStr = getLocalDateString();
+            const todayStr = getLocalDateStr();
             const lastEarned = userData.lastEarnedDate || todayStr;
 
             if (lastEarned === todayStr) return;
 
-            let currentDate = new Date(lastEarned);
+            let currentDate = parseLocalDate(lastEarned);
             currentDate.setDate(currentDate.getDate() + 1);
 
-            const todayDate = new Date(todayStr);
+            const todayDate = parseLocalDate(todayStr);
             let earnedToday = 0;
             let totalAdded = 0;
 
@@ -535,7 +543,7 @@
                 // Strictly skip Monday (1) and Tuesday (2)
                 if (dayOfWeek !== 1 && dayOfWeek !== 2) {
                     totalAdded += dailyRate;
-                    if (getLocalDateString(currentDate) === todayStr) {
+                    if (getLocalDateStr(currentDate) === todayStr) {
                         earnedToday += dailyRate;
                     }
                 }
@@ -591,7 +599,7 @@
                             totalRevenue: 0,
                             referralCode: uniqueRefCode,
                             referredBy: "",
-                            lastEarnedDate: getLocalDateString(),
+                            lastEarnedDate: getLocalDateStr(),
                             startDate: new Date().toLocaleDateString('en-IN')
                         };
                         await setDoc(userDocRef, currentUserData);
@@ -699,7 +707,7 @@
             }
 
             try {
-                const todayDateStr = getLocalDateString();
+                const todayDateStr = getLocalDateStr();
                 const wdrQuery = query(collection(db, "withdrawals"), where("uid", "==", currentUser.uid));
                 const wdrSnap = await getDocs(wdrQuery);
                 let todayCount = 0;
