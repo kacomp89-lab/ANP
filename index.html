@@ -108,16 +108,6 @@
             pointer-events: none;
         }
 
-        @keyframes vipFloatUp {
-            0% { transform: translateY(30px) scale(0.9); opacity: 0; }
-            40% { transform: translateY(0) scale(1.05); opacity: 1; }
-            70% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-20px) scale(1); opacity: 0; }
-        }
-        .animate-vip-toast {
-            animation: vipFloatUp 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
         /* Elite Neon Auras for VIP 3 & 4 */
         @keyframes eliteAuraGlow {
             0%, 100% { box-shadow: 0 0 15px rgba(250, 204, 21, 0.3), inset 0 0 10px rgba(250, 204, 21, 0.1); border-color: rgba(250, 204, 21, 0.7); }
@@ -330,6 +320,7 @@
                     <i class="fas fa-bicycle text-2xl"></i>
                 </button>
             </div>
+            <!-- Map button linked to map.html -->
             <button onclick="window.location.href='map.html'" class="flex flex-col items-center text-gray-400 group hover:text-green-600 transition-colors">
                 <i class="fas fa-map-marked-alt text-lg mb-1"></i>
                 <span class="text-[10px] font-medium">Map</span>
@@ -412,6 +403,7 @@
             
             <div id="step-qr" class="block">
                 <div class="bg-white p-3 rounded-2xl inline-block mb-3 shadow-md">
+                    <!-- Dynamic UPI QR Code Image with pre-filled amount -->
                     <img id="upi-qr-img" src="qrimg.jpg" alt="UPI QR Code" class="w-40 h-40 mx-auto object-contain">
                 </div>
                 
@@ -693,7 +685,6 @@
                 return;
             }
 
-            // Check if user has zero or insufficient balance
             const currentBalance = currentUserData && currentUserData.balance ? currentUserData.balance : 0;
             if (currentBalance <= 0) {
                 alert("Your balance is 0.00! You cannot make a withdrawal request.");
@@ -704,7 +695,6 @@
                 return;
             }
 
-            // Check daily withdrawal limit (Max 3 per day)
             try {
                 const todayDateStr = new Date().toISOString().split('T')[0];
                 const wdrQuery = query(collection(db, "withdrawals"), where("uid", "==", currentUser.uid));
@@ -792,19 +782,7 @@
                 document.getElementById("modal-vip-title").innerText = title;
                 document.getElementById("modal-vip-price").innerText = `Package Price: ₹${amount.toLocaleString()}`;
                 document.getElementById("modal-vip-desc").innerText = description;
-
-                const cardId = amount >= 20000 ? 'vip-card-4' : (amount >= 4999 ? 'vip-card-3' : null);
-                if (cardId) {
-                    const toast = document.getElementById("vip-celebration-toast");
-                    toast.classList.remove("hidden");
-
-                    setTimeout(() => {
-                        toast.classList.add("hidden");
-                        document.getElementById("vip-details-modal").classList.remove("hidden");
-                    }, 1200);
-                } else {
-                    document.getElementById("vip-details-modal").classList.remove("hidden");
-                }
+                document.getElementById("vip-details-modal").classList.remove("hidden");
             });
         }
 
@@ -823,7 +801,6 @@
             document.getElementById("paytm-btn").href = upiString;
             document.getElementById("phonepe-btn").href = upiString;
 
-            // Generate dynamic pre-filled amount QR code for scanning
             document.getElementById("upi-qr-img").src = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(upiString)}`;
         }
 
