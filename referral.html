@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ANP MONEY - Agency & Referral</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a1f12 0%, #000000 100%);
+            -webkit-tap-highlight-color: transparent;
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .bg-wave-pattern {
+            background: linear-gradient(to bottom, #5cb45c, #3f8e43);
+        }
+        .app-container {
+            width: 100%;
+            max-width: 430px;
+            height: 100dvh;
+            background: #f8fafc;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        }
+        @media (min-width: 640px) {
+            .app-container {
+                height: 880px;
+                max-height: 92vh;
+                border-radius: 36px;
+                border: 8px solid rgba(255, 255, 255, 0.12);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- Header -->
+        <header class="bg-wave-pattern pt-5 px-5 pb-6 text-white flex items-center justify-between shadow-md z-20">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-white text-sm">
+                    <i class="fas fa-users-crown"></i>
+                </div>
+                <h1 class="text-base font-black tracking-tight">Agency & Referral</h1>
+            </div>
+            <button onclick="window.location.href='index.html'" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white text-xs">
+                <i class="fas fa-home"></i>
+            </button>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 overflow-y-auto hide-scrollbar px-4 py-4 pb-24 flex flex-col gap-4">
+            
+            <!-- Top Commission Card -->
+            <div class="bg-gradient-to-br from-green-600 to-emerald-700 rounded-3xl p-5 text-white text-center shadow-md relative overflow-hidden">
+                <div class="absolute -right-6 -bottom-6 w-28 h-28 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+                <span class="text-2xl font-black tracking-tight block mb-1" id="yesterday-commission">₹0.00</span>
+                <span class="text-[11px] font-semibold text-green-100 uppercase tracking-wider block mb-2">Yesterday's Total Commission</span>
+                <p class="text-[10px] text-green-200">Upgrade your partner level to increase commission income & rebates</p>
+            </div>
+
+            <!-- Direct Subordinates vs Team Subordinates Stats Grid -->
+            <div class="bg-white border border-green-100 rounded-3xl p-5 shadow-sm">
+                <div class="grid grid-cols-2 divide-x divide-gray-100 text-center">
+                    <!-- Direct Subordinates -->
+                    <div class="pr-2">
+                        <span class="text-xs font-bold text-green-800 block mb-3 pb-1 border-b border-green-50">Direct Subordinates</span>
+                        <div class="space-y-3 text-left">
+                            <div>
+                                <span class="text-[10px] text-gray-400 block">Number of register</span>
+                                <span class="text-xs font-extrabold text-gray-800" id="direct-register">0</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-gray-400 block">Deposit number</span>
+                                <span class="text-xs font-extrabold text-emerald-600" id="direct-deposit-num">0</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-gray-400 block">Deposit amount</span>
+                                <span class="text-xs font-extrabold text-gray-800" id="direct-deposit-amt">₹0</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-gray-400 block">First deposit count</span>
+                                <span class="text-xs font-extrabold text-gray-800" id="direct-first-deposit">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Team Subordinates -->
+                    <div class="pl-3">
+                        <span class="text-xs font-bold text-green-800 block mb-3 pb-1 border-b border-green-50">Team Subordinates</span>
+                        <div class="space-y-3 text-left">
+                            <div>
+                                <span class="text-[10px] text-gray-400 block">Number of register</span>
+                                <span class="text-xs font-extrabold text-gray-800" id="team-register">0</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-gray-400 block">Deposit number</span>
+                                <span class="text-xs font-extrabold text-emerald-600" id="team-deposit-num">0</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-gray-400 block">Deposit amount</span>
+                                <span class="text-xs font-extrabold text-gray-800" id="team-deposit-amt">₹0</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-gray-400 block">First deposit count</span>
+                                <span class="text-xs font-extrabold text-gray-800" id="team-first-deposit">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Big Invitation Link Button -->
+            <button onclick="copyInvitationLink()" class="w-full py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-2xl text-xs shadow-lg transition-all flex items-center justify-center gap-2">
+                <i class="fas fa-link"></i> INVITATION LINK
+            </button>
+
+            <!-- Copy Invitation Code Card -->
+            <div class="bg-white border border-green-100 rounded-2xl p-4 flex items-center justify-between shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-green-50 text-green-600 flex items-center justify-center text-sm">
+                        <i class="fas fa-id-badge"></i>
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-gray-400 block font-medium">Copy invitation code</span>
+                        <span class="text-xs font-bold text-gray-800 font-mono" id="display-ref-code">Loading...</span>
+                    </div>
+                </div>
+                <button onclick="copyReferralCode()" class="px-3.5 py-1.5 bg-green-100 hover:bg-green-200 text-green-800 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5">
+                    <i class="far fa-copy"></i> Copy
+                </button>
+            </div>
+
+            <!-- Menu List Options -->
+            <div class="bg-white border border-green-100 rounded-2xl overflow-hidden shadow-sm">
+                <div onclick="alert('Subordinate data details coming soon!')" class="flex items-center justify-between p-3.5 border-b border-gray-50 cursor-pointer hover:bg-green-50/50 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-green-50 text-green-600 flex items-center justify-center text-xs"><i class="fas fa-list-alt"></i></div>
+                        <span class="text-xs font-bold text-gray-700">Subordinate data</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-300 text-xs"></i>
+                </div>
+                
+                <div onclick="alert('Commission details & rebate breakdown logs.')" class="flex items-center justify-between p-3.5 border-b border-gray-50 cursor-pointer hover:bg-green-50/50 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-green-50 text-green-600 flex items-center justify-center text-xs"><i class="fas fa-dollar-sign"></i></div>
+                        <span class="text-xs font-bold text-gray-700">Commission detail</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-300 text-xs"></i>
+                </div>
+
+                <div onclick="alert('Rule: Referrers receive a 10% cashback bonus upon the referred user\'s first VIP pack activation.')" class="flex items-center justify-between p-3.5 border-b border-gray-50 cursor-pointer hover:bg-green-50/50 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-green-50 text-green-600 flex items-center justify-center text-xs"><i class="fas fa-book-open"></i></div>
+                        <span class="text-xs font-bold text-gray-700">Invitation rules</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-300 text-xs"></i>
+                </div>
+
+                <div onclick="window.location.href='map.html'" class="flex items-center justify-between p-3.5 border-b border-gray-50 cursor-pointer hover:bg-green-50/50 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-green-50 text-green-600 flex items-center justify-center text-xs"><i class="fas fa-headset"></i></div>
+                        <span class="text-xs font-bold text-gray-700">Agent line customer service</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-300 text-xs"></i>
+                </div>
+
+                <div onclick="alert('Rebate ratio: 10% instant cashback on referee VIP pack activations.')" class="flex items-center justify-between p-3.5 cursor-pointer hover:bg-green-50/50 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-green-50 text-green-600 flex items-center justify-center text-xs"><i class="fas fa-percentage"></i></div>
+                        <span class="text-xs font-bold text-gray-700">Rebate ratio</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-300 text-xs"></i>
+                </div>
+            </div>
+
+            <!-- Promotion Data Summary Card -->
+            <div class="bg-white border border-green-100 rounded-2xl p-4 shadow-sm">
+                <div class="flex items-center gap-2 mb-3">
+                    <i class="fas fa-chart-line text-green-600 text-xs"></i>
+                    <h3 class="text-xs font-bold text-gray-800">Promotion data overview</h3>
+                </div>
+                <div class="grid grid-cols-2 gap-y-3 gap-x-2 text-center pt-2 border-t border-gray-50">
+                    <div class="p-2 bg-green-50/40 rounded-xl">
+                        <span class="text-sm font-black text-green-700 block" id="promo-week">₹0</span>
+                        <span class="text-[10px] text-gray-500 font-medium">This Week</span>
+                    </div>
+                    <div class="p-2 bg-green-50/40 rounded-xl">
+                        <span class="text-sm font-black text-emerald-700 block" id="promo-total-comm">₹0</span>
+                        <span class="text-[10px] text-gray-500 font-medium">Total commission</span>
+                    </div>
+                    <div class="p-2 bg-green-50/40 rounded-xl">
+                        <span class="text-sm font-black text-gray-800 block" id="promo-direct-sub">0</span>
+                        <span class="text-[10px] text-gray-500 font-medium">Direct Subordinate</span>
+                    </div>
+                    <div class="p-2 bg-green-50/40 rounded-xl">
+                        <span class="text-sm font-black text-gray-800 block" id="promo-team-sub">0</span>
+                        <span class="text-[10px] text-gray-500 font-medium">Team subordinates</span>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Bottom Navigation Bar -->
+        <nav class="absolute bottom-0 w-full bg-white border-t border-gray-100 flex justify-between items-center px-6 pt-2 pb-5 z-40">
+            <button onclick="window.location.href='index.html'" class="flex flex-col items-center text-gray-400 group hover:text-green-600 transition-colors">
+                <i class="fas fa-home text-lg mb-1"></i>
+                <span class="text-[10px] font-medium">Home</span>
+            </button>
+            <button onclick="window.location.href='delivery.html'" class="flex flex-col items-center text-gray-400 group hover:text-green-600 transition-colors">
+                <i class="fas fa-box text-lg mb-1"></i>
+                <span class="text-[10px] font-medium">Delivery</span>
+            </button>
+            <div class="relative -top-6">
+                <button onclick="window.location.href='index.html'" class="w-14 h-14 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white border-4 border-white shadow-[0_5px_15px_rgba(74,222,128,0.4)]">
+                    <i class="fas fa-bicycle text-2xl"></i>
+                </button>
+            </div>
+            <button onclick="window.location.href='referral.html'" class="flex flex-col items-center text-green-600 group">
+                <i class="fas fa-users text-lg mb-1"></i>
+                <span class="text-[10px] font-medium">Promotion</span>
+            </button>
+            <button onclick="window.location.href='my.html'" class="flex flex-col items-center text-gray-400 group hover:text-green-600 transition-colors">
+                <i class="fas fa-user text-lg mb-1"></i>
+                <span class="text-[10px] font-medium">My</span>
+            </button>
+        </nav>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDZb4KcR5Tvw3x_ipR2ocgdUDqh47Arz6M",
+            authDomain: "anp-money.firebaseapp.com",
+            projectId: "anp-money",
+            storageBucket: "anp-money.firebasestorage.app",
+            messagingSenderId: "581687927989",
+            appId: "1:581687927989:web:41218431483f24a18b0afc"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let userReferralCode = "";
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                alert("Please log in to view your referral agency data.");
+                window.location.href = "ANP.HTML";
+                return;
+            }
+
+            try {
+                const userRef = doc(db, "users", user.uid);
+                const userSnap = await getDoc(userRef);
+
+                if (userSnap.exists()) {
+                    const data = userSnap.data();
+                    userReferralCode = data.referralCode || "ANP" + user.uid.substring(0, 6).toUpperCase();
+                    document.getElementById("display-ref-code").innerText = userReferralCode;
+
+                    const totalRebate = data.referralRebate || 0;
+                    document.getElementById("yesterday-commission").innerText = `₹${totalRebate.toLocaleString()}`;
+                    document.getElementById("promo-total-comm").innerText = `₹${totalRebate.toLocaleString()}`;
+                    document.getElementById("promo-week").innerText = `₹${totalRebate.toLocaleString()}`;
+
+                    // Fetch subordinates registered with this user's referral code
+                    const subQuery = query(collection(db, "users"), where("referredBy", "==", userReferralCode));
+                    const subSnap = await getDocs(subQuery);
+                    
+                    let directCount = subSnap.size;
+                    document.getElementById("direct-register").innerText = directCount;
+                    document.getElementById("team-register").innerText = directCount;
+                    document.getElementById("promo-direct-sub").innerText = directCount;
+                    document.getElementById("promo-team-sub").innerText = directCount;
+                }
+            } catch (e) {
+                console.error("Error fetching referral data:", e);
+            }
+        });
+
+        window.copyReferralCode = function() {
+            if (!userReferralCode) return;
+            navigator.clipboard.writeText(userReferralCode).then(() => {
+                alert("Referral code copied to clipboard: " + userReferralCode);
+            });
+        }
+
+        window.copyInvitationLink = function() {
+            if (!userReferralCode) return;
+            const inviteLink = window.location.origin + "/anpregister.html?ref=" + userReferralCode;
+            navigator.clipboard.writeText(inviteLink).then(() => {
+                alert("Invitation link copied to clipboard!\n\n" + inviteLink);
+            });
+        }
+    </script>
+</body>
+</html>
