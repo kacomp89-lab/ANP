@@ -57,31 +57,31 @@
         <!-- Header -->
         <header class="bg-wave-pattern pt-6 px-5 pb-8 text-white relative z-20">
             <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-white text-sm shadow-sm">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-full bg-white/25 flex items-center justify-center text-white text-sm shadow-sm backdrop-blur-md">
                         <i class="fas fa-users-crown"></i>
                     </div>
                     <h1 class="text-base font-black tracking-tight">Agency & Referral</h1>
                 </div>
-                <button onclick="window.location.href='index.html'" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white text-xs shadow-sm hover:bg-white/30 transition-all">
+                <button onclick="window.location.href='index.html'" class="w-8 h-8 rounded-full bg-white/25 flex items-center justify-center text-white text-xs shadow-sm backdrop-blur-md hover:bg-white/35 transition-all active:scale-95">
                     <i class="fas fa-home"></i>
                 </button>
             </div>
         </header>
 
         <!-- Main Content Area -->
-        <main class="flex-1 overflow-y-auto hide-scrollbar px-5 pt-4 pb-24 flex flex-col gap-5 bg-white rounded-t-[24px] -mt-4 relative z-10 shadow-[0_-4px_15px_rgba(0,0,0,0.05)]">
+        <main class="flex-1 overflow-y-auto hide-scrollbar px-5 pt-4 pb-24 flex flex-col gap-5 bg-white rounded-t-[28px] -mt-5 relative z-10 shadow-[0_-6px_20px_rgba(0,0,0,0.08)]">
             
-            <!-- Top Commission Card (Fixed cut-off & matched theme) -->
-            <div class="bg-gradient-to-br from-green-500 via-emerald-600 to-green-700 rounded-3xl p-6 text-white text-center shadow-lg relative overflow-hidden mt-2">
-                <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
-                <span class="text-3xl font-black tracking-tight block mb-1 drop-shadow" id="yesterday-commission">₹0.00</span>
+            <!-- Top Commission Card (Polished & Fully Visible) -->
+            <div class="bg-gradient-to-br from-green-500 via-emerald-600 to-green-700 rounded-3xl p-6 text-white text-center shadow-xl relative overflow-hidden mt-2 border border-green-400/30">
+                <div class="absolute -right-8 -bottom-8 w-36 h-36 bg-white/15 rounded-full blur-2xl pointer-events-none"></div>
+                <span class="text-3xl font-black tracking-tight block mb-1 drop-shadow-md" id="yesterday-commission">₹0.00</span>
                 <span class="text-[11px] font-bold text-green-100 uppercase tracking-widest block mb-2">Yesterday's Total Commission</span>
-                <p class="text-[10px] text-green-100 font-medium">Upgrade your partner level to increase commission income & rebates</p>
+                <p class="text-[10px] text-green-100 font-medium leading-relaxed">Upgrade your partner level to increase commission income & rebates</p>
             </div>
 
             <!-- Direct Subordinates vs Team Subordinates Stats Grid -->
-            <div class="bg-gradient-to-br from-green-50/60 to-emerald-50/40 border border-green-100 rounded-3xl p-4 shadow-sm">
+            <div class="bg-gradient-to-br from-green-50/70 to-emerald-50/40 border border-green-200/80 rounded-3xl p-4 shadow-sm">
                 <div class="grid grid-cols-2 divide-x divide-green-200 text-center">
                     <!-- Direct Subordinates -->
                     <div class="pr-3">
@@ -89,7 +89,7 @@
                         <div class="space-y-2.5 text-left">
                             <div>
                                 <span class="text-[10px] text-gray-500 block">Number of register</span>
-                                <span class="text-xs font-extrabold text-gray-800" id="direct-register">0</span>
+                                <span class="text-xs font-extrabold text-gray-900" id="direct-register">0</span>
                             </div>
                             <div>
                                 <span class="text-[10px] text-gray-500 block">Deposit number</span>
@@ -97,11 +97,11 @@
                             </div>
                             <div>
                                 <span class="text-[10px] text-gray-500 block">Deposit amount</span>
-                                <span class="text-xs font-extrabold text-gray-800" id="direct-deposit-amt">₹0</span>
+                                <span class="text-xs font-extrabold text-gray-900" id="direct-deposit-amt">₹0</span>
                             </div>
                             <div>
                                 <span class="text-[10px] text-gray-500 block">First deposit count</span>
-                                <span class="text-xs font-extrabold text-gray-800" id="direct-first-deposit">0</span>
+                                <span class="text-xs font-extrabold text-gray-900" id="direct-first-deposit">0</span>
                             </div>
                         </div>
                     </div>
@@ -111,7 +111,7 @@
                         <div class="space-y-2.5 text-left">
                             <div>
                                 <span class="text-[10px] text-gray-500 block">Number of register</span>
-                                <span class="text-xs font-extrabold text-gray-800" id="team-register">0</span>
+                                <span class="text-xs font-extrabold text-gray-900" id="team-register">0</span>
                             </div>
                             <div>
                                 <span class="text-[10px] text-gray-500 block">Deposit number</span>
@@ -119,11 +119,11 @@
                             </div>
                             <div>
                                 <span class="text-[10px] text-gray-500 block">Deposit amount</span>
-                                <span class="text-xs font-extrabold text-gray-800" id="team-deposit-amt">₹0</span>
+                                <span class="text-xs font-extrabold text-gray-900" id="team-deposit-amt">₹0</span>
                             </div>
                             <div>
                                 <span class="text-[10px] text-gray-500 block">First deposit count</span>
-                                <span class="text-xs font-extrabold text-gray-800" id="team-first-deposit">0</span>
+                                <span class="text-xs font-extrabold text-gray-900" id="team-first-deposit">0</span>
                             </div>
                         </div>
                     </div>
@@ -131,29 +131,29 @@
             </div>
 
             <!-- Big Invitation Link Button -->
-            <button onclick="copyInvitationLink()" class="w-full py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-2xl text-xs shadow-lg transition-all flex items-center justify-center gap-2">
+            <button onclick="copyInvitationLink()" class="w-full py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-2xl text-xs shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2">
                 <i class="fas fa-link"></i> INVITATION LINK
             </button>
 
             <!-- Copy Invitation Code Card -->
-            <div class="bg-gray-50 border border-green-100 rounded-2xl p-4 flex items-center justify-between shadow-sm">
+            <div class="bg-gray-50 border border-green-100 rounded-2xl p-4 flex items-center justify-between shadow-sm hover:border-green-300 transition-all">
                 <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-green-100 text-green-700 flex items-center justify-center text-sm shadow-sm">
+                    <div class="w-10 h-10 rounded-xl bg-green-100 text-green-700 flex items-center justify-center text-sm shadow-inner">
                         <i class="fas fa-id-badge"></i>
                     </div>
                     <div>
                         <span class="text-[10px] text-gray-500 block font-medium">Copy invitation code</span>
-                        <span class="text-xs font-bold text-gray-900 font-mono" id="display-ref-code">Loading...</span>
+                        <span class="text-xs font-extrabold text-gray-900 font-mono" id="display-ref-code">Loading...</span>
                     </div>
                 </div>
-                <button onclick="copyReferralCode()" class="px-3.5 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-xs font-bold shadow transition-all flex items-center gap-1.5">
+                <button onclick="copyReferralCode()" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl text-xs font-bold shadow-md transition-all active:scale-95 flex items-center gap-1.5">
                     <i class="far fa-copy"></i> Copy
                 </button>
             </div>
 
             <!-- Menu List Options -->
             <div class="bg-gray-50 border border-green-100 rounded-2xl overflow-hidden shadow-sm">
-                <div onclick="alert('Subordinate data details coming soon!')" class="flex items-center justify-between p-3.5 border-b border-gray-100 cursor-pointer hover:bg-green-50/50 transition-colors">
+                <div onclick="alert('Subordinate data details coming soon!')" class="flex items-center justify-between p-3.5 border-b border-gray-100 cursor-pointer hover:bg-green-50/80 transition-colors">
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-xs"><i class="fas fa-list-alt"></i></div>
                         <span class="text-xs font-bold text-gray-800">Subordinate data</span>
@@ -161,7 +161,7 @@
                     <i class="fas fa-chevron-right text-gray-400 text-xs"></i>
                 </div>
                 
-                <div onclick="alert('Commission details & rebate breakdown logs.')" class="flex items-center justify-between p-3.5 border-b border-gray-100 cursor-pointer hover:bg-green-50/50 transition-colors">
+                <div onclick="alert('Commission details & rebate breakdown logs.')" class="flex items-center justify-between p-3.5 border-b border-gray-100 cursor-pointer hover:bg-green-50/80 transition-colors">
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-xs"><i class="fas fa-dollar-sign"></i></div>
                         <span class="text-xs font-bold text-gray-800">Commission detail</span>
@@ -169,7 +169,7 @@
                     <i class="fas fa-chevron-right text-gray-400 text-xs"></i>
                 </div>
 
-                <div onclick="alert('Rule: Referrers receive a 10% cashback bonus upon the referred user\'s first VIP pack activation.')" class="flex items-center justify-between p-3.5 border-b border-gray-100 cursor-pointer hover:bg-green-50/50 transition-colors">
+                <div onclick="alert('Rule: Referrers receive a 10% cashback bonus upon the referred user\'s first VIP pack activation.')" class="flex items-center justify-between p-3.5 border-b border-gray-100 cursor-pointer hover:bg-green-50/80 transition-colors">
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-xs"><i class="fas fa-book-open"></i></div>
                         <span class="text-xs font-bold text-gray-800">Invitation rules</span>
@@ -177,7 +177,7 @@
                     <i class="fas fa-chevron-right text-gray-400 text-xs"></i>
                 </div>
 
-                <div onclick="window.location.href='map.html'" class="flex items-center justify-between p-3.5 border-b border-gray-100 cursor-pointer hover:bg-green-50/50 transition-colors">
+                <div onclick="window.location.href='map.html'" class="flex items-center justify-between p-3.5 border-b border-gray-100 cursor-pointer hover:bg-green-50/80 transition-colors">
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-xs"><i class="fas fa-headset"></i></div>
                         <span class="text-xs font-bold text-gray-800">Agent line customer service</span>
@@ -185,7 +185,7 @@
                     <i class="fas fa-chevron-right text-gray-400 text-xs"></i>
                 </div>
 
-                <div onclick="alert('Rebate ratio: 10% instant cashback on referee VIP pack activations.')" class="flex items-center justify-between p-3.5 cursor-pointer hover:bg-green-50/50 transition-colors">
+                <div onclick="alert('Rebate ratio: 10% instant cashback on referee VIP pack activations.')" class="flex items-center justify-between p-3.5 cursor-pointer hover:bg-green-50/80 transition-colors">
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-xs"><i class="fas fa-percentage"></i></div>
                         <span class="text-xs font-bold text-gray-800">Rebate ratio</span>
@@ -201,20 +201,20 @@
                     <h3 class="text-xs font-bold text-gray-800">Promotion data overview</h3>
                 </div>
                 <div class="grid grid-cols-2 gap-y-3 gap-x-2 text-center pt-2 border-t border-gray-100">
-                    <div class="p-2.5 bg-white rounded-xl border border-gray-100 shadow-sm">
+                    <div class="p-3 bg-white rounded-xl border border-gray-200/60 shadow-sm">
                         <span class="text-sm font-black text-green-700 block" id="promo-week">₹0</span>
                         <span class="text-[10px] text-gray-500 font-medium">This Week</span>
                     </div>
-                    <div class="p-2.5 bg-white rounded-xl border border-gray-100 shadow-sm">
+                    <div class="p-3 bg-white rounded-xl border border-gray-200/60 shadow-sm">
                         <span class="text-sm font-black text-emerald-700 block" id="promo-total-comm">₹0</span>
                         <span class="text-[10px] text-gray-500 font-medium">Total commission</span>
                     </div>
-                    <div class="p-2.5 bg-white rounded-xl border border-gray-100 shadow-sm">
-                        <span class="text-sm font-black text-gray-800 block" id="promo-direct-sub">0</span>
+                    <div class="p-3 bg-white rounded-xl border border-gray-200/60 shadow-sm">
+                        <span class="text-sm font-black text-gray-900 block" id="promo-direct-sub">0</span>
                         <span class="text-[10px] text-gray-500 font-medium">Direct Subordinate</span>
                     </div>
-                    <div class="p-2.5 bg-white rounded-xl border border-gray-100 shadow-sm">
-                        <span class="text-sm font-black text-gray-800 block" id="promo-team-sub">0</span>
+                    <div class="p-3 bg-white rounded-xl border border-gray-200/60 shadow-sm">
+                        <span class="text-sm font-black text-gray-900 block" id="promo-team-sub">0</span>
                         <span class="text-[10px] text-gray-500 font-medium">Team subordinates</span>
                     </div>
                 </div>
@@ -223,7 +223,7 @@
         </main>
 
         <!-- Bottom Navigation Bar -->
-        <nav class="absolute bottom-0 w-full bg-white border-t border-gray-100 flex justify-between items-center px-6 pt-2 pb-5 z-40">
+        <nav class="absolute bottom-0 w-full bg-white border-t border-gray-100 flex justify-between items-center px-6 pt-2 pb-5 z-40 shadow-lg">
             <button onclick="window.location.href='index.html'" class="flex flex-col items-center text-gray-400 group hover:text-green-600 transition-colors">
                 <i class="fas fa-home text-lg mb-1"></i>
                 <span class="text-[10px] font-medium">Home</span>
@@ -233,7 +233,7 @@
                 <span class="text-[10px] font-medium">Delivery</span>
             </button>
             <div class="relative -top-6">
-                <button onclick="window.location.href='index.html'" class="w-14 h-14 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white border-4 border-white shadow-[0_5px_15px_rgba(74,222,128,0.4)]">
+                <button onclick="window.location.href='index.html'" class="w-14 h-14 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white border-4 border-white shadow-[0_5px_15px_rgba(74,222,128,0.4)] active:scale-95 transition-transform">
                     <i class="fas fa-bicycle text-2xl"></i>
                 </button>
             </div>
