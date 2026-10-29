@@ -48,7 +48,6 @@
             }
         }
 
-        /* High-Budget Message Entrance Animation */
         @keyframes messageSlideUp {
             0% { opacity: 0; transform: translateY(20px) scale(0.92); }
             100% { opacity: 1; transform: translateY(0) scale(1); }
@@ -57,37 +56,24 @@
             animation: messageSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        /* Pulsing Glow Animation for Agent Avatar */
         @keyframes pulseGlow {
             0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
             50% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
         }
-        .agent-glow {
-            animation: pulseGlow 2s infinite ease-in-out;
-        }
-
-        /* Typing Indicator Bounce */
-        @keyframes bounceDot {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-6px); }
-        }
-        .typing-dot-1 { animation: bounceDot 1.4s infinite ease-in-out; }
-        .typing-dot-2 { animation: bounceDot 1.4s infinite ease-in-out 0.2s; }
-        .typing-dot-3 { animation: bounceDot 1.4s infinite ease-in-out 0.4s; }
+        .agent-glow { animation: pulseGlow 2s infinite ease-in-out; }
     </style>
 </head>
 <body>
 
     <div class="app-container">
         
-        <!-- 1. Chat Header -->
+        <!-- Chat Header -->
         <header class="bg-wave-pattern pt-5 px-5 pb-4 text-white flex items-center justify-between shadow-md z-20 flex-shrink-0">
             <div class="flex items-center gap-3">
                 <div class="relative">
                     <div class="w-10 h-10 rounded-full bg-white/25 flex items-center justify-center text-white text-base shadow-sm backdrop-blur-md agent-glow">
                         <i class="fas fa-headset"></i>
                     </div>
-                    <!-- Online Pulse Dot -->
                     <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-green-700 rounded-full animate-pulse"></span>
                 </div>
                 <div>
@@ -102,15 +88,13 @@
             </button>
         </header>
 
-        <!-- 2. Chat Messages Area (Flex-1 fills available space and scrolls internally) -->
+        <!-- Chat Messages Area -->
         <main id="chat-messages" class="flex-1 overflow-y-auto p-4 flex flex-col gap-3.5 bg-slate-50/80 hide-scrollbar">
-            
-            <!-- Timestamp -->
             <div class="text-center my-1">
                 <span class="text-[9px] text-gray-400 bg-gray-200/60 px-3 py-1 rounded-full font-medium shadow-sm">Today, Live Support Active</span>
             </div>
 
-            <!-- Agent Welcome Message -->
+            <!-- Welcome Message -->
             <div class="flex items-start gap-2.5 max-w-[85%] animate-msg">
                 <div class="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 text-white flex items-center justify-center text-xs shadow-md flex-shrink-0">
                     <i class="fas fa-robot"></i>
@@ -119,36 +103,22 @@
                     <p class="font-bold text-green-700 mb-0.5 flex items-center gap-1">
                         ANP Support Agent <i class="fas fa-check-circle text-[10px] text-sky-500"></i>
                     </p>
-                    Hello Partner! 👋 Welcome to ANP Green Ride live support. How can we help you today with your VIP packs, deposits, or withdrawals?
-                    <span class="text-[9px] text-gray-400 block mt-1 text-right">Just now</span>
+                    Hello Partner! 👋 Send your message here, and our live admin team will receive it instantly.
                 </div>
             </div>
-
         </main>
 
-        <!-- 3. Typing Indicator (Appears right above input bar when active) -->
-        <div id="typing-indicator" class="hidden px-4 py-2 bg-slate-50 flex items-center gap-2 flex-shrink-0 animate-msg border-t border-gray-100">
-            <div class="w-6 h-6 rounded-full bg-green-600 text-white flex items-center justify-center text-[10px] shadow-sm">
-                <i class="fas fa-robot"></i>
-            </div>
-            <div class="bg-white border border-gray-100 rounded-2xl px-3 py-1.5 shadow-sm flex items-center gap-1.5">
-                <div class="w-1.5 h-1.5 bg-green-500 rounded-full typing-dot-1"></div>
-                <div class="w-1.5 h-1.5 bg-green-500 rounded-full typing-dot-2"></div>
-                <div class="w-1.5 h-1.5 bg-green-500 rounded-full typing-dot-3"></div>
-            </div>
-        </div>
-
-        <!-- 4. Chat Input Bar (Flex-shrink-0, sits cleanly between messages and bottom navigation) -->
+        <!-- Chat Input Bar -->
         <div class="bg-white border-t border-gray-200/80 px-4 py-3 flex-shrink-0 shadow-[0_-4px_15px_rgba(0,0,0,0.05)]">
             <div class="flex items-center gap-2.5">
-                <input type="text" id="chat-input" onkeypress="handleKeyPress(event)" placeholder="Type your message here..." class="flex-1 bg-gray-100 border border-gray-200 rounded-2xl px-4 py-3 text-xs text-gray-800 outline-none focus:border-green-500 focus:bg-white focus:ring-2 focus:ring-green-400/20 transition-all shadow-inner">
+                <input type="text" id="chat-input" onkeypress="handleKeyPress(event)" placeholder="Type your message to admin..." class="flex-1 bg-gray-100 border border-gray-200 rounded-2xl px-4 py-3 text-xs text-gray-800 outline-none focus:border-green-500 focus:bg-white focus:ring-2 focus:ring-green-400/20 transition-all shadow-inner">
                 <button onclick="sendMessage()" class="w-11 h-11 bg-gradient-to-br from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-2xl flex items-center justify-center shadow-lg transition-all active:scale-95 flex-shrink-0">
                     <i class="fas fa-paper-plane text-xs"></i>
                 </button>
             </div>
         </div>
 
-        <!-- 5. Bottom Navigation Bar (Flex-shrink-0, sits at the absolute bottom of flex container) -->
+        <!-- Bottom Navigation Bar -->
         <nav class="w-full bg-white border-t border-gray-100 flex justify-between items-center px-6 pt-2 pb-5 flex-shrink-0 shadow-2xl z-40">
             <button onclick="window.location.href='index.html'" class="flex flex-col items-center text-gray-400 group hover:text-green-600 transition-colors">
                 <i class="fas fa-home text-lg mb-1"></i>
@@ -163,7 +133,6 @@
                     <i class="fas fa-bicycle text-2xl"></i>
                 </button>
             </div>
-            <!-- Map tab linked to map.html -->
             <button onclick="window.location.href='map.html'" class="flex flex-col items-center text-green-600 group">
                 <i class="fas fa-map-marked-alt text-lg mb-1"></i>
                 <span class="text-[10px] font-medium">Map</span>
@@ -175,84 +144,106 @@
         </nav>
     </div>
 
-    <script>
-        const chatMessages = document.getElementById("chat-messages");
-        const chatInput = document.getElementById("chat-input");
-        const typingIndicator = document.getElementById("typing-indicator");
+    <!-- Firebase Script Integration -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, where, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
-        function getCurrentTime() {
-            const now = new Date();
-            return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const firebaseConfig = {
+            apiKey: "AIzaSyDZb4KcR5Tvw3x_ipR2ocgdUDqh47Arz6M",
+            authDomain: "anp-money.firebaseapp.com",
+            projectId: "anp-money",
+            storageBucket: "anp-money.firebasestorage.app",
+            messagingSenderId: "581687927989",
+            appId: "1:581687927989:web:41218431483f24a18b0afc"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        const chatMessages = document.getElementById("chat-messages");
+
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                alert("Please log in to use live support chat.");
+                window.location.href = "ANP.HTML";
+                return;
+            }
+            currentUser = user;
+            loadUserMessages(user.uid);
+        });
+
+        function loadUserMessages(uid) {
+            const q = query(collection(db, "support_chats"), where("uid", "==", uid), orderBy("createdAt", "asc"));
+            
+            onSnapshot(q, (snapshot) => {
+                // Keep the welcome message, clear the rest and render real database messages
+                const welcomeHTML = chatMessages.firstElementChild.outerHTML + chatMessages.children[1].outerHTML;
+                chatMessages.innerHTML = welcomeHTML;
+
+                snapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    const timeStr = new Date(data.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                    if (data.sender === 'user') {
+                        const userMsgHTML = `
+                            <div class="flex items-end justify-end gap-2.5 max-w-[85%] ml-auto animate-msg">
+                                <div class="bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-2xl rounded-tr-sm p-3.5 shadow-md text-xs leading-relaxed">
+                                    ${escapeHtml(data.message)}
+                                    <span class="text-[9px] text-green-200 block mt-1 text-right">${timeStr}</span>
+                                </div>
+                                <div class="w-8 h-8 rounded-full bg-gray-800 text-white flex items-center justify-center text-xs shadow-md flex-shrink-0">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                            </div>
+                        `;
+                        chatMessages.insertAdjacentHTML('beforeend', userMsgHTML);
+                    } else {
+                        const adminMsgHTML = `
+                            <div class="flex items-start gap-2.5 max-w-[85%] animate-msg">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 text-white flex items-center justify-center text-xs shadow-md flex-shrink-0">
+                                    <i class="fas fa-user-shield"></i>
+                                </div>
+                                <div class="bg-white border border-gray-100 rounded-2xl rounded-tl-sm p-3.5 text-gray-800 shadow-sm text-xs leading-relaxed">
+                                    <p class="font-bold text-green-700 mb-0.5">ANP Support Admin</p>
+                                    ${escapeHtml(data.message)}
+                                    <span class="text-[9px] text-gray-400 block mt-1 text-right">${timeStr}</span>
+                                </div>
+                            </div>
+                        `;
+                        chatMessages.insertAdjacentHTML('beforeend', adminMsgHTML);
+                    }
+                });
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            });
         }
 
-        function handleKeyPress(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
+        window.sendMessage = async function() {
+            const chatInput = document.getElementById("chat-input");
+            const text = chatInput.value.trim();
+            if (!text || !currentUser) return;
+
+            try {
+                await addDoc(collection(db, "support_chats"), {
+                    uid: currentUser.uid,
+                    email: currentUser.email,
+                    message: text,
+                    sender: "user",
+                    createdAt: new Date().toISOString()
+                });
+                chatInput.value = "";
+            } catch (e) {
+                alert("Error sending message: " + e.message);
             }
         }
 
-        function scrollToBottom() {
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        function sendMessage() {
-            const text = chatInput.value.trim();
-            if (!text) return;
-
-            // 1. Append User Message with animation
-            const userMsgHTML = `
-                <div class="flex items-end justify-end gap-2.5 max-w-[85%] ml-auto animate-msg">
-                    <div class="bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-2xl rounded-tr-sm p-3.5 shadow-md text-xs leading-relaxed">
-                        ${escapeHtml(text)}
-                        <span class="text-[9px] text-green-200 block mt-1 text-right">${getCurrentTime()}</span>
-                    </div>
-                    <div class="w-8 h-8 rounded-full bg-gray-800 text-white flex items-center justify-center text-xs shadow-md flex-shrink-0">
-                        <i class="fas fa-user"></i>
-                    </div>
-                </div>
-            `;
-            chatMessages.insertAdjacentHTML('beforeend', userMsgHTML);
-            chatInput.value = "";
-            scrollToBottom();
-
-            // 2. Show Typing Indicator after 500ms
-            setTimeout(() => {
-                typingIndicator.classList.remove("hidden");
-                scrollToBottom();
-            }, 500);
-
-            // 3. Simulate Smart Agent Reply after 2 seconds with smooth entrance animation
-            setTimeout(() => {
-                typingIndicator.classList.add("hidden");
-                
-                let replyText = "Thank you for reaching out! Our support team has received your query and will resolve it shortly.";
-                const lower = text.toLowerCase();
-                
-                if (lower.includes('deposit') || lower.includes('utr') || lower.includes('recharge')) {
-                    replyText = "For deposit verification, please ensure you have submitted your correct 12-digit UTR number. Deposits are verified by our admin team within 5-10 minutes!";
-                } else if (lower.includes('withdraw') || lower.includes('money') || lower.includes('bank')) {
-                    replyText = "Withdrawals are processed securely up to ₹200 per request (max 3 times a day). Please make sure your bank account and IFSC code are correct.";
-                } else if (lower.includes('earn') || lower.includes('vip') || lower.includes('monday') || lower.includes('tuesday')) {
-                    replyText = "Remember that daily earnings run every day except Mondays and Tuesdays! Your earnings catch up automatically when you open your dashboard.";
-                }
-
-                const agentMsgHTML = `
-                    <div class="flex items-start gap-2.5 max-w-[85%] animate-msg">
-                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 text-white flex items-center justify-center text-xs shadow-md flex-shrink-0">
-                            <i class="fas fa-robot"></i>
-                        </div>
-                        <div class="bg-white border border-gray-100 rounded-2xl rounded-tl-sm p-3.5 text-gray-800 shadow-sm text-xs leading-relaxed">
-                            <p class="font-bold text-green-700 mb-0.5 flex items-center gap-1">
-                                ANP Support Agent <i class="fas fa-check-circle text-[10px] text-sky-500"></i>
-                            </p>
-                            ${replyText}
-                            <span class="text-[9px] text-gray-400 block mt-1 text-right">${getCurrentTime()}</span>
-                        </div>
-                    </div>
-                `;
-                chatMessages.insertAdjacentHTML('beforeend', agentMsgHTML);
-                scrollToBottom();
-            }, 2200);
+        window.handleKeyPress = function(e) {
+            if (e.key === 'Enter') {
+                window.sendMessage();
+            }
         }
 
         function escapeHtml(string) {
