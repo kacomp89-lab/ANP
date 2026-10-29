@@ -13,6 +13,14 @@
         body { font-family: 'Inter', sans-serif; background: #0b1a10; color: white; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        @keyframes scaleUpModal {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-modal-pop {
+            animation: scaleUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
     </style>
 </head>
 <body class="min-h-screen p-6 flex flex-col justify-between">
@@ -114,7 +122,7 @@
                         <!-- Admin Reply Input -->
                         <div class="pt-2.5 flex gap-2 mt-auto border-t border-green-900/50">
                             <input type="text" id="admin-reply-input" onkeypress="handleAdminKeyPress(event)" placeholder="Type reply as admin..." class="flex-1 bg-black/70 border border-green-800 rounded-xl px-3 py-2.5 text-xs text-white outline-none focus:border-green-400">
-                            <button onclick="sendAdminReply()" class="px-5 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl text-xs shadow transition-all">
+                            <button onclick="sendAdminReply()" class="px-5 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl text-xs shadow transition-all active:scale-95">
                                 Send
                             </button>
                         </div>
@@ -124,6 +132,29 @@
 
         </div>
 
+    </div>
+
+    <!-- CUSTOM HIGH-GUI MODAL SYSTEM -->
+    <div id="anp-custom-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-gray-900 border border-green-500/40 rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl animate-modal-pop relative overflow-hidden">
+            <div class="absolute -top-10 -right-10 w-28 h-28 bg-green-500/15 rounded-full blur-xl pointer-events-none"></div>
+            
+            <div id="modal-icon-container" class="w-14 h-14 bg-green-500/20 border border-green-500/50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-green-400 text-xl shadow-[0_8px_20px_rgba(34,197,94,0.3)]">
+                <i id="modal-icon" class="fas fa-check"></i>
+            </div>
+            
+            <h3 id="modal-title" class="text-base font-black text-white mb-1.5">Notice</h3>
+            <p id="modal-text" class="text-xs text-gray-300 mb-5 leading-relaxed">Message goes here.</p>
+            
+            <!-- Optional Input for Prompt -->
+            <div id="modal-input-container" class="mb-5 hidden">
+                <input type="text" id="modal-prompt-input" class="w-full bg-black/60 border border-green-800 rounded-xl px-4 py-3 text-xs text-white outline-none focus:border-green-400" placeholder="Enter details...">
+            </div>
+
+            <div id="modal-buttons" class="flex gap-2.5">
+                <!-- Buttons injected dynamically -->
+            </div>
+        </div>
     </div>
 
     <footer class="text-center text-[10px] text-gray-600 mt-8">
@@ -152,8 +183,107 @@
 
         let activeChatUid = null;
         let activeChatEmail = "";
-        let chatUnsubscribe = null;
 
+        // ==================== CUSTOM MODAL HELPERS ====================
+        window.showAnpAlert = function(title, message, isSuccess = true) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById("anp-custom-modal");
+                document.getElementById("modal-title").innerText = title;
+                document.getElementById("modal-text").innerText = message;
+                document.getElementById("modal-input-container").classList.add("hidden");
+
+                const iconBox = document.getElementById("modal-icon-container");
+                const iconEl = document.getElementById("modal-icon");
+
+                if (isSuccess) {
+                    iconBox.className = "w-14 h-14 bg-green-500/20 border border-green-500/50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-green-400 text-xl shadow-[0_8px_20px_rgba(34,197,94,0.3)]";
+                    iconEl.className = "fas fa-check";
+                } else {
+                    iconBox.className = "w-14 h-14 bg-red-500/20 border border-red-500/50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-red-400 text-xl shadow-[0_8px_20px_rgba(239,68,68,0.3)]";
+                    iconEl.className = "fas fa-exclamation-triangle";
+                }
+
+                const btnContainer = document.getElementById("modal-buttons");
+                btnContainer.innerHTML = `
+                    <button id="modal-ok-btn" class="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl text-xs shadow-lg transition-all active:scale-95">
+                        Okay
+                    </button>
+                `;
+
+                modal.classList.remove("hidden");
+                document.getElementById("modal-ok-btn").onclick = () => {
+                    modal.classList.add("hidden");
+                    resolve(true);
+                };
+            });
+        };
+
+        window.showAnpConfirm = function(title, message) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById("anp-custom-modal");
+                document.getElementById("modal-title").innerText = title;
+                document.getElementById("modal-text").innerText = message;
+                document.getElementById("modal-input-container").classList.add("hidden");
+
+                const iconBox = document.getElementById("modal-icon-container");
+                iconBox.className = "w-14 h-14 bg-amber-500/20 border border-amber-500/50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-amber-400 text-xl shadow-[0_8px_20px_rgba(245,158,11,0.3)]";
+                document.getElementById("modal-icon").className = "fas fa-question-circle";
+
+                const btnContainer = document.getElementById("modal-buttons");
+                btnContainer.innerHTML = `
+                    <button id="modal-cancel-btn" class="flex-1 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all active:scale-95">Cancel</button>
+                    <button id="modal-confirm-btn" class="flex-1 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl text-xs shadow-lg transition-all active:scale-95">Proceed</button>
+                `;
+
+                modal.classList.remove("hidden");
+                document.getElementById("modal-cancel-btn").onclick = () => {
+                    modal.classList.add("hidden");
+                    resolve(false);
+                };
+                document.getElementById("modal-confirm-btn").onclick = () => {
+                    modal.classList.add("hidden");
+                    resolve(true);
+                };
+            });
+        };
+
+        window.showAnpPrompt = function(title, message, defaultValue = "") {
+            return new Promise((resolve) => {
+                const modal = document.getElementById("anp-custom-modal");
+                document.getElementById("modal-title").innerText = title;
+                document.getElementById("modal-text").innerText = message;
+                
+                const inputContainer = document.getElementById("modal-input-container");
+                inputContainer.classList.remove("hidden");
+                const promptInput = document.getElementById("modal-prompt-input");
+                promptInput.value = defaultValue;
+
+                const iconBox = document.getElementById("modal-icon-container");
+                iconBox.className = "w-14 h-14 bg-blue-500/20 border border-blue-500/50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-blue-400 text-xl shadow-[0_8px_20px_rgba(59,130,246,0.3)]";
+                document.getElementById("modal-icon").className = "fas fa-edit";
+
+                const btnContainer = document.getElementById("modal-buttons");
+                btnContainer.innerHTML = `
+                    <button id="modal-cancel-btn" class="flex-1 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all active:scale-95">Cancel</button>
+                    <button id="modal-submit-btn" class="flex-1 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl text-xs shadow-lg transition-all active:scale-95">Submit</button>
+                `;
+
+                modal.classList.remove("hidden");
+                promptInput.focus();
+
+                document.getElementById("modal-cancel-btn").onclick = () => {
+                    modal.classList.add("hidden");
+                    resolve(null);
+                };
+                document.getElementById("modal-submit-btn").onclick = () => {
+                    const val = promptInput.value.trim();
+                    modal.classList.add("hidden");
+                    resolve(val);
+                };
+            });
+        };
+
+        // ==================== INITIALIZATION & PIN GATE ====================
         window.addEventListener('DOMContentLoaded', () => {
             const isUnlocked = localStorage.getItem("anp_admin_unlocked");
             if (isUnlocked === "true") {
@@ -268,7 +398,6 @@
                     usersListDiv.appendChild(btn);
                 }
 
-                // If an active chat is open, refresh its messages live
                 if (activeChatUid && usersMap[activeChatUid]) {
                     selectUserChat(activeChatUid, activeChatEmail, usersMap[activeChatUid].messages);
                 }
@@ -310,7 +439,7 @@
             const input = document.getElementById("admin-reply-input");
             const text = input.value.trim();
             if (!text || !activeChatUid) {
-                alert("Please select a user conversation from the left sidebar first.");
+                showAnpAlert("Notice", "Please select a user conversation from the left sidebar first.", false);
                 return;
             }
 
@@ -324,7 +453,7 @@
                 });
                 input.value = "";
             } catch (e) {
-                alert("Error sending reply: " + e.message);
+                showAnpAlert("Error", "Error sending reply: " + e.message, false);
             }
         }
 
@@ -372,10 +501,10 @@
                                 <p class="text-[10px] text-gray-500 mt-1">${dateStr}</p>
                             </div>
                             <div class="flex flex-col gap-2 w-full sm:w-auto">
-                                <button onclick="approveDeposit('${depositId}', '${deposit.uid}', ${deposit.amount})" class="px-5 py-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl text-xs shadow-lg transition-all">
+                                <button onclick="approveDeposit('${depositId}', '${deposit.uid}', ${deposit.amount})" class="px-5 py-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl text-xs shadow-lg transition-all active:scale-95">
                                     <i class="fas fa-check mr-1"></i> Verify & Activate
                                 </button>
-                                <button onclick="rejectDeposit('${depositId}')" class="px-5 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs shadow transition-all">
+                                <button onclick="rejectDeposit('${depositId}')" class="px-5 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs shadow transition-all active:scale-95">
                                     <i class="fas fa-trash mr-1"></i> Delete Request
                                 </button>
                             </div>
@@ -430,15 +559,15 @@
                             </div>
                             <div class="flex flex-col gap-2 w-full sm:w-auto">
                                 ${!isVerified ? `
-                                    <button onclick="verifyWithdrawal('${wdrId}')" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs shadow transition-all">
+                                    <button onclick="verifyWithdrawal('${wdrId}')" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs shadow transition-all active:scale-95">
                                         <i class="fas fa-check mr-1"></i> Verify Details
                                     </button>
                                 ` : `
-                                    <button onclick="payWithdrawal('${wdrId}', '${wdr.uid}', ${wdr.amount})" class="px-5 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl text-xs shadow-lg transition-all">
+                                    <button onclick="payWithdrawal('${wdrId}', '${wdr.uid}', ${wdr.amount})" class="px-5 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl text-xs shadow-lg transition-all active:scale-95">
                                         <i class="fas fa-rupee-sign mr-1"></i> Paid Money
                                     </button>
                                 `}
-                                <button onclick="rejectWithdrawal('${wdrId}')" class="px-5 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs shadow transition-all">
+                                <button onclick="rejectWithdrawal('${wdrId}')" class="px-5 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs shadow transition-all active:scale-95">
                                     <i class="fas fa-trash mr-1"></i> Delete Request
                                 </button>
                             </div>
@@ -454,7 +583,7 @@
         }
 
         window.rejectDeposit = async function(depositId) {
-            const note = prompt("Enter a reason/note for rejecting this deposit (will be shown to user):", "False UTR provided or payment not received.");
+            const note = await showAnpPrompt("Reject Deposit", "Enter a reason/note for rejecting this deposit (will be shown to user):", "False UTR provided or payment not received.");
             if (note === null) return;
 
             try {
@@ -462,15 +591,15 @@
                     status: "rejected",
                     adminNote: note || "Request rejected by admin."
                 });
-                alert("Deposit request deleted/rejected.");
+                await showAnpAlert("Success", "Deposit request rejected successfully.", true);
                 loadPendingDeposits();
             } catch (error) {
-                alert("Error rejecting deposit: " + error.message);
+                await showAnpAlert("Error", "Error rejecting deposit: " + error.message, false);
             }
         }
 
         window.rejectWithdrawal = async function(wdrId) {
-            const note = prompt("Enter a reason/note for rejecting this withdrawal (will be shown to user):", "Invalid bank details or limit exceeded.");
+            const note = await showAnpPrompt("Reject Withdrawal", "Enter a reason/note for rejecting this withdrawal (will be shown to user):", "Invalid bank details or limit exceeded.");
             if (note === null) return;
 
             try {
@@ -478,10 +607,10 @@
                     status: "rejected",
                     adminNote: note || "Withdrawal rejected by admin."
                 });
-                alert("Withdrawal request deleted/rejected.");
+                await showAnpAlert("Success", "Withdrawal request rejected successfully.", true);
                 loadWithdrawalRequests();
             } catch (error) {
-                alert("Error rejecting withdrawal: " + error.message);
+                await showAnpAlert("Error", "Error rejecting withdrawal: " + error.message, false);
             }
         }
 
@@ -490,17 +619,16 @@
                 await updateDoc(doc(db, "withdrawals", wdrId), {
                     status: "verified"
                 });
-                alert("Withdrawal details verified!");
+                await showAnpAlert("Verified", "Withdrawal details verified successfully!", true);
                 loadWithdrawalRequests();
             } catch (error) {
-                alert("Error verifying withdrawal: " + error.message);
+                await showAnpAlert("Error", "Error verifying withdrawal: " + error.message, false);
             }
         }
 
         window.payWithdrawal = async function(wdrId, userId, amount) {
-            if (!confirm(`Mark payout of ₹${amount} as Paid?\n\nThis will deduct the amount from user balance and record it in their transaction history.`)) {
-                return;
-            }
+            const confirmed = await showAnpConfirm("Confirm Payout", `Mark payout of ₹${amount} as Paid?\n\nThis will deduct the amount from user balance and record it in their transaction history.`);
+            if (!confirmed) return;
 
             try {
                 await updateDoc(doc(db, "users", userId), {
@@ -512,10 +640,10 @@
                     paidAt: new Date().toISOString()
                 });
 
-                alert("Payout successful! Recorded in user history.");
+                await showAnpAlert("Success", "Payout successful! Recorded in user history.", true);
                 loadWithdrawalRequests();
             } catch (error) {
-                alert("Error paying withdrawal: " + error.message);
+                await showAnpAlert("Error", "Error paying withdrawal: " + error.message, false);
             }
         }
 
@@ -537,9 +665,8 @@
                 dailyReward = 50;
             }
 
-            if (!confirm(`Verify payment of ₹${depositAmount}?\n\nThis will activate partner tier [${vipLevel}], credit daily reward of ₹${dailyReward}, and process any referral cashback.`)) {
-                return;
-            }
+            const confirmed = await showAnpConfirm("Verify Deposit", `Verify payment of ₹${depositAmount}?\n\nThis will activate partner tier [${vipLevel}], credit daily reward of ₹${dailyReward}, and process referral cashback.`);
+            if (!confirmed) return;
 
             try {
                 const userRef = doc(db, "users", userId);
@@ -577,10 +704,10 @@
                     rewardCredited: dailyReward
                 });
 
-                alert(`Successfully activated ${vipLevel}!`);
+                await showAnpAlert("Success", `Successfully activated ${vipLevel}!`, true);
                 loadPendingDeposits();
             } catch (error) {
-                alert("Error approving payment: " + error.message);
+                await showAnpAlert("Error", "Error approving payment: " + error.message, false);
             }
         };
     </script>
