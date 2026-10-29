@@ -148,7 +148,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, where, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDZb4KcR5Tvw3x_ipR2ocgdUDqh47Arz6M",
@@ -177,15 +177,37 @@
         });
 
         function loadUserMessages(uid) {
-            const q = query(collection(db, "support_chats"), where("uid", "==", uid), orderBy("createdAt", "asc"));
+            // Query without orderBy to avoid needing Firestore compound indexes
+            const q = query(collection(db, "support_chats"), where("uid", "==", uid));
             
             onSnapshot(q, (snapshot) => {
-                // Keep the welcome message, clear the rest and render real database messages
-                const welcomeHTML = chatMessages.firstElementChild.outerHTML + chatMessages.children[1].outerHTML;
-                chatMessages.innerHTML = welcomeHTML;
+                // Reset chat container with static header & welcome message
+                chatMessages.innerHTML = `
+                    <div class="text-center my-1">
+                        <span class="text-[9px] text-gray-400 bg-gray-200/60 px-3 py-1 rounded-full font-medium shadow-sm">Today, Live Support Active</span>
+                    </div>
+                    <div class="flex items-start gap-2.5 max-w-[85%] animate-msg">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 text-white flex items-center justify-center text-xs shadow-md flex-shrink-0">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="bg-white border border-gray-100 rounded-2xl rounded-tl-sm p-3.5 text-gray-800 shadow-sm text-xs leading-relaxed">
+                            <p class="font-bold text-green-700 mb-0.5 flex items-center gap-1">
+                                ANP Support Agent <i class="fas fa-check-circle text-[10px] text-sky-500"></i>
+                            </p>
+                            Hello Partner! 👋 Send your message here, and our live admin team will receive it instantly.
+                        </div>
+                    </div>
+                `;
 
+                // Gather docs and sort them locally in JavaScript by creation timestamp
+                let messages = [];
                 snapshot.forEach((docSnap) => {
-                    const data = docSnap.data();
+                    messages.push(docSnap.data());
+                });
+                messages.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+                // Render sorted messages
+                messages.forEach((data) => {
                     const timeStr = new Date(data.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
                     if (data.sender === 'user') {
@@ -218,6 +240,8 @@
                     }
                 });
                 chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, (error) => {
+                console.error("Chat sync error: ", error);
             });
         }
 
