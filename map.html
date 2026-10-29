@@ -49,13 +49,22 @@
             }
         }
 
-        /* Message Entrance Animation */
+        /* High-Budget Message Entrance Animation */
         @keyframes messageSlideUp {
-            0% { opacity: 0; transform: translateY(15px) scale(0.95); }
+            0% { opacity: 0; transform: translateY(20px) scale(0.92); }
             100% { opacity: 1; transform: translateY(0) scale(1); }
         }
         .animate-msg {
-            animation: messageSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: messageSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* Pulsing Glow Animation for Agent Avatar */
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+        }
+        .agent-glow {
+            animation: pulseGlow 2s infinite ease-in-out;
         }
 
         /* Typing Indicator Bounce */
@@ -76,7 +85,7 @@
         <header class="bg-wave-pattern pt-5 px-5 pb-4 text-white flex items-center justify-between shadow-md z-20 flex-shrink-0">
             <div class="flex items-center gap-3">
                 <div class="relative">
-                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white text-base shadow-sm backdrop-blur-md">
+                    <div class="w-10 h-10 rounded-full bg-white/25 flex items-center justify-center text-white text-base shadow-sm backdrop-blur-md agent-glow">
                         <i class="fas fa-headset"></i>
                     </div>
                     <!-- Online Pulse Dot -->
@@ -89,26 +98,28 @@
                     </span>
                 </div>
             </div>
-            <button onclick="window.location.href='index.html'" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white text-xs hover:bg-white/30 transition-all backdrop-blur-md">
+            <button onclick="window.location.href='index.html'" class="w-8 h-8 rounded-full bg-white/25 flex items-center justify-center text-white text-xs hover:bg-white/35 transition-all backdrop-blur-md active:scale-95">
                 <i class="fas fa-home"></i>
             </button>
         </header>
 
-        <!-- Chat Messages Area (Takes remaining space and scrolls) -->
-        <main id="chat-messages" class="flex-1 overflow-y-auto p-4 flex flex-col gap-3.5 bg-slate-50/80 hide-scrollbar mb-[125px]">
+        <!-- Chat Messages Area (With bottom padding so messages are never hidden behind input) -->
+        <main id="chat-messages" class="flex-1 overflow-y-auto p-4 flex flex-col gap-3.5 bg-slate-50/80 hide-scrollbar pb-[145px]">
             
             <!-- Timestamp -->
             <div class="text-center my-1">
-                <span class="text-[9px] text-gray-400 bg-gray-200/60 px-2.5 py-1 rounded-full font-medium">Today, Live Support</span>
+                <span class="text-[9px] text-gray-400 bg-gray-200/60 px-3 py-1 rounded-full font-medium shadow-sm">Today, Live Support Active</span>
             </div>
 
             <!-- Agent Welcome Message -->
             <div class="flex items-start gap-2.5 max-w-[85%] animate-msg">
-                <div class="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center text-xs shadow flex-shrink-0">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 text-white flex items-center justify-center text-xs shadow-md flex-shrink-0">
                     <i class="fas fa-robot"></i>
                 </div>
-                <div class="bg-white border border-gray-100 rounded-2xl rounded-tl-sm p-3 text-gray-800 shadow-sm text-xs leading-relaxed">
-                    <p class="font-bold text-green-700 mb-0.5">ANP Support Agent</p>
+                <div class="bg-white border border-gray-100 rounded-2xl rounded-tl-sm p-3.5 text-gray-800 shadow-sm text-xs leading-relaxed">
+                    <p class="font-bold text-green-700 mb-0.5 flex items-center gap-1">
+                        ANP Support Agent <i class="fas fa-check-circle text-[10px] text-sky-500"></i>
+                    </p>
                     Hello Partner! 👋 Welcome to ANP Green Ride live support. How can we help you today with your VIP packs, deposits, or withdrawals?
                     <span class="text-[9px] text-gray-400 block mt-1 text-right">Just now</span>
                 </div>
@@ -116,11 +127,11 @@
 
         </main>
 
-        <!-- Fixed Bottom Floating Container (Input bar sits right above bottom navigation) -->
-        <div class="absolute bottom-[65px] left-0 w-full bg-white/95 backdrop-blur-md border-t border-gray-100 px-4 py-2.5 z-30 shadow-lg">
+        <!-- Fixed Bottom Input Bar (Positioned cleanly right above bottom navigation bar) -->
+        <div class="absolute bottom-[65px] left-0 w-full bg-white/95 backdrop-blur-md border-t border-gray-200/80 px-4 py-3 z-30 shadow-[0_-5px_20px_rgba(0,0,0,0.06)]">
             <!-- Typing Indicator -->
-            <div id="typing-indicator" class="hidden pb-2 flex items-center gap-2">
-                <div class="w-6 h-6 rounded-full bg-green-600 text-white flex items-center justify-center text-[10px]">
+            <div id="typing-indicator" class="hidden pb-2 flex items-center gap-2 animate-msg">
+                <div class="w-6 h-6 rounded-full bg-green-600 text-white flex items-center justify-center text-[10px] shadow-sm">
                     <i class="fas fa-robot"></i>
                 </div>
                 <div class="bg-white border border-gray-100 rounded-2xl px-3 py-1.5 shadow-sm flex items-center gap-1.5">
@@ -131,16 +142,16 @@
             </div>
 
             <!-- Input Bar -->
-            <div class="flex items-center gap-2">
-                <input type="text" id="chat-input" onkeypress="handleKeyPress(event)" placeholder="Type your message here..." class="flex-1 bg-gray-100 border border-gray-200 rounded-2xl px-4 py-3 text-xs text-gray-800 outline-none focus:border-green-500 focus:bg-white transition-all shadow-inner">
-                <button onclick="sendMessage()" class="w-11 h-11 bg-gradient-to-br from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-2xl flex items-center justify-center shadow-md transition-all active:scale-95 flex-shrink-0">
+            <div class="flex items-center gap-2.5">
+                <input type="text" id="chat-input" onkeypress="handleKeyPress(event)" placeholder="Type your message here..." class="flex-1 bg-gray-100 border border-gray-200 rounded-2xl px-4 py-3 text-xs text-gray-800 outline-none focus:border-green-500 focus:bg-white focus:ring-2 focus:ring-green-400/20 transition-all shadow-inner">
+                <button onclick="sendMessage()" class="w-11 h-11 bg-gradient-to-br from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-2xl flex items-center justify-center shadow-lg transition-all active:scale-95 flex-shrink-0">
                     <i class="fas fa-paper-plane text-xs"></i>
                 </button>
             </div>
         </div>
 
-        <!-- Bottom Navigation Bar (With Map Tab linked to map.html) -->
-        <nav class="absolute bottom-0 w-full bg-white border-t border-gray-100 flex justify-between items-center px-6 pt-2 pb-5 z-40 shadow-lg">
+        <!-- Bottom Navigation Bar (Map Tab linked to map.html) -->
+        <nav class="absolute bottom-0 w-full bg-white border-t border-gray-100 flex justify-between items-center px-6 pt-2 pb-5 z-40 shadow-2xl">
             <button onclick="window.location.href='index.html'" class="flex flex-col items-center text-gray-400 group hover:text-green-600 transition-colors">
                 <i class="fas fa-home text-lg mb-1"></i>
                 <span class="text-[10px] font-medium">Home</span>
@@ -190,14 +201,14 @@
             const text = chatInput.value.trim();
             if (!text) return;
 
-            // 1. Append User Message
+            // 1. Append User Message with animation
             const userMsgHTML = `
                 <div class="flex items-end justify-end gap-2.5 max-w-[85%] ml-auto animate-msg">
-                    <div class="bg-green-600 text-white rounded-2xl rounded-tr-sm p-3 shadow-sm text-xs leading-relaxed">
+                    <div class="bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-2xl rounded-tr-sm p-3.5 shadow-md text-xs leading-relaxed">
                         ${escapeHtml(text)}
                         <span class="text-[9px] text-green-200 block mt-1 text-right">${getCurrentTime()}</span>
                     </div>
-                    <div class="w-8 h-8 rounded-full bg-gray-300 text-gray-700 flex items-center justify-center text-xs shadow flex-shrink-0">
+                    <div class="w-8 h-8 rounded-full bg-gray-800 text-white flex items-center justify-center text-xs shadow-md flex-shrink-0">
                         <i class="fas fa-user"></i>
                     </div>
                 </div>
@@ -206,13 +217,13 @@
             chatInput.value = "";
             scrollToBottom();
 
-            // 2. Show Typing Indicator after 600ms
+            // 2. Show Typing Indicator after 500ms
             setTimeout(() => {
                 typingIndicator.classList.remove("hidden");
                 scrollToBottom();
-            }, 600);
+            }, 500);
 
-            // 3. Simulate Smart Agent Reply after 2 seconds
+            // 3. Simulate Smart Agent Reply after 2 seconds with smooth entrance animation
             setTimeout(() => {
                 typingIndicator.classList.add("hidden");
                 
@@ -229,11 +240,13 @@
 
                 const agentMsgHTML = `
                     <div class="flex items-start gap-2.5 max-w-[85%] animate-msg">
-                        <div class="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center text-xs shadow flex-shrink-0">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 text-white flex items-center justify-center text-xs shadow-md flex-shrink-0">
                             <i class="fas fa-robot"></i>
                         </div>
-                        <div class="bg-white border border-gray-100 rounded-2xl rounded-tl-sm p-3 text-gray-800 shadow-sm text-xs leading-relaxed">
-                            <p class="font-bold text-green-700 mb-0.5">ANP Support Agent</p>
+                        <div class="bg-white border border-gray-100 rounded-2xl rounded-tl-sm p-3.5 text-gray-800 shadow-sm text-xs leading-relaxed">
+                            <p class="font-bold text-green-700 mb-0.5 flex items-center gap-1">
+                                ANP Support Agent <i class="fas fa-check-circle text-[10px] text-sky-500"></i>
+                            </p>
                             ${replyText}
                             <span class="text-[9px] text-gray-400 block mt-1 text-right">${getCurrentTime()}</span>
                         </div>
@@ -241,7 +254,7 @@
                 `;
                 chatMessages.insertAdjacentHTML('beforeend', agentMsgHTML);
                 scrollToBottom();
-            }, 2400);
+            }, 2200);
         }
 
         function escapeHtml(string) {
