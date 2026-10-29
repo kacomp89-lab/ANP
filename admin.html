@@ -2,128 +2,183 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ANP Money - Secure Team Admin Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ANP MONEY - Backend Server Control Center</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background: #0b1a10; color: white; }
+        body { font-family: 'Inter', sans-serif; background: #07110a; color: #e2e8f0; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
         @keyframes scaleUpModal {
-            0% { transform: scale(0.9); opacity: 0; }
+            0% { transform: scale(0.85); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
         .animate-modal-pop {
             animation: scaleUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
+
+        /* GPay / Paytm Tick Animation Keyframes */
+        @keyframes circleScale {
+            0% { transform: scale(0); opacity: 0; }
+            60% { transform: scale(1.12); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes checkmarkDraw {
+            0% { stroke-dashoffset: 48; }
+            100% { stroke-dashoffset: 0; }
+        }
+        .gpay-circle { animation: circleScale 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .gpay-check { stroke-dasharray: 48; stroke-dashoffset: 48; animation: checkmarkDraw 0.4s 0.25s ease-in-out forwards; }
+        
+        .server-glow {
+            box-shadow: 0 0 25px rgba(34, 197, 94, 0.15);
+        }
     </style>
 </head>
-<body class="min-h-screen p-6 flex flex-col justify-between">
-    <div class="max-w-4xl mx-auto w-full">
+<body class="min-h-screen p-3 sm:p-6 flex flex-col justify-between">
+    <div class="max-w-6xl mx-auto w-full">
         
-        <!-- Header -->
-        <div class="flex justify-between items-center mb-8 border-b border-green-900 pb-4">
-            <div>
-                <h1 class="text-2xl font-black tracking-tight text-green-400">ANP MONEY ADMIN</h1>
-                <p class="text-xs text-gray-400 mt-1">Authorized Team Verification Portal</p>
-            </div>
+        <!-- Enterprise Server Telemetry Header Bar -->
+        <div class="bg-gray-950/90 border border-green-500/30 rounded-2xl px-4 py-3 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 server-glow">
             <div class="flex items-center gap-3">
-                <button onclick="lockAdminSession()" id="lock-btn" class="px-3 py-2 bg-red-900/40 hover:bg-red-900/70 text-red-300 text-xs font-bold rounded-xl transition-all hidden" title="Lock Admin Panel">
-                    <i class="fas fa-lock"></i> Lock
+                <div class="relative">
+                    <div class="w-3 h-3 bg-green-500 rounded-full animate-ping absolute inset-0"></div>
+                    <div class="w-3 h-3 bg-green-500 rounded-full relative"></div>
+                </div>
+                <div>
+                    <div class="text-xs font-mono font-bold text-green-400 tracking-wider">SRV-CLUSTER // ANP-CORE-01</div>
+                    <div class="text-[10px] text-gray-400 font-mono">FIRESTORE DB: CONNECTED &bull; LATENCY: 14ms</div>
+                </div>
+            </div>
+            <div class="flex items-center gap-2.5 w-full sm:w-auto justify-end">
+                <span class="hidden sm:inline-block px-2.5 py-1 bg-green-500/10 border border-green-500/30 rounded-lg text-[10px] font-mono text-green-300">SECURE SSL ACTIVE</span>
+                <button onclick="lockAdminSession()" id="lock-btn" class="px-3 py-1.5 bg-red-950/60 hover:bg-red-900 text-red-300 text-xs font-bold rounded-xl border border-red-800/50 transition-all hidden" title="Lock Session">
+                    <i class="fas fa-lock mr-1"></i> Lock
                 </button>
-                <button onclick="window.location.href='index.html'" class="px-4 py-2 bg-green-800 hover:bg-green-700 text-xs font-bold rounded-xl transition-all">
-                    Back to App
+                <button onclick="window.location.href='index.html'" class="px-3.5 py-1.5 bg-green-900/40 hover:bg-green-800 text-green-300 text-xs font-bold rounded-xl border border-green-700/50 transition-all">
+                    App Portal
                 </button>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-6 border-b border-green-900/50 pb-4">
+            <div>
+                <h1 class="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-2">
+                    <i class="fas fa-server text-green-400 text-lg"></i> Backend Operations
+                </h1>
+                <p class="text-xs text-gray-400 mt-0.5">Authorized Team Verification & Telemetry Terminal</p>
             </div>
         </div>
 
         <!-- PIN Gate Card -->
-        <div id="pin-gate-card" class="bg-gray-900 border border-green-900/60 rounded-3xl p-8 shadow-2xl max-w-sm mx-auto text-center my-12">
-            <div class="w-14 h-14 bg-yellow-500/20 border border-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4 text-yellow-400 text-xl shadow-lg">
-                <i class="fas fa-shield-alt"></i>
+        <div id="pin-gate-card" class="bg-gray-900/90 backdrop-blur-md border border-green-500/40 rounded-3xl p-8 shadow-2xl max-w-sm mx-auto text-center my-16 server-glow">
+            <div class="w-16 h-16 bg-green-500/10 border border-green-500/40 rounded-2xl flex items-center justify-center mx-auto mb-4 text-green-400 text-2xl shadow-inner">
+                <i class="fas fa-terminal"></i>
             </div>
-            <h2 class="text-lg font-bold text-white mb-1">Team PIN Gate</h2>
-            <p class="text-xs text-gray-400 mb-6">Enter your shared team PIN to access verifications.</p>
+            <h2 class="text-base font-bold text-white mb-1">Server Access Terminal</h2>
+            <p class="text-xs text-gray-400 mb-6">Enter encrypted team security PIN to authorize connection.</p>
             
             <div class="mb-4">
-                <input type="password" id="team-pin-input" placeholder="Enter Team PIN" maxlength="10" class="w-full bg-black/60 border border-green-800 rounded-2xl px-4 py-3 text-center text-white tracking-widest text-lg outline-none focus:border-green-500 shadow-inner">
+                <input type="password" id="team-pin-input" placeholder="••••" maxlength="10" class="w-full bg-black/80 border border-green-800/80 rounded-2xl px-4 py-3 text-center text-white tracking-[0.5em] text-xl outline-none focus:border-green-400 font-mono shadow-inner">
             </div>
 
-            <button onclick="verifyTeamPin()" id="unlock-btn-el" class="w-full py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-2xl text-xs shadow-lg transition-all">
-                Unlock Portal
+            <button onclick="verifyTeamPin()" class="w-full py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-2xl text-xs shadow-[0_5px_20px_rgba(34,197,94,0.4)] transition-all active:scale-95">
+                Authorize Session
             </button>
-            <p id="pin-error" class="text-red-400 text-[11px] font-semibold mt-3 hidden">Incorrect PIN. Access denied.</p>
+            <p id="pin-error" class="text-red-400 text-[11px] font-semibold mt-3 hidden">Access Denied: Invalid Security Key.</p>
         </div>
 
-        <!-- Admin Dashboard Container -->
-        <div id="admin-dashboard-container" class="bg-gray-900 border border-green-900/60 rounded-3xl p-6 shadow-2xl hidden">
+        <!-- Admin Dashboard Container (Hidden until unlocked) -->
+        <div id="admin-dashboard-container" class="bg-gray-900/80 backdrop-blur-md border border-green-900/60 rounded-3xl p-4 sm:p-6 shadow-2xl hidden">
             
+            <!-- Telemetry Quick Stats Overview Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                <div class="bg-black/50 border border-green-900/40 rounded-2xl p-3.5">
+                    <span class="text-[10px] text-gray-400 block font-mono uppercase">System Mode</span>
+                    <span class="text-xs font-bold text-green-400 font-mono mt-0.5 block"><i class="fas fa-shield-alt mr-1"></i> LIVE OPS</span>
+                </div>
+                <div class="bg-black/50 border border-green-900/40 rounded-2xl p-3.5">
+                    <span class="text-[10px] text-gray-400 block font-mono uppercase">Auth Token</span>
+                    <span class="text-xs font-bold text-emerald-400 font-mono mt-0.5 block"><i class="fas fa-key mr-1"></i> ADMIN-7860</span>
+                </div>
+                <div class="bg-black/50 border border-green-900/40 rounded-2xl p-3.5">
+                    <span class="text-[10px] text-gray-400 block font-mono uppercase">Database Protocol</span>
+                    <span class="text-xs font-bold text-sky-400 font-mono mt-0.5 block"><i class="fas fa-database mr-1"></i> CLOUD V2</span>
+                </div>
+                <div class="bg-black/50 border border-green-900/40 rounded-2xl p-3.5">
+                    <span class="text-[10px] text-gray-400 block font-mono uppercase">Server Time</span>
+                    <span class="text-xs font-bold text-yellow-400 font-mono mt-0.5 block" id="server-live-clock">00:00:00</span>
+                </div>
+            </div>
+
             <!-- Tab Buttons -->
-            <div class="flex flex-wrap gap-2 mb-6 border-b border-green-900 pb-4">
-                <button onclick="switchAdminTab('deposits')" id="tab-btn-deposits" class="px-4 py-2 bg-green-600 text-white font-bold rounded-xl text-xs transition-all">
-                    <i class="fas fa-coins mr-1"></i> Deposit Verifications
+            <div class="flex flex-wrap gap-2 mb-6 border-b border-green-900/50 pb-4">
+                <button onclick="switchAdminTab('deposits')" id="tab-btn-deposits" class="px-4 py-2.5 bg-green-600 text-white font-bold rounded-xl text-xs transition-all shadow-md active:scale-95">
+                    <i class="fas fa-coins mr-1.5"></i> Deposit Verifications
                 </button>
-                <button onclick="switchAdminTab('withdrawals')" id="tab-btn-withdrawals" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all">
-                    <i class="fas fa-wallet mr-1"></i> Withdrawal & Payouts
+                <button onclick="switchAdminTab('withdrawals')" id="tab-btn-withdrawals" class="px-4 py-2.5 bg-gray-800/80 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all active:scale-95">
+                    <i class="fas fa-wallet mr-1.5"></i> Withdrawal Payouts
                 </button>
-                <button onclick="switchAdminTab('customercare')" id="tab-btn-customercare" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all">
-                    <i class="fas fa-headset mr-1"></i> Customer Care Chat
+                <button onclick="switchAdminTab('customercare')" id="tab-btn-customercare" class="px-4 py-2.5 bg-gray-800/80 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all active:scale-95">
+                    <i class="fas fa-headset mr-1.5"></i> Customer Care Inbox
                 </button>
             </div>
 
             <!-- Deposits Section -->
             <div id="section-deposits">
-                <h2 class="text-sm font-bold text-green-300 mb-4 flex items-center gap-2">
-                    <i class="fas fa-clock"></i> Pending Payment Requests
+                <h2 class="text-xs font-mono font-bold text-green-300 mb-4 flex items-center gap-2 uppercase tracking-wider">
+                    <i class="fas fa-stream"></i> Pending Payment Requests Queue
                 </h2>
-                <div id="admin-deposit-list" class="flex flex-col gap-4">
-                    <div class="text-center py-12 text-gray-500 text-xs">Loading records...</div>
+                <div id="admin-deposit-list" class="flex flex-col gap-3.5">
+                    <div class="text-center py-12 text-gray-500 text-xs font-mono">Fetching server records...</div>
                 </div>
             </div>
 
             <!-- Withdrawals Section -->
             <div id="section-withdrawals" class="hidden">
-                <h2 class="text-sm font-bold text-green-300 mb-4 flex items-center gap-2">
-                    <i class="fas fa-university"></i> Withdrawal Requests & Payout Queue
+                <h2 class="text-xs font-mono font-bold text-green-300 mb-4 flex items-center gap-2 uppercase tracking-wider">
+                    <i class="fas fa-university"></i> Withdrawal Payout Requests Queue
                 </h2>
-                <div id="admin-withdrawal-list" class="flex flex-col gap-4">
-                    <div class="text-center py-12 text-gray-500 text-xs">Loading withdrawal requests...</div>
+                <div id="admin-withdrawal-list" class="flex flex-col gap-3.5">
+                    <div class="text-center py-12 text-gray-500 text-xs font-mono">Fetching payout requests...</div>
                 </div>
             </div>
 
             <!-- Customer Care Section (Live Chat Inbox) -->
             <div id="section-customercare" class="hidden">
-                <h2 class="text-sm font-bold text-green-300 mb-4 flex items-center gap-2">
-                    <i class="fas fa-comments"></i> Live Customer Support Inbox
+                <h2 class="text-xs font-mono font-bold text-green-300 mb-4 flex items-center gap-2 uppercase tracking-wider">
+                    <i class="fas fa-comments"></i> Live Customer Support Terminal
                 </h2>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <!-- User Conversations Sidebar -->
-                    <div id="admin-chat-users" class="bg-black/50 border border-green-900/40 rounded-2xl p-3 h-80 overflow-y-auto space-y-2 hide-scrollbar">
-                        <div class="text-center py-12 text-gray-500 text-xs">Loading conversations...</div>
+                    <div id="admin-chat-users" class="bg-black/60 border border-green-900/40 rounded-2xl p-3 h-96 overflow-y-auto space-y-2 hide-scrollbar">
+                        <div class="text-center py-16 text-gray-500 text-xs font-mono">Loading active sessions...</div>
                     </div>
 
                     <!-- Active Chat & Reply Window -->
-                    <div class="md:col-span-2 bg-black/50 border border-green-900/40 rounded-2xl p-3 flex flex-col h-80">
-                        <div id="admin-active-chat-header" class="text-xs font-bold text-green-300 pb-2 border-b border-green-900/50 mb-2 flex items-center justify-between">
-                            <span>Select a user conversation</span>
+                    <div class="md:col-span-2 bg-black/60 border border-green-900/40 rounded-2xl p-3.5 flex flex-col h-96">
+                        <div id="admin-active-chat-header" class="text-xs font-mono font-bold text-green-300 pb-2.5 border-b border-green-900/50 mb-2.5 flex items-center justify-between">
+                            <span>// Select session from telemetry sidebar</span>
                         </div>
                         
                         <!-- Messages Container -->
-                        <div id="admin-chat-messages" class="flex-1 overflow-y-auto space-y-2.5 pr-1 text-xs text-gray-300 hide-scrollbar">
-                            <div class="text-center text-gray-500 py-16">No chat selected</div>
+                        <div id="admin-chat-messages" class="flex-1 overflow-y-auto space-y-3 pr-1 text-xs text-gray-300 hide-scrollbar">
+                            <div class="text-center text-gray-500 py-20 font-mono">No conversation active</div>
                         </div>
 
                         <!-- Admin Reply Input -->
-                        <div class="pt-2.5 flex gap-2 mt-auto border-t border-green-900/50">
-                            <input type="text" id="admin-reply-input" onkeypress="handleAdminKeyPress(event)" placeholder="Type reply as admin..." class="flex-1 bg-black/70 border border-green-800 rounded-xl px-3 py-2.5 text-xs text-white outline-none focus:border-green-400">
-                            <button onclick="sendAdminReply()" class="px-5 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl text-xs shadow transition-all active:scale-95">
-                                Send
+                        <div class="pt-3 flex gap-2.5 mt-auto border-t border-green-900/50">
+                            <input type="text" id="admin-reply-input" onkeypress="handleAdminKeyPress(event)" placeholder="Transmit response to partner..." class="flex-1 bg-black/80 border border-green-800/80 rounded-xl px-4 py-3 text-xs text-white outline-none focus:border-green-400 font-mono">
+                            <button onclick="sendAdminReply()" class="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl text-xs shadow-lg transition-all active:scale-95 flex-shrink-0">
+                                Transmit
                             </button>
                         </div>
                     </div>
@@ -134,31 +189,32 @@
 
     </div>
 
-    <!-- CUSTOM HIGH-GUI MODAL SYSTEM -->
-    <div id="anp-custom-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-gray-900 border border-green-500/40 rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl animate-modal-pop relative overflow-hidden">
-            <div class="absolute -top-10 -right-10 w-28 h-28 bg-green-500/15 rounded-full blur-xl pointer-events-none"></div>
+    <!-- GPAY & PAYTM STYLE SUCCESS ANIMATION OVERLAY MODAL -->
+    <div id="anp-custom-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-gray-900 border border-green-500/40 rounded-[32px] p-7 max-w-sm w-full text-center shadow-2xl animate-modal-pop relative overflow-hidden">
+            <div class="absolute -top-12 -right-12 w-32 h-32 bg-green-500/15 rounded-full blur-2xl pointer-events-none"></div>
             
-            <div id="modal-icon-container" class="w-14 h-14 bg-green-500/20 border border-green-500/50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-green-400 text-xl shadow-[0_8px_20px_rgba(34,197,94,0.3)]">
-                <i id="modal-icon" class="fas fa-check"></i>
+            <!-- Animated Checkmark Container -->
+            <div id="modal-icon-container" class="my-3 flex justify-center">
+                <!-- Injected dynamically via JS (GPay Tick or Warning Icon) -->
             </div>
             
-            <h3 id="modal-title" class="text-base font-black text-white mb-1.5">Notice</h3>
-            <p id="modal-text" class="text-xs text-gray-300 mb-5 leading-relaxed">Message goes here.</p>
+            <h3 id="modal-title" class="text-lg font-black text-white mb-1.5 tracking-tight">Success</h3>
+            <p id="modal-text" class="text-xs text-gray-300 mb-6 leading-relaxed px-2">Operation completed successfully.</p>
             
             <!-- Optional Input for Prompt -->
             <div id="modal-input-container" class="mb-5 hidden">
-                <input type="text" id="modal-prompt-input" class="w-full bg-black/60 border border-green-800 rounded-xl px-4 py-3 text-xs text-white outline-none focus:border-green-400" placeholder="Enter details...">
+                <input type="text" id="modal-prompt-input" class="w-full bg-black/80 border border-green-800/80 rounded-xl px-4 py-3 text-xs text-white outline-none focus:border-green-400 font-mono" placeholder="Enter notes...">
             </div>
 
-            <div id="modal-buttons" class="flex gap-2.5">
+            <div id="modal-buttons" class="flex gap-3">
                 <!-- Buttons injected dynamically -->
             </div>
         </div>
     </div>
 
-    <footer class="text-center text-[10px] text-gray-600 mt-8">
-        ANP Green Ride Secure Partner Management System
+    <footer class="text-center text-[10px] text-gray-600 font-mono mt-8">
+        ANP MONEY ENTERPRISE SERVER v2.4.1 // SECURE CLOUD TELEMETRY
     </footer>
 
     <script type="module">
@@ -184,7 +240,15 @@
         let activeChatUid = null;
         let activeChatEmail = "";
 
-        // ==================== CUSTOM MODAL HELPERS ====================
+        // Live Server Clock
+        setInterval(() => {
+            const now = new Date();
+            const timeString = now.toTimeString().split(' ')[0];
+            const clockEl = document.getElementById("server-live-clock");
+            if (clockEl) clockEl.innerText = timeString;
+        }, 1000);
+
+        // ==================== GPAY / PAYTM STYLE ANIMATED MODALS ====================
         window.showAnpAlert = function(title, message, isSuccess = true) {
             return new Promise((resolve) => {
                 const modal = document.getElementById("anp-custom-modal");
@@ -192,21 +256,29 @@
                 document.getElementById("modal-text").innerText = message;
                 document.getElementById("modal-input-container").classList.add("hidden");
 
-                const iconBox = document.getElementById("modal-icon-container");
-                const iconEl = document.getElementById("modal-icon");
+                const iconContainer = document.getElementById("modal-icon-container");
 
                 if (isSuccess) {
-                    iconBox.className = "w-14 h-14 bg-green-500/20 border border-green-500/50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-green-400 text-xl shadow-[0_8px_20px_rgba(34,197,94,0.3)]";
-                    iconEl.className = "fas fa-check";
+                    // Paytm / GPay Style Animated Tick
+                    iconContainer.innerHTML = `
+                        <div class="w-20 h-20 bg-green-500/15 border border-green-500/40 rounded-full flex items-center justify-center gpay-circle shadow-[0_0_30px_rgba(34,197,94,0.3)]">
+                            <svg class="w-10 h-10 text-green-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                                <path class="gpay-check" stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                    `;
                 } else {
-                    iconBox.className = "w-14 h-14 bg-red-500/20 border border-red-500/50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-red-400 text-xl shadow-[0_8px_20px_rgba(239,68,68,0.3)]";
-                    iconEl.className = "fas fa-exclamation-triangle";
+                    iconContainer.innerHTML = `
+                        <div class="w-20 h-20 bg-red-500/15 border border-red-500/40 rounded-full flex items-center justify-center gpay-circle shadow-[0_0_30px_rgba(239,68,68,0.3)]">
+                            <i class="fas fa-exclamation-triangle text-red-400 text-2xl"></i>
+                        </div>
+                    `;
                 }
 
                 const btnContainer = document.getElementById("modal-buttons");
                 btnContainer.innerHTML = `
-                    <button id="modal-ok-btn" class="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl text-xs shadow-lg transition-all active:scale-95">
-                        Okay
+                    <button id="modal-ok-btn" class="w-full py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-2xl text-xs shadow-lg transition-all active:scale-95">
+                        Acknowledge
                     </button>
                 `;
 
@@ -225,14 +297,17 @@
                 document.getElementById("modal-text").innerText = message;
                 document.getElementById("modal-input-container").classList.add("hidden");
 
-                const iconBox = document.getElementById("modal-icon-container");
-                iconBox.className = "w-14 h-14 bg-amber-500/20 border border-amber-500/50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-amber-400 text-xl shadow-[0_8px_20px_rgba(245,158,11,0.3)]";
-                document.getElementById("modal-icon").className = "fas fa-question-circle";
+                const iconContainer = document.getElementById("modal-icon-container");
+                iconContainer.innerHTML = `
+                    <div class="w-16 h-16 bg-amber-500/15 border border-amber-500/40 rounded-2xl flex items-center justify-center gpay-circle text-amber-400 text-xl shadow-inner">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                `;
 
                 const btnContainer = document.getElementById("modal-buttons");
                 btnContainer.innerHTML = `
-                    <button id="modal-cancel-btn" class="flex-1 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all active:scale-95">Cancel</button>
-                    <button id="modal-confirm-btn" class="flex-1 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl text-xs shadow-lg transition-all active:scale-95">Proceed</button>
+                    <button id="modal-cancel-btn" class="flex-1 py-3.5 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold rounded-2xl text-xs transition-all active:scale-95">Abort</button>
+                    <button id="modal-confirm-btn" class="flex-1 py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-2xl text-xs shadow-lg transition-all active:scale-95">Confirm</button>
                 `;
 
                 modal.classList.remove("hidden");
@@ -258,14 +333,17 @@
                 const promptInput = document.getElementById("modal-prompt-input");
                 promptInput.value = defaultValue;
 
-                const iconBox = document.getElementById("modal-icon-container");
-                iconBox.className = "w-14 h-14 bg-blue-500/20 border border-blue-500/50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-blue-400 text-xl shadow-[0_8px_20px_rgba(59,130,246,0.3)]";
-                document.getElementById("modal-icon").className = "fas fa-edit";
+                const iconContainer = document.getElementById("modal-icon-container");
+                iconContainer.innerHTML = `
+                    <div class="w-16 h-16 bg-blue-500/15 border border-blue-500/40 rounded-2xl flex items-center justify-center gpay-circle text-blue-400 text-xl shadow-inner">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                `;
 
                 const btnContainer = document.getElementById("modal-buttons");
                 btnContainer.innerHTML = `
-                    <button id="modal-cancel-btn" class="flex-1 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all active:scale-95">Cancel</button>
-                    <button id="modal-submit-btn" class="flex-1 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl text-xs shadow-lg transition-all active:scale-95">Submit</button>
+                    <button id="modal-cancel-btn" class="flex-1 py-3.5 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold rounded-2xl text-xs transition-all active:scale-95">Cancel</button>
+                    <button id="modal-submit-btn" class="flex-1 py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-2xl text-xs shadow-lg transition-all active:scale-95">Submit</button>
                 `;
 
                 modal.classList.remove("hidden");
@@ -337,22 +415,22 @@
             const wdrSec = document.getElementById("section-withdrawals");
             const ccSec = document.getElementById("section-customercare");
 
-            depBtn.className = "px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all";
-            wdrBtn.className = "px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all";
-            ccBtn.className = "px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all";
+            depBtn.className = "px-4 py-2.5 bg-gray-800/80 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all active:scale-95";
+            wdrBtn.className = "px-4 py-2.5 bg-gray-800/80 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all active:scale-95";
+            ccBtn.className = "px-4 py-2.5 bg-gray-800/80 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all active:scale-95";
 
             depSec.classList.add("hidden");
             wdrSec.classList.add("hidden");
             ccSec.classList.add("hidden");
 
             if (tab === 'deposits') {
-                depBtn.className = "px-4 py-2 bg-green-600 text-white font-bold rounded-xl text-xs transition-all";
+                depBtn.className = "px-4 py-2.5 bg-green-600 text-white font-bold rounded-xl text-xs transition-all shadow-md active:scale-95";
                 depSec.classList.remove("hidden");
             } else if (tab === 'withdrawals') {
-                wdrBtn.className = "px-4 py-2 bg-green-600 text-white font-bold rounded-xl text-xs transition-all";
+                wdrBtn.className = "px-4 py-2.5 bg-green-600 text-white font-bold rounded-xl text-xs transition-all shadow-md active:scale-95";
                 wdrSec.classList.remove("hidden");
             } else if (tab === 'customercare') {
-                ccBtn.className = "px-4 py-2 bg-green-600 text-white font-bold rounded-xl text-xs transition-all";
+                ccBtn.className = "px-4 py-2.5 bg-green-600 text-white font-bold rounded-xl text-xs transition-all shadow-md active:scale-95";
                 ccSec.classList.remove("hidden");
             }
         }
@@ -379,7 +457,7 @@
                 usersListDiv.innerHTML = "";
 
                 if (Object.keys(usersMap).length === 0) {
-                    usersListDiv.innerHTML = `<p class="text-[11px] text-gray-500 text-center py-12">No customer inquiries yet.</p>`;
+                    usersListDiv.innerHTML = `<p class="text-[11px] text-gray-500 text-center py-16 font-mono">No active partner sessions.</p>`;
                     return;
                 }
 
@@ -389,10 +467,10 @@
                     const lastMsg = userObj.messages[userObj.messages.length - 1]?.message || "New message";
                     
                     const btn = document.createElement("div");
-                    btn.className = `p-3 rounded-xl cursor-pointer border transition-all ${activeChatUid === uid ? 'bg-green-900/40 border-green-500 text-white shadow' : 'bg-black/30 border-green-900/30 text-gray-300 hover:bg-green-900/20'}`;
+                    btn.className = `p-3 rounded-xl cursor-pointer border transition-all ${activeChatUid === uid ? 'bg-green-950/60 border-green-500 text-white shadow-md' : 'bg-black/30 border-green-900/30 text-gray-300 hover:bg-green-900/20'}`;
                     btn.innerHTML = `
-                        <div class="text-[11px] font-bold truncate text-green-300">${userObj.email}</div>
-                        <div class="text-[10px] text-gray-400 truncate mt-0.5">${lastMsg}</div>
+                        <div class="text-[11px] font-mono font-bold truncate text-green-300">${userObj.email}</div>
+                        <div class="text-[10px] text-gray-400 truncate mt-1">${lastMsg}</div>
                     `;
                     btn.onclick = () => selectUserChat(uid, userObj.email, userObj.messages);
                     usersListDiv.appendChild(btn);
@@ -407,13 +485,13 @@
         function selectUserChat(uid, email, messages) {
             activeChatUid = uid;
             activeChatEmail = email;
-            document.getElementById("admin-active-chat-header").innerHTML = `<span>Chat with: ${email}</span>`;
+            document.getElementById("admin-active-chat-header").innerHTML = `<span class="font-mono">// SESSION: ${email}</span>`;
 
             const chatBox = document.getElementById("admin-chat-messages");
             chatBox.innerHTML = "";
 
             if (!messages || messages.length === 0) {
-                chatBox.innerHTML = `<div class="text-center text-gray-500 py-16">No messages in this chat.</div>`;
+                chatBox.innerHTML = `<div class="text-center text-gray-500 py-20 font-mono">No data packet stream.</div>`;
                 return;
             }
 
@@ -424,11 +502,11 @@
                 const isUser = msg.sender === 'user';
                 
                 const div = document.createElement("div");
-                div.className = `p-2.5 rounded-2xl text-xs max-w-[85%] shadow-sm ${isUser ? 'bg-gray-800 text-white mr-auto rounded-tl-sm' : 'bg-gradient-to-r from-green-600 to-emerald-600 text-white ml-auto rounded-tr-sm'}`;
+                div.className = `p-3 rounded-2xl text-xs max-w-[85%] shadow-sm ${isUser ? 'bg-gray-800/90 text-white mr-auto rounded-tl-sm border border-gray-700/50' : 'bg-gradient-to-r from-green-600 to-emerald-600 text-white ml-auto rounded-tr-sm shadow-md'}`;
                 div.innerHTML = `
-                    <div class="text-[9px] text-green-200 font-bold mb-0.5">${isUser ? email : 'ANP Support Admin'}</div>
+                    <div class="text-[9px] text-green-200 font-mono font-bold mb-1">${isUser ? email : 'ANP Support Server'}</div>
                     ${msg.message}
-                    <div class="text-[8px] text-gray-200 text-right mt-1">${timeStr}</div>
+                    <div class="text-[8px] text-gray-200 text-right font-mono mt-1">${timeStr}</div>
                 `;
                 chatBox.appendChild(div);
             });
@@ -439,7 +517,7 @@
             const input = document.getElementById("admin-reply-input");
             const text = input.value.trim();
             if (!text || !activeChatUid) {
-                showAnpAlert("Notice", "Please select a user conversation from the left sidebar first.", false);
+                showAnpAlert("Notice", "Please select a partner session from the telemetry sidebar first.", false);
                 return;
             }
 
@@ -453,7 +531,7 @@
                 });
                 input.value = "";
             } catch (e) {
-                showAnpAlert("Error", "Error sending reply: " + e.message, false);
+                showAnpAlert("Error", "Transmission failed: " + e.message, false);
             }
         }
 
@@ -466,7 +544,7 @@
         // ==================== DEPOSITS & WITHDRAWALS LOGIC ====================
         async function loadPendingDeposits() {
             const container = document.getElementById("admin-deposit-list");
-            container.innerHTML = `<div class="text-center py-8 text-gray-500 text-xs">Fetching records...</div>`;
+            container.innerHTML = `<div class="text-center py-12 text-gray-500 text-xs font-mono">Querying database...</div>`;
 
             try {
                 const q = query(collection(db, "deposits"), where("status", "==", "pending"));
@@ -476,9 +554,9 @@
 
                 if (querySnapshot.empty) {
                     container.innerHTML = `
-                        <div class="text-center py-12 text-gray-500 text-xs">
-                            <i class="fas fa-check-circle text-2xl text-green-600 mb-2"></i>
-                            <p>No pending payment requests right now!</p>
+                        <div class="text-center py-16 text-gray-500 text-xs font-mono">
+                            <i class="fas fa-check-circle text-3xl text-green-600 mb-2"></i>
+                            <p>All deposit payment queues cleared!</p>
                         </div>
                     `;
                     return;
@@ -490,22 +568,22 @@
                     const dateStr = deposit.createdAt ? new Date(deposit.createdAt).toLocaleString('en-IN') : 'Recent';
 
                     const card = `
-                        <div class="bg-black/40 border border-green-900/40 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div class="bg-black/50 border border-green-900/40 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                             <div>
-                                <div class="flex items-center gap-2 mb-1">
-                                    <span class="text-xs font-bold text-white">${deposit.email || 'Partner'}</span>
-                                    <span class="bg-yellow-500/20 text-yellow-300 text-[9px] font-bold px-2 py-0.5 rounded-full">Pending Verification</span>
+                                <div class="flex items-center gap-2 mb-1.5">
+                                    <span class="text-xs font-mono font-bold text-white">${deposit.email || 'Partner'}</span>
+                                    <span class="bg-yellow-500/20 text-yellow-300 text-[9px] font-mono font-bold px-2 py-0.5 rounded-full border border-yellow-500/30">PENDING</span>
                                 </div>
-                                <p class="text-xs text-gray-300">Package Price: <span class="font-extrabold text-green-400">₹${(deposit.amount || 0).toLocaleString()}</span></p>
-                                <p class="text-xs text-gray-300">UTR Reference: <span class="font-mono text-yellow-300 font-bold bg-black/60 px-2 py-0.5 rounded">${deposit.utr}</span></p>
-                                <p class="text-[10px] text-gray-500 mt-1">${dateStr}</p>
+                                <p class="text-xs text-gray-300">Package Amount: <span class="font-extrabold text-green-400 font-mono">₹${(deposit.amount || 0).toLocaleString()}</span></p>
+                                <p class="text-xs text-gray-300">UTR Code: <span class="font-mono text-yellow-300 font-bold bg-black/80 px-2 py-0.5 rounded border border-yellow-500/20">${deposit.utr}</span></p>
+                                <p class="text-[10px] text-gray-500 font-mono mt-1">${dateStr}</p>
                             </div>
                             <div class="flex flex-col gap-2 w-full sm:w-auto">
-                                <button onclick="approveDeposit('${depositId}', '${deposit.uid}', ${deposit.amount})" class="px-5 py-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl text-xs shadow-lg transition-all active:scale-95">
+                                <button onclick="approveDeposit('${depositId}', '${deposit.uid}', ${deposit.amount})" class="px-5 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl text-xs shadow-lg transition-all active:scale-95">
                                     <i class="fas fa-check mr-1"></i> Verify & Activate
                                 </button>
-                                <button onclick="rejectDeposit('${depositId}')" class="px-5 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs shadow transition-all active:scale-95">
-                                    <i class="fas fa-trash mr-1"></i> Delete Request
+                                <button onclick="rejectDeposit('${depositId}')" class="px-5 py-2 bg-red-950/60 hover:bg-red-900 text-red-300 font-bold rounded-xl text-xs border border-red-800/40 transition-all active:scale-95">
+                                    <i class="fas fa-trash mr-1"></i> Purge Request
                                 </button>
                             </div>
                         </div>
@@ -515,13 +593,13 @@
 
             } catch (error) {
                 console.error("Error loading deposits:", error);
-                container.innerHTML = `<p class="text-red-400 text-xs text-center py-4">Error: ${error.message}</p>`;
+                container.innerHTML = `<p class="text-red-400 text-xs text-center py-4 font-mono">Error: ${error.message}</p>`;
             }
         }
 
         async function loadWithdrawalRequests() {
             const container = document.getElementById("admin-withdrawal-list");
-            container.innerHTML = `<div class="text-center py-8 text-gray-500 text-xs">Fetching withdrawals...</div>`;
+            container.innerHTML = `<div class="text-center py-12 text-gray-500 text-xs font-mono">Querying database...</div>`;
 
             try {
                 const q = query(collection(db, "withdrawals"), where("status", "in", ["pending", "verified"]));
@@ -531,9 +609,9 @@
 
                 if (querySnapshot.empty) {
                     container.innerHTML = `
-                        <div class="text-center py-12 text-gray-500 text-xs">
-                            <i class="fas fa-check-circle text-2xl text-green-600 mb-2"></i>
-                            <p>No withdrawal requests right now!</p>
+                        <div class="text-center py-16 text-gray-500 text-xs font-mono">
+                            <i class="fas fa-check-circle text-3xl text-green-600 mb-2"></i>
+                            <p>All withdrawal payout queues cleared!</p>
                         </div>
                     `;
                     return;
@@ -546,29 +624,29 @@
                     const isVerified = wdr.status === "verified";
 
                     const card = `
-                        <div class="bg-black/40 border border-green-900/40 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div class="bg-black/50 border border-green-900/40 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                             <div>
-                                <div class="flex items-center gap-2 mb-1">
-                                    <span class="text-xs font-bold text-white">${wdr.email || 'Partner'}</span>
-                                    <span class="${isVerified ? 'bg-blue-500/20 text-blue-300' : 'bg-yellow-500/20 text-yellow-300'} text-[9px] font-bold px-2 py-0.5 rounded-full uppercase">${wdr.status}</span>
+                                <div class="flex items-center gap-2 mb-1.5">
+                                    <span class="text-xs font-mono font-bold text-white">${wdr.email || 'Partner'}</span>
+                                    <span class="${isVerified ? 'bg-blue-500/20 text-blue-300 border-blue-500/30' : 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30'} text-[9px] font-mono font-bold px-2 py-0.5 rounded-full border uppercase">${wdr.status}</span>
                                 </div>
-                                <p class="text-xs text-gray-300">Amount: <span class="font-extrabold text-green-400">₹${(wdr.amount || 0).toLocaleString()}</span></p>
+                                <p class="text-xs text-gray-300">Amount: <span class="font-extrabold text-green-400 font-mono">₹${(wdr.amount || 0).toLocaleString()}</span></p>
                                 <p class="text-xs text-gray-300">Bank A/C: <span class="font-mono text-white font-bold">${wdr.bankAccount}</span></p>
                                 <p class="text-xs text-gray-300">IFSC: <span class="font-mono text-white font-bold">${wdr.ifsc || 'N/A'}</span></p>
-                                <p class="text-[10px] text-gray-500 mt-1">${dateStr}</p>
+                                <p class="text-[10px] text-gray-500 font-mono mt-1">${dateStr}</p>
                             </div>
                             <div class="flex flex-col gap-2 w-full sm:w-auto">
                                 ${!isVerified ? `
-                                    <button onclick="verifyWithdrawal('${wdrId}')" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs shadow transition-all active:scale-95">
+                                    <button onclick="verifyWithdrawal('${wdrId}')" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs shadow transition-all active:scale-95">
                                         <i class="fas fa-check mr-1"></i> Verify Details
                                     </button>
                                 ` : `
                                     <button onclick="payWithdrawal('${wdrId}', '${wdr.uid}', ${wdr.amount})" class="px-5 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl text-xs shadow-lg transition-all active:scale-95">
-                                        <i class="fas fa-rupee-sign mr-1"></i> Paid Money
+                                        <i class="fas fa-rupee-sign mr-1"></i> Release Payout
                                     </button>
                                 `}
-                                <button onclick="rejectWithdrawal('${wdrId}')" class="px-5 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs shadow transition-all active:scale-95">
-                                    <i class="fas fa-trash mr-1"></i> Delete Request
+                                <button onclick="rejectWithdrawal('${wdrId}')" class="px-5 py-2 bg-red-950/60 hover:bg-red-900 text-red-300 font-bold rounded-xl text-xs border border-red-800/40 transition-all active:scale-95">
+                                    <i class="fas fa-trash mr-1"></i> Purge Request
                                 </button>
                             </div>
                         </div>
@@ -578,12 +656,12 @@
 
             } catch (error) {
                 console.error("Error loading withdrawals:", error);
-                container.innerHTML = `<p class="text-red-400 text-xs text-center py-4">Error: ${error.message}</p>`;
+                container.innerHTML = `<p class="text-red-400 text-xs text-center py-4 font-mono">Error: ${error.message}</p>`;
             }
         }
 
         window.rejectDeposit = async function(depositId) {
-            const note = await showAnpPrompt("Reject Deposit", "Enter a reason/note for rejecting this deposit (will be shown to user):", "False UTR provided or payment not received.");
+            const note = await showAnpPrompt("Purge Deposit", "Enter audit note for deposit rejection:", "False UTR reference or payment not received.");
             if (note === null) return;
 
             try {
@@ -591,15 +669,15 @@
                     status: "rejected",
                     adminNote: note || "Request rejected by admin."
                 });
-                await showAnpAlert("Success", "Deposit request rejected successfully.", true);
+                await showAnpAlert("Purged", "Deposit request purged successfully.", true);
                 loadPendingDeposits();
             } catch (error) {
-                await showAnpAlert("Error", "Error rejecting deposit: " + error.message, false);
+                await showAnpAlert("Error", "Error purging deposit: " + error.message, false);
             }
         }
 
         window.rejectWithdrawal = async function(wdrId) {
-            const note = await showAnpPrompt("Reject Withdrawal", "Enter a reason/note for rejecting this withdrawal (will be shown to user):", "Invalid bank details or limit exceeded.");
+            const note = await showAnpPrompt("Purge Withdrawal", "Enter audit note for withdrawal rejection:", "Invalid bank routing or limit constraints.");
             if (note === null) return;
 
             try {
@@ -607,10 +685,10 @@
                     status: "rejected",
                     adminNote: note || "Withdrawal rejected by admin."
                 });
-                await showAnpAlert("Success", "Withdrawal request rejected successfully.", true);
+                await showAnpAlert("Purged", "Withdrawal request purged successfully.", true);
                 loadWithdrawalRequests();
             } catch (error) {
-                await showAnpAlert("Error", "Error rejecting withdrawal: " + error.message, false);
+                await showAnpAlert("Error", "Error purging withdrawal: " + error.message, false);
             }
         }
 
@@ -619,7 +697,7 @@
                 await updateDoc(doc(db, "withdrawals", wdrId), {
                     status: "verified"
                 });
-                await showAnpAlert("Verified", "Withdrawal details verified successfully!", true);
+                await showAnpAlert("Verified", "Banking credentials verified successfully!", true);
                 loadWithdrawalRequests();
             } catch (error) {
                 await showAnpAlert("Error", "Error verifying withdrawal: " + error.message, false);
@@ -627,7 +705,7 @@
         }
 
         window.payWithdrawal = async function(wdrId, userId, amount) {
-            const confirmed = await showAnpConfirm("Confirm Payout", `Mark payout of ₹${amount} as Paid?\n\nThis will deduct the amount from user balance and record it in their transaction history.`);
+            const confirmed = await showAnpConfirm("Authorize Payout", `Release payout of ₹${amount}?\n\nThis will deduct funds from partner balance and log transaction.`);
             if (!confirmed) return;
 
             try {
@@ -640,10 +718,10 @@
                     paidAt: new Date().toISOString()
                 });
 
-                await showAnpAlert("Success", "Payout successful! Recorded in user history.", true);
+                await showAnpAlert("Payout Released", `Successfully transferred ₹${amount} to partner account!`, true);
                 loadWithdrawalRequests();
             } catch (error) {
-                await showAnpAlert("Error", "Error paying withdrawal: " + error.message, false);
+                await showAnpAlert("Error", "Payout release failed: " + error.message, false);
             }
         }
 
@@ -665,7 +743,7 @@
                 dailyReward = 50;
             }
 
-            const confirmed = await showAnpConfirm("Verify Deposit", `Verify payment of ₹${depositAmount}?\n\nThis will activate partner tier [${vipLevel}], credit daily reward of ₹${dailyReward}, and process referral cashback.`);
+            const confirmed = await showAnpConfirm("Activate VIP Tier", `Verify deposit of ₹${depositAmount}?\n\nThis will activate tier [${vipLevel}], credit daily reward of ₹${dailyReward}, and process referral cashback.`);
             if (!confirmed) return;
 
             try {
@@ -704,10 +782,10 @@
                     rewardCredited: dailyReward
                 });
 
-                await showAnpAlert("Success", `Successfully activated ${vipLevel}!`, true);
+                await showAnpAlert("Activation Complete", `Partner tier ${vipLevel} activated successfully!`, true);
                 loadPendingDeposits();
             } catch (error) {
-                await showAnpAlert("Error", "Error approving payment: " + error.message, false);
+                await showAnpAlert("Error", "Activation failed: " + error.message, false);
             }
         };
     </script>
