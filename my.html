@@ -3,18 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ANP MONEY - Partner Profile</title>
+    <title>ANP MONEY - My Profile</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Inter', sans-serif;
-            background: #020b05;
-            color: #e2e8f0;
+            background: linear-gradient(135deg, #0a1f12 0%, #000000 100%);
             -webkit-tap-highlight-color: transparent;
             min-height: 100vh;
             min-height: 100dvh;
@@ -22,32 +21,32 @@
             align-items: center;
             justify-content: center;
             overflow-x: hidden;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .bg-wave-pattern {
+            background: linear-gradient(to bottom, #5cb45c, #3f8e43);
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 430px;
+            height: 100dvh;
+            background: #f8fafc;
             position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
         }
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
-
-        /* Ambient Floating Cyber Orbs */
-        .orb-1 {
-            position: absolute; top: -10%; left: -10%; width: 350px; height: 350px;
-            background: radial-gradient(circle, rgba(16,185,129,0.2) 0%, rgba(0,0,0,0) 70%);
-            border-radius: 50%; animation: floatOrb 8s infinite alternate ease-in-out; pointer-events: none;
-        }
-        .orb-2 {
-            position: absolute; bottom: -10%; right: -10%; width: 400px; height: 400px;
-            background: radial-gradient(circle, rgba(5,150,105,0.15) 0%, rgba(0,0,0,0) 70%);
-            border-radius: 50%; animation: floatOrb 10s infinite alternate-reverse ease-in-out; pointer-events: none;
-        }
-        @keyframes floatOrb {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(30px, 40px) scale(1.1); }
-        }
-
-        .glass-card {
-            background: rgba(10, 24, 15, 0.75);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1);
+        @media (min-width: 640px) {
+            .app-container {
+                height: 880px;
+                max-height: 92vh;
+                border-radius: 36px;
+                border: 8px solid rgba(255, 255, 255, 0.12);
+            }
         }
 
         /* Tactile Button & Ripple Physics */
@@ -56,11 +55,11 @@
             transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s ease, filter 0.15s ease;
             cursor: pointer; -webkit-user-select: none; user-select: none;
         }
-        .tactile-btn:hover { filter: brightness(1.08); }
-        .tactile-btn:active { transform: scale(0.93) translateY(1px) !important; box-shadow: 0 2px 8px rgba(34, 197, 94, 0.25) !important; }
+        .tactile-btn:hover { filter: brightness(1.05); }
+        .tactile-btn:active { transform: scale(0.94) translateY(1px) !important; box-shadow: 0 2px 6px rgba(63, 142, 67, 0.25) !important; }
 
         .ripple {
-            position: absolute; background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 70%);
+            position: absolute; background: radial-gradient(circle, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 70%);
             border-radius: 50%; transform: scale(0); animation: rippleEffect 0.55s cubic-bezier(0.4, 0, 0.2, 1) forwards; pointer-events: none;
         }
         @keyframes rippleEffect {
@@ -68,12 +67,16 @@
             100% { transform: scale(4.5); opacity: 0; }
         }
 
+        /* Modal Pop Animation */
         @keyframes scaleUpModal {
             0% { transform: scale(0.9); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
-        .animate-modal-pop { animation: scaleUpModal 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .animate-modal-pop {
+            animation: scaleUpModal 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
 
+        /* GPay / Paytm Tick Animation */
         @keyframes circleScale {
             0% { transform: scale(0); opacity: 0; }
             60% { transform: scale(1.12); opacity: 1; }
@@ -85,87 +88,72 @@
         }
         .gpay-circle { animation: circleScale 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         .gpay-check { stroke-dasharray: 48; stroke-dashoffset: 48; animation: checkmarkDraw 0.4s 0.25s ease-in-out forwards; }
-
-        .app-container {
-            width: 100%; max-width: 430px; height: 100dvh; background: #07130a;
-            position: relative; display: flex; flex-direction: column; overflow: hidden;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.8);
-        }
-        @media (min-width: 640px) {
-            .app-container { height: 880px; max-height: 92vh; border-radius: 36px; border: 8px solid rgba(255,255,255,0.12); }
-        }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body>
 
-    <div class="orb-1"></div>
-    <div class="orb-2"></div>
-
     <div class="app-container">
         
         <!-- Header Profile Summary -->
-        <header class="bg-gradient-to-r from-green-600 to-emerald-700 pt-6 px-6 pb-6 text-white relative flex-shrink-0 shadow-lg">
+        <header class="bg-wave-pattern pt-8 px-6 pb-8 text-white relative flex-shrink-0 shadow-md">
             <div class="flex items-center justify-between mb-4">
-                <h1 class="text-sm font-black tracking-tight">Partner Profile</h1>
-                <button onclick="handleLogout()" class="px-3 py-1.5 bg-red-950/60 hover:bg-red-900 text-red-300 rounded-xl text-xs font-bold border border-red-800/40 transition-all tactile-btn">
+                <h1 class="text-sm font-black tracking-tight">My Profile</h1>
+                <button onclick="handleLogout()" class="px-3 py-1.5 bg-red-600/90 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all shadow tactile-btn">
                     <i class="fas fa-sign-out-alt mr-1"></i> Log Out
                 </button>
             </div>
             
-            <div class="flex items-center gap-4">
-                <div class="w-14 h-14 bg-white/20 backdrop-blur-md text-white rounded-2xl flex items-center justify-center text-2xl font-black shadow-inner border border-white/20" id="profile-initial">
+            <div class="flex items-center gap-4 mt-2">
+                <div class="w-14 h-14 bg-white text-green-700 rounded-full flex items-center justify-center text-2xl font-black shadow-md flex-shrink-0" id="profile-initial">
                     A
                 </div>
-                <div class="flex-1">
+                <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-2">
-                        <h2 class="text-base font-bold text-white truncate" id="profile-name">Loading...</h2>
-                        <button onclick="openEditUsernameModal()" class="text-green-200 hover:text-white text-xs transition-colors tactile-btn p-1" title="Edit Username">
+                        <h2 class="text-base font-bold truncate" id="profile-name">Loading...</h2>
+                        <button onclick="openEditUsernameModal()" class="w-6 h-6 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white text-[10px] transition-all tactile-btn flex-shrink-0" title="Edit Username">
                             <i class="fas fa-pen"></i>
                         </button>
                     </div>
-                    <p class="text-xs text-green-100 font-mono truncate" id="profile-email">--</p>
-                    <span class="inline-block mt-1 bg-black/30 border border-white/20 text-green-300 text-[10px] font-mono font-extrabold px-2.5 py-0.5 rounded-full" id="profile-level">VIP1</span>
+                    <p class="text-xs text-green-100 truncate font-mono" id="profile-email">--</p>
+                    <span class="inline-block mt-1 bg-green-800/60 text-green-100 text-[10px] font-mono font-extrabold px-2.5 py-0.5 rounded-full" id="profile-level">VIP1</span>
                 </div>
             </div>
         </header>
 
         <!-- Main Content -->
-        <main class="flex-1 overflow-y-auto p-4 flex flex-col gap-4 hide-scrollbar pb-[110px]">
+        <main class="flex-1 bg-slate-50 rounded-t-[28px] -mt-4 relative z-10 px-5 pt-6 pb-24 overflow-y-auto hide-scrollbar">
             
             <!-- Account Overview Cards -->
-            <div class="grid grid-cols-2 gap-3">
-                <div class="glass-card rounded-2xl p-4 text-center">
-                    <span class="text-[10px] text-gray-400 block mb-1 font-mono uppercase">Available Balance</span>
-                    <span class="text-lg font-black text-green-400 font-mono" id="profile-balance">₹0.00</span>
+            <div class="grid grid-cols-2 gap-3 mb-5">
+                <div class="bg-white border border-green-100 rounded-2xl p-4 text-center shadow-sm">
+                    <span class="text-[11px] text-gray-500 block mb-1 font-medium">Available Balance</span>
+                    <span class="text-lg font-black text-green-700 font-mono" id="profile-balance">₹0.00</span>
                 </div>
-                <div class="glass-card rounded-2xl p-4 text-center">
-                    <span class="text-[10px] text-gray-400 block mb-1 font-mono uppercase">Total Revenue</span>
-                    <span class="text-lg font-black text-emerald-300 font-mono" id="profile-revenue">₹0.00</span>
+                <div class="bg-white border border-emerald-100 rounded-2xl p-4 text-center shadow-sm">
+                    <span class="text-[11px] text-gray-500 block mb-1 font-medium">Total Revenue</span>
+                    <span class="text-lg font-black text-emerald-700 font-mono" id="profile-revenue">₹0.00</span>
                 </div>
             </div>
 
             <!-- Referral Code Card -->
-            <div class="glass-card rounded-3xl p-5 relative overflow-hidden">
-                <div class="absolute -right-8 -bottom-8 w-28 h-28 bg-green-500/20 rounded-full blur-xl pointer-events-none"></div>
-                <h3 class="text-xs font-bold text-green-300 mb-1 flex items-center gap-2 uppercase tracking-wide">
-                    <i class="fas fa-share-alt"></i> Your Referral Code
+            <div class="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200/80 rounded-2xl p-4 mb-5 shadow-sm">
+                <h3 class="text-xs font-bold text-green-800 mb-1.5 flex items-center gap-2">
+                    <i class="fas fa-share-alt text-green-600"></i> Your Referral Code
                 </h3>
-                <p class="text-[10px] text-gray-300 mb-3 leading-relaxed">Share this code with friends. When they register and recharge a VIP pack, you earn cashback!</p>
+                <p class="text-[10px] text-green-700 mb-3 leading-relaxed">Share this code with friends. When they register and recharge a VIP pack, you earn instant cashback!</p>
                 
-                <div class="flex items-center justify-between bg-black/50 border border-white/10 rounded-2xl px-4 py-2.5 shadow-inner">
-                    <span id="display-ref-code" class="font-mono font-bold text-sm text-green-300 tracking-wider">Loading...</span>
-                    <button onclick="copyReferralCode()" class="px-3.5 py-1.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl text-xs font-bold shadow tactile-btn">
+                <div class="flex items-center justify-between bg-white border border-green-300/80 rounded-xl px-3 py-2.5 shadow-inner">
+                    <span id="display-ref-code" class="font-mono font-bold text-xs text-green-900 tracking-wider">Loading...</span>
+                    <button onclick="copyReferralCode()" class="px-3.5 py-1.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-lg text-xs font-bold shadow tactile-btn">
                         <i class="fas fa-copy mr-1"></i> Copy
                     </button>
                 </div>
             </div>
 
             <!-- Saved Bank Account Section -->
-            <div class="glass-card rounded-3xl p-5">
-                <h3 class="text-xs font-bold text-green-300 mb-3 flex items-center gap-2 uppercase tracking-wide">
-                    <i class="fas fa-university"></i> Saved Bank Account Details
+            <div class="bg-white border border-gray-200/80 rounded-2xl p-4 mb-5 shadow-sm">
+                <h3 class="text-xs font-bold text-gray-800 mb-3 flex items-center gap-2">
+                    <i class="fas fa-university text-green-600"></i> Saved Bank Account Details
                 </h3>
                 <div id="bank-info-box">
                     <p class="text-xs text-gray-400 font-mono">Loading bank details...</p>
@@ -174,96 +162,99 @@
 
             <!-- Quick Links -->
             <div class="flex flex-col gap-2.5">
-                <button onclick="window.location.href='delivery.html'" class="glass-card py-3.5 px-4 text-gray-200 font-semibold rounded-2xl text-xs flex justify-between items-center tactile-btn">
-                    <span class="flex items-center gap-2.5"><i class="fas fa-history text-green-400"></i> Transaction History</span>
-                    <i class="fas fa-chevron-right text-gray-500 text-[10px]"></i>
+                <button onclick="window.location.href='delivery.html'" class="w-full py-3.5 px-4 bg-white hover:bg-gray-50 text-gray-800 font-semibold rounded-xl text-xs flex justify-between items-center border border-gray-200/80 shadow-sm transition-all tactile-btn">
+                    <span class="flex items-center gap-2.5"><i class="fas fa-history text-green-600"></i> Transaction History</span>
+                    <i class="fas fa-chevron-right text-gray-400 text-[10px]"></i>
                 </button>
-                <button onclick="window.location.href='index.html'" class="glass-card py-3.5 px-4 text-gray-200 font-semibold rounded-2xl text-xs flex justify-between items-center tactile-btn">
-                    <span class="flex items-center gap-2.5"><i class="fas fa-home text-green-400"></i> Back to Home Dashboard</span>
-                    <i class="fas fa-chevron-right text-gray-500 text-[10px]"></i>
+                <button onclick="window.location.href='index.html'" class="w-full py-3.5 px-4 bg-white hover:bg-gray-50 text-gray-800 font-semibold rounded-xl text-xs flex justify-between items-center border border-gray-200/80 shadow-sm transition-all tactile-btn">
+                    <span class="flex items-center gap-2.5"><i class="fas fa-home text-green-600"></i> Back to Home Dashboard</span>
+                    <i class="fas fa-chevron-right text-gray-400 text-[10px]"></i>
                 </button>
             </div>
 
         </main>
 
         <!-- Edit Username Modal -->
-        <div id="edit-username-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-            <div class="bg-gray-900 border border-green-500/40 rounded-[36px] p-7 max-w-sm w-full text-center shadow-2xl animate-modal-pop relative overflow-hidden">
-                <div class="absolute -top-12 -right-12 w-32 h-32 bg-green-500/15 rounded-full blur-2xl pointer-events-none"></div>
-                <h3 class="text-base font-black text-white mb-1">Edit Display Name</h3>
-                <p class="text-xs text-gray-400 mb-5">Enter your updated partner name below:</p>
+        <div id="edit-username-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+            <div class="bg-white border border-green-200 rounded-3xl p-6 max-w-xs w-full text-center shadow-2xl animate-modal-pop text-gray-800">
+                <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-3 text-lg">
+                    <i class="fas fa-pen"></i>
+                </div>
+                <h3 class="text-sm font-black text-gray-900 mb-1">Edit Display Name</h3>
+                <p class="text-xs text-gray-500 mb-4">Enter your updated partner name below:</p>
                 
-                <div class="mb-5 text-left">
-                    <input type="text" id="edit-username-input" placeholder="Enter Full Name" class="w-full bg-black/80 border border-green-800 rounded-2xl px-4 py-3.5 text-xs text-white outline-none focus:border-green-400 font-mono shadow-inner">
+                <div class="mb-4 text-left">
+                    <input type="text" id="edit-username-input" placeholder="Enter Full Name" class="w-full bg-gray-100 border border-gray-300 rounded-xl px-3.5 py-3 text-xs text-gray-900 outline-none focus:border-green-500 focus:bg-white shadow-inner">
                 </div>
 
-                <div class="flex flex-col gap-2.5">
-                    <button onclick="saveUsername()" class="w-full py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-2xl text-xs shadow-lg tactile-btn">Save Username</button>
-                    <button onclick="closeEditUsernameModal()" class="w-full py-2.5 bg-transparent text-gray-400 hover:text-white rounded-xl text-xs tactile-btn">Cancel</button>
+                <div class="flex flex-col gap-2">
+                    <button onclick="saveUsername()" class="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl text-xs shadow-md tactile-btn">Save Username</button>
+                    <button onclick="closeEditUsernameModal()" class="w-full py-2 bg-transparent text-gray-500 hover:text-gray-800 rounded-xl text-xs tactile-btn">Cancel</button>
                 </div>
             </div>
         </div>
 
         <!-- Edit Bank Modal -->
-        <div id="edit-bank-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-            <div class="bg-gray-900 border border-green-500/40 rounded-[36px] p-7 max-w-sm w-full text-center shadow-2xl animate-modal-pop relative overflow-hidden">
-                <div class="absolute -top-12 -right-12 w-32 h-32 bg-green-500/15 rounded-full blur-2xl pointer-events-none"></div>
-                <h3 class="text-base font-black text-white mb-1">Edit Bank Account</h3>
-                <p class="text-xs text-gray-400 mb-5">Update your valid payout details below:</p>
+        <div id="edit-bank-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+            <div class="bg-white border border-green-200 rounded-3xl p-6 max-w-xs w-full text-center shadow-2xl animate-modal-pop text-gray-800">
+                <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-3 text-lg">
+                    <i class="fas fa-university"></i>
+                </div>
+                <h3 class="text-sm font-black text-gray-900 mb-1">Edit Bank Account</h3>
+                <p class="text-xs text-gray-500 mb-4">Update your valid payout details below:</p>
                 
-                <div class="flex flex-col gap-3 text-left mb-5">
+                <div class="flex flex-col gap-3 text-left mb-4">
                     <div>
-                        <label class="text-[10px] text-green-300 font-mono font-semibold mb-1 block uppercase">Account Number (9-18 digits)</label>
-                        <input type="text" id="edit-account-num" placeholder="Enter Account Number" class="w-full bg-black/80 border border-green-800 rounded-2xl px-4 py-3 text-xs text-white outline-none focus:border-green-400 font-mono shadow-inner">
+                        <label class="text-[10px] text-green-700 font-semibold mb-1 block">Account Number (9-18 digits)</label>
+                        <input type="text" id="edit-account-num" placeholder="Enter Account Number" class="w-full bg-gray-100 border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:border-green-500 font-mono">
                     </div>
                     <div>
-                        <label class="text-[10px] text-green-300 font-mono font-semibold mb-1 block uppercase">IFSC Code (e.g. SBIN0001234)</label>
-                        <input type="text" id="edit-ifsc" placeholder="Enter IFSC Code" class="w-full bg-black/80 border border-green-800 rounded-2xl px-4 py-3 text-xs text-white outline-none focus:border-green-400 uppercase font-mono shadow-inner">
+                        <label class="text-[10px] text-green-700 font-semibold mb-1 block">IFSC Code (e.g. SBIN0001234)</label>
+                        <input type="text" id="edit-ifsc" placeholder="Enter IFSC Code" class="w-full bg-gray-100 border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:border-green-500 uppercase font-mono">
                     </div>
                 </div>
 
-                <div class="flex flex-col gap-2.5">
-                    <button onclick="saveBankDetails()" class="w-full py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-2xl text-xs shadow-lg tactile-btn">Save Changes</button>
-                    <button onclick="closeEditBankModal()" class="w-full py-2.5 bg-transparent text-gray-400 hover:text-white rounded-xl text-xs tactile-btn">Cancel</button>
+                <div class="flex flex-col gap-2">
+                    <button onclick="saveBankDetails()" class="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl text-xs shadow-md tactile-btn">Save Changes</button>
+                    <button onclick="closeEditBankModal()" class="w-full py-2 bg-transparent text-gray-500 hover:text-gray-800 rounded-xl text-xs tactile-btn">Cancel</button>
                 </div>
+            </div>
+        </div>
+
+        <!-- CUSTOM ANIMATED MODAL SYSTEM -->
+        <div id="anp-custom-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+            <div class="bg-white border border-green-200 rounded-3xl p-6 max-w-xs w-full text-center shadow-2xl animate-modal-pop text-gray-800 relative overflow-hidden">
+                <div id="modal-icon-container" class="my-3 flex justify-center"></div>
+                <h3 id="modal-title" class="text-sm font-black text-gray-900 mb-1 tracking-tight">Notice</h3>
+                <p id="modal-text" class="text-xs text-gray-500 mb-5 leading-relaxed px-1">Message goes here.</p>
+                <div id="modal-buttons"></div>
             </div>
         </div>
 
         <!-- Bottom Navigation Bar -->
-        <nav class="absolute bottom-0 w-full bg-gray-950/90 backdrop-blur-xl border-t border-white/10 flex justify-between items-center px-6 pt-2 pb-5 z-40 shadow-2xl">
-            <button onclick="window.location.href='index.html'" class="flex flex-col items-center text-gray-400 hover:text-green-400 transition-colors">
+        <nav class="absolute bottom-0 w-full bg-white border-t border-gray-100 flex justify-between items-center px-6 pt-2 pb-5 z-40 shadow-lg">
+            <button onclick="window.location.href='index.html'" class="flex flex-col items-center text-gray-400 group hover:text-green-600 transition-colors">
                 <i class="fas fa-home text-lg mb-1"></i>
                 <span class="text-[10px] font-medium">Home</span>
             </button>
-            <button onclick="window.location.href='delivery.html'" class="flex flex-col items-center text-gray-400 hover:text-green-400 transition-colors">
+            <button onclick="window.location.href='delivery.html'" class="flex flex-col items-center text-gray-400 group hover:text-green-600 transition-colors">
                 <i class="fas fa-box text-lg mb-1"></i>
                 <span class="text-[10px] font-medium">Delivery</span>
             </button>
             <div class="relative -top-6">
-                <button onclick="window.location.href='referral.html'" class="w-14 h-14 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white border-4 border-[#07130a] shadow-[0_5px_20px_rgba(34,197,94,0.5)] tactile-btn">
+                <button onclick="window.location.href='referral.html'" class="w-14 h-14 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white border-4 border-white shadow-[0_5px_15px_rgba(74,222,128,0.4)] tactile-btn">
                     <i class="fas fa-bicycle text-2xl"></i>
                 </button>
             </div>
-            <button onclick="window.location.href='map.html'" class="flex flex-col items-center text-gray-400 hover:text-green-400 transition-colors">
+            <button onclick="window.location.href='map.html'" class="flex flex-col items-center text-gray-400 group hover:text-green-600 transition-colors">
                 <i class="fas fa-map-marked-alt text-lg mb-1"></i>
                 <span class="text-[10px] font-medium">Map</span>
             </button>
-            <button onclick="window.location.href='my.html'" class="flex flex-col items-center text-green-400 group">
+            <button onclick="window.location.href='my.html'" class="flex flex-col items-center text-green-600 group">
                 <i class="fas fa-user text-lg mb-1"></i>
                 <span class="text-[10px] font-bold">My</span>
             </button>
         </nav>
-    </div>
-
-    <!-- CUSTOM ANIMATED MODAL SYSTEM -->
-    <div id="anp-custom-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-gray-900 border border-green-500/40 rounded-[36px] p-7 max-w-sm w-full text-center shadow-2xl animate-modal-pop relative overflow-hidden">
-            <div class="absolute -top-12 -right-12 w-32 h-32 bg-green-500/15 rounded-full blur-2xl pointer-events-none"></div>
-            <div id="modal-icon-container" class="my-3 flex justify-center"></div>
-            <h3 id="modal-title" class="text-lg font-black text-white mb-1.5 tracking-tight">Notice</h3>
-            <p id="modal-text" class="text-xs text-gray-300 mb-6 leading-relaxed px-2">Message goes here.</p>
-            <div id="modal-buttons"></div>
-        </div>
     </div>
 
     <script type="module">
@@ -295,12 +286,12 @@
                 document.getElementById("modal-text").innerText = message;
                 const iconContainer = document.getElementById("modal-icon-container");
                 if (isSuccess) {
-                    iconContainer.innerHTML = `<div class="w-20 h-20 bg-green-500/15 border border-green-500/40 rounded-full flex items-center justify-center gpay-circle shadow-[0_0_30px_rgba(34,197,94,0.3)]"><svg class="w-10 h-10 text-green-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path class="gpay-check" stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg></div>`;
+                    iconContainer.innerHTML = `<div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center gpay-circle shadow-md"><svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path class="gpay-check" stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg></div>`;
                 } else {
-                    iconContainer.innerHTML = `<div class="w-20 h-20 bg-red-500/15 border border-red-500/40 rounded-full flex items-center justify-center gpay-circle shadow-[0_0_30px_rgba(239,68,68,0.3)]"><i class="fas fa-exclamation-triangle text-red-400 text-2xl"></i></div>`;
+                    iconContainer.innerHTML = `<div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center gpay-circle shadow-md"><i class="fas fa-exclamation-triangle text-red-600 text-xl"></i></div>`;
                 }
                 const btnContainer = document.getElementById("modal-buttons");
-                btnContainer.innerHTML = `<button id="modal-ok-btn" class="w-full py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-2xl text-xs shadow-lg tactile-btn">Acknowledge</button>`;
+                btnContainer.innerHTML = `<button id="modal-ok-btn" class="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl text-xs shadow-md tactile-btn">Acknowledge</button>`;
                 modal.classList.remove("hidden");
                 document.getElementById("modal-ok-btn").onclick = () => { modal.classList.add("hidden"); resolve(true); };
             });
@@ -352,22 +343,22 @@
             const box = document.getElementById("bank-info-box");
             if (currentUserData && currentUserData.bankAccount) {
                 box.innerHTML = `
-                    <div class="flex justify-between items-center bg-black/40 border border-white/10 rounded-2xl p-3.5 shadow-inner">
+                    <div class="flex justify-between items-center bg-gray-50 border border-gray-200 rounded-xl p-3 shadow-inner">
                         <div>
-                            <p class="text-[11px] text-gray-300 font-semibold mb-1">A/C: <span class="text-white font-mono font-bold">${currentUserData.bankAccount}</span></p>
-                            <p class="text-[11px] text-gray-300 font-semibold">IFSC: <span class="text-white font-mono font-bold">${currentUserData.ifsc || 'N/A'}</span></p>
+                            <p class="text-[11px] text-gray-600 font-semibold mb-0.5">A/C: <span class="text-gray-900 font-mono font-bold">${currentUserData.bankAccount}</span></p>
+                            <p class="text-[11px] text-gray-600 font-semibold">IFSC: <span class="text-gray-900 font-mono font-bold">${currentUserData.ifsc || 'N/A'}</span></p>
                         </div>
-                        <div class="flex gap-2">
-                            <button onclick="openEditBankModal()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-[10px] font-bold shadow tactile-btn">Edit</button>
-                            <button onclick="deleteBankDetails()" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-[10px] font-bold shadow tactile-btn">Delete</button>
+                        <div class="flex gap-1.5">
+                            <button onclick="openEditBankModal()" class="px-2.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[10px] font-bold shadow tactile-btn">Edit</button>
+                            <button onclick="deleteBankDetails()" class="px-2.5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-[10px] font-bold shadow tactile-btn">Delete</button>
                         </div>
                     </div>
                 `;
             } else {
                 box.innerHTML = `
-                    <div class="text-center py-4">
-                        <p class="text-xs text-gray-400 mb-3 font-mono">No bank account linked yet.</p>
-                        <button onclick="openEditBankModal()" class="px-5 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl text-xs font-bold shadow-lg tactile-btn">
+                    <div class="text-center py-3">
+                        <p class="text-xs text-gray-400 mb-2.5">No bank account linked yet.</p>
+                        <button onclick="openEditBankModal()" class="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl text-xs font-bold shadow tactile-btn">
                             <i class="fas fa-plus mr-1"></i> Add Bank Details
                         </button>
                     </div>
@@ -457,16 +448,15 @@
         }
 
         window.deleteBankDetails = async function() {
-            // Using custom confirm modal logic
             const confirmed = await new Promise((resolve) => {
                 const modal = document.getElementById("anp-custom-modal");
                 document.getElementById("modal-title").innerText = "Delete Bank Details";
                 document.getElementById("modal-text").innerText = "Are you sure you want to delete your saved bank account?";
-                document.getElementById("modal-icon-container").innerHTML = `<div class="w-16 h-16 bg-amber-500/15 border border-amber-500/40 rounded-2xl flex items-center justify-center text-amber-400 text-xl"><i class="fas fa-exclamation-triangle"></i></div>`;
+                document.getElementById("modal-icon-container").innerHTML = `<div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center text-xl"><i class="fas fa-exclamation-triangle"></i></div>`;
                 document.getElementById("modal-buttons").innerHTML = `
-                    <div class="flex gap-2.5">
-                        <button id="modal-cancel-btn" class="flex-1 py-3 bg-gray-800 text-gray-300 font-bold rounded-xl text-xs tactile-btn">Cancel</button>
-                        <button id="modal-confirm-btn" class="flex-1 py-3 bg-red-600 text-white font-bold rounded-xl text-xs shadow-lg tactile-btn">Delete</button>
+                    <div class="flex gap-2">
+                        <button id="modal-cancel-btn" class="flex-1 py-3 bg-gray-100 text-gray-700 font-bold rounded-xl text-xs tactile-btn">Cancel</button>
+                        <button id="modal-confirm-btn" class="flex-1 py-3 bg-red-600 text-white font-bold rounded-xl text-xs shadow-md tactile-btn">Delete</button>
                     </div>
                 `;
                 modal.classList.remove("hidden");
@@ -497,11 +487,11 @@
                 const modal = document.getElementById("anp-custom-modal");
                 document.getElementById("modal-title").innerText = "Log Out";
                 document.getElementById("modal-text").innerText = "Are you sure you want to sign out of your account?";
-                document.getElementById("modal-icon-container").innerHTML = `<div class="w-16 h-16 bg-red-500/15 border border-red-500/40 rounded-2xl flex items-center justify-center text-red-400 text-xl"><i class="fas fa-sign-out-alt"></i></div>`;
+                document.getElementById("modal-icon-container").innerHTML = `<div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-xl"><i class="fas fa-sign-out-alt"></i></div>`;
                 document.getElementById("modal-buttons").innerHTML = `
-                    <div class="flex gap-2.5">
-                        <button id="modal-cancel-btn" class="flex-1 py-3 bg-gray-800 text-gray-300 font-bold rounded-xl text-xs tactile-btn">Cancel</button>
-                        <button id="modal-confirm-btn" class="flex-1 py-3 bg-red-600 text-white font-bold rounded-xl text-xs shadow-lg tactile-btn">Log Out</button>
+                    <div class="flex gap-2">
+                        <button id="modal-cancel-btn" class="flex-1 py-3 bg-gray-100 text-gray-700 font-bold rounded-xl text-xs tactile-btn">Cancel</button>
+                        <button id="modal-confirm-btn" class="flex-1 py-3 bg-red-600 text-white font-bold rounded-xl text-xs shadow-md tactile-btn">Log Out</button>
                     </div>
                 `;
                 modal.classList.remove("hidden");
@@ -512,7 +502,7 @@
             if (!confirmed) return;
 
             await signOut(auth);
-            window.location.href = 'ANP.HTML';
+            window.location.href = 'index.html';
         }
 
         // Universal Tactile Ripple Effect Listener
