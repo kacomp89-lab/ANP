@@ -396,15 +396,21 @@
         </div>
     </div>
 
-    <!-- Deposit / UPI Payment Modal with Dynamic Pre-filled QR Code -->
+    <!-- Deposit / UPI Payment Modal with Rotating UPI & QR Code -->
     <div id="deposit-modal" class="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center hidden px-4 backdrop-blur-md">
         <div class="glass-modal rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl text-white animate-modal-pop">
             <div class="w-12 h-12 bg-green-500 bg-opacity-30 border border-green-400 rounded-full flex items-center justify-center mx-auto mb-3 text-green-300 text-xl">
                 <i class="fas fa-qrcode"></i>
             </div>
             <h3 class="text-lg font-bold mb-1">Buy ANP Coins via UPI</h3>
-            <p class="text-[11px] text-gray-300 mb-3">Scan QR code or click apps below:</p>
+            <p class="text-[11px] text-gray-300 mb-2">Scan QR code or click apps below:</p>
             
+            <!-- Rotating UPI Indicator Box -->
+            <div class="bg-black/40 border border-green-500/30 rounded-xl p-2.5 mb-3 text-xs flex justify-between items-center">
+                <span class="text-gray-300">UPI ID: <strong id="active-upi-text" class="text-green-400 font-mono">...</strong></span>
+                <span class="text-[10px] text-yellow-400 font-mono"><i class="fas fa-clock mr-1"></i> Rotates in <span id="upi-timer-display">60:00</span></span>
+            </div>
+
             <div id="step-qr" class="block">
                 <div class="bg-white p-3 rounded-2xl inline-block mb-3 shadow-md">
                     <img id="upi-qr-img" src="qrimg.jpg" alt="UPI QR Code" class="w-40 h-40 mx-auto object-contain">
@@ -505,9 +511,31 @@
         let currentUserData = null;
         let userDocRef = null;
         let selectedVIPAmount = 0;
+        let upiTimerInterval = null;
 
-        const MERCHANT_UPI = "anpadarshanp@fam"; 
+        // Hourly Rotating UPI Pool
+        const MERCHANT_UPIS = ["anpadarshanp@fam", "8115898176@ibl"];
         const MERCHANT_NAME = "ANP Green Ride";
+
+        function getActiveMerchantUPI() {
+            const hourIndex = Math.floor(Date.now() / (1000 * 60 * 60));
+            return MERCHANT_UPIS[hourIndex % MERCHANT_UPIS.length];
+        }
+
+        function startUpiCountdown() {
+            if (upiTimerInterval) clearInterval(upiTimerInterval);
+            const timerEl = document.getElementById("upi-timer-display");
+            if (!timerEl) return;
+
+            function updateTimer() {
+                const now = new Date();
+                const minutesLeft = 59 - now.getMinutes();
+                const secondsLeft = 59 - now.getSeconds();
+                timerEl.innerText = `${String(minutesLeft).padStart(2, '0')}:${String(secondsLeft).padStart(2, '0')}`;
+            }
+            updateTimer();
+            upiTimerInterval = setInterval(updateTimer, 1000);
+        }
 
         function showSuccessModal(message = "Your request has been submitted successfully.") {
             return new Promise((resolve) => {
@@ -813,7 +841,11 @@
             document.getElementById("deposit-modal").classList.remove("hidden");
             document.getElementById("display-amount").innerText = `₹${selectedVIPAmount.toLocaleString()}`;
 
-            const upiString = `upi://pay?pa=${MERCHANT_UPI}&pn=${encodeURIComponent(MERCHANT_NAME)}&am=${selectedVIPAmount.toFixed(2)}&cu=INR`;
+            const activeUpi = getActiveMerchantUPI();
+            document.getElementById("active-upi-text").innerText = activeUpi;
+            startUpiCountdown();
+
+            const upiString = `upi://pay?pa=${activeUpi}&pn=${encodeURIComponent(MERCHANT_NAME)}&am=${selectedVIPAmount.toFixed(2)}&cu=INR`;
 
             document.getElementById("gpay-btn").href = upiString;
             document.getElementById("paytm-btn").href = upiString;
@@ -825,6 +857,7 @@
         window.closeDepositModal = function() {
             document.getElementById("deposit-modal").classList.add("hidden");
             document.getElementById("utr-number").value = "";
+            if (upiTimerInterval) clearInterval(upiTimerInterval);
         }
 
         window.submitPaymentProof = async function() {
