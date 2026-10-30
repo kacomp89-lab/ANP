@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>ANP MONEY - Backend Server Control Center</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -23,6 +23,14 @@
             animation: scaleUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
+        @keyframes messageSlideUp {
+            0% { opacity: 0; transform: translateY(15px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .animate-msg {
+            animation: messageSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
         /* GPay / Paytm Tick Animation Keyframes */
         @keyframes circleScale {
             0% { transform: scale(0); opacity: 0; }
@@ -39,6 +47,14 @@
         .server-glow {
             box-shadow: 0 0 25px rgba(34, 197, 94, 0.15);
         }
+
+        .tactile-btn {
+            position: relative; overflow: hidden; transform: translateZ(0);
+            transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s ease, filter 0.15s ease;
+            cursor: pointer; -webkit-user-select: none; user-select: none;
+        }
+        .tactile-btn:hover { filter: brightness(1.08); }
+        .tactile-btn:active { transform: scale(0.93) translateY(1px) !important; }
     </style>
 </head>
 <body class="min-h-screen p-3 sm:p-6 flex flex-col justify-between">
@@ -53,15 +69,15 @@
                 </div>
                 <div>
                     <div class="text-xs font-mono font-bold text-green-400 tracking-wider">SRV-CLUSTER // ANP-CORE-01</div>
-                    <div class="text-[10px] text-gray-400 font-mono">FIRESTORE DB: CONNECTED &bull; LATENCY: 14ms</div>
+                    <div class="text-[10px] text-gray-400 font-mono">FIRESTORE DB: LIVE SYNC &bull; LATENCY: 12ms</div>
                 </div>
             </div>
             <div class="flex items-center gap-2.5 w-full sm:w-auto justify-end">
                 <span class="hidden sm:inline-block px-2.5 py-1 bg-green-500/10 border border-green-500/30 rounded-lg text-[10px] font-mono text-green-300">SECURE SSL ACTIVE</span>
-                <button onclick="lockAdminSession()" id="lock-btn" class="px-3 py-1.5 bg-red-950/60 hover:bg-red-900 text-red-300 text-xs font-bold rounded-xl border border-red-800/50 transition-all hidden" title="Lock Session">
+                <button onclick="lockAdminSession()" id="lock-btn" class="px-3 py-1.5 bg-red-950/60 hover:bg-red-900 text-red-300 text-xs font-bold rounded-xl border border-red-800/50 transition-all hidden tactile-btn" title="Lock Session">
                     <i class="fas fa-lock mr-1"></i> Lock
                 </button>
-                <button onclick="window.location.href='index.html'" class="px-3.5 py-1.5 bg-green-900/40 hover:bg-green-800 text-green-300 text-xs font-bold rounded-xl border border-green-700/50 transition-all">
+                <button onclick="window.location.href='index.html'" class="px-3.5 py-1.5 bg-green-900/40 hover:bg-green-800 text-green-300 text-xs font-bold rounded-xl border border-green-700/50 transition-all tactile-btn">
                     App Portal
                 </button>
             </div>
@@ -73,7 +89,7 @@
                 <h1 class="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-2">
                     <i class="fas fa-server text-green-400 text-lg"></i> Backend Operations
                 </h1>
-                <p class="text-xs text-gray-400 mt-0.5">Authorized Team Verification & Telemetry Terminal</p>
+                <p class="text-xs text-gray-400 mt-0.5">Real-Time Telemetry & Instant Payout Dispatch Terminal</p>
             </div>
         </div>
 
@@ -89,7 +105,7 @@
                 <input type="password" id="team-pin-input" placeholder="••••" maxlength="10" class="w-full bg-black/80 border border-green-800/80 rounded-2xl px-4 py-3 text-center text-white tracking-[0.5em] text-xl outline-none focus:border-green-400 font-mono shadow-inner">
             </div>
 
-            <button onclick="verifyTeamPin()" class="w-full py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-2xl text-xs shadow-[0_5px_20px_rgba(34,197,94,0.4)] transition-all active:scale-95">
+            <button onclick="verifyTeamPin()" class="w-full py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-2xl text-xs shadow-[0_5px_20px_rgba(34,197,94,0.4)] transition-all tactile-btn">
                 Authorize Session
             </button>
             <p id="pin-error" class="text-red-400 text-[11px] font-semibold mt-3 hidden">Access Denied: Invalid Security Key.</p>
@@ -102,7 +118,7 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
                 <div class="bg-black/50 border border-green-900/40 rounded-2xl p-3.5">
                     <span class="text-[10px] text-gray-400 block font-mono uppercase">System Mode</span>
-                    <span class="text-xs font-bold text-green-400 font-mono mt-0.5 block"><i class="fas fa-shield-alt mr-1"></i> LIVE OPS</span>
+                    <span class="text-xs font-bold text-green-400 font-mono mt-0.5 block"><i class="fas fa-shield-alt mr-1"></i> LIVE STREAM</span>
                 </div>
                 <div class="bg-black/50 border border-green-900/40 rounded-2xl p-3.5">
                     <span class="text-[10px] text-gray-400 block font-mono uppercase">Auth Token</span>
@@ -110,7 +126,7 @@
                 </div>
                 <div class="bg-black/50 border border-green-900/40 rounded-2xl p-3.5">
                     <span class="text-[10px] text-gray-400 block font-mono uppercase">Database Protocol</span>
-                    <span class="text-xs font-bold text-sky-400 font-mono mt-0.5 block"><i class="fas fa-database mr-1"></i> CLOUD V2</span>
+                    <span class="text-xs font-bold text-sky-400 font-mono mt-0.5 block"><i class="fas fa-database mr-1"></i> SNAPSHOT V2</span>
                 </div>
                 <div class="bg-black/50 border border-green-900/40 rounded-2xl p-3.5">
                     <span class="text-[10px] text-gray-400 block font-mono uppercase">Server Time</span>
@@ -120,13 +136,13 @@
 
             <!-- Tab Buttons -->
             <div class="flex flex-wrap gap-2 mb-6 border-b border-green-900/50 pb-4">
-                <button onclick="switchAdminTab('deposits')" id="tab-btn-deposits" class="px-4 py-2.5 bg-green-600 text-white font-bold rounded-xl text-xs transition-all shadow-md active:scale-95">
+                <button onclick="switchAdminTab('deposits')" id="tab-btn-deposits" class="px-4 py-2.5 bg-green-600 text-white font-bold rounded-xl text-xs transition-all shadow-md tactile-btn">
                     <i class="fas fa-coins mr-1.5"></i> Deposit Verifications
                 </button>
-                <button onclick="switchAdminTab('withdrawals')" id="tab-btn-withdrawals" class="px-4 py-2.5 bg-gray-800/80 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all active:scale-95">
+                <button onclick="switchAdminTab('withdrawals')" id="tab-btn-withdrawals" class="px-4 py-2.5 bg-gray-800/80 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all tactile-btn">
                     <i class="fas fa-wallet mr-1.5"></i> Withdrawal Payouts
                 </button>
-                <button onclick="switchAdminTab('customercare')" id="tab-btn-customercare" class="px-4 py-2.5 bg-gray-800/80 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all active:scale-95">
+                <button onclick="switchAdminTab('customercare')" id="tab-btn-customercare" class="px-4 py-2.5 bg-gray-800/80 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all tactile-btn">
                     <i class="fas fa-headset mr-1.5"></i> Customer Care Inbox
                 </button>
             </div>
@@ -134,20 +150,20 @@
             <!-- Deposits Section -->
             <div id="section-deposits">
                 <h2 class="text-xs font-mono font-bold text-green-300 mb-4 flex items-center gap-2 uppercase tracking-wider">
-                    <i class="fas fa-stream"></i> Pending Payment Requests Queue
+                    <i class="fas fa-stream"></i> Real-Time Payment Requests Queue
                 </h2>
                 <div id="admin-deposit-list" class="flex flex-col gap-3.5">
-                    <div class="text-center py-12 text-gray-500 text-xs font-mono">Fetching server records...</div>
+                    <div class="text-center py-12 text-gray-500 text-xs font-mono">Syncing live server records...</div>
                 </div>
             </div>
 
             <!-- Withdrawals Section -->
             <div id="section-withdrawals" class="hidden">
                 <h2 class="text-xs font-mono font-bold text-green-300 mb-4 flex items-center gap-2 uppercase tracking-wider">
-                    <i class="fas fa-university"></i> Withdrawal Payout Requests Queue
+                    <i class="fas fa-university"></i> Real-Time Payout Queue
                 </h2>
                 <div id="admin-withdrawal-list" class="flex flex-col gap-3.5">
-                    <div class="text-center py-12 text-gray-500 text-xs font-mono">Fetching payout requests...</div>
+                    <div class="text-center py-12 text-gray-500 text-xs font-mono">Syncing live payout requests...</div>
                 </div>
             </div>
 
@@ -160,7 +176,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <!-- User Conversations Sidebar -->
                     <div id="admin-chat-users" class="bg-black/60 border border-green-900/40 rounded-2xl p-3 h-96 overflow-y-auto space-y-2 hide-scrollbar">
-                        <div class="text-center py-16 text-gray-500 text-xs font-mono">Loading active sessions...</div>
+                        <div class="text-center py-16 text-gray-500 text-xs font-mono">Syncing active sessions...</div>
                     </div>
 
                     <!-- Active Chat & Reply Window -->
@@ -177,7 +193,7 @@
                         <!-- Admin Reply Input -->
                         <div class="pt-3 flex gap-2.5 mt-auto border-t border-green-900/50">
                             <input type="text" id="admin-reply-input" onkeypress="handleAdminKeyPress(event)" placeholder="Transmit response to partner..." class="flex-1 bg-black/80 border border-green-800/80 rounded-xl px-4 py-3 text-xs text-white outline-none focus:border-green-400 font-mono">
-                            <button onclick="sendAdminReply()" class="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl text-xs shadow-lg transition-all active:scale-95 flex-shrink-0">
+                            <button onclick="sendAdminReply()" class="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl text-xs shadow-lg transition-all tactile-btn flex-shrink-0">
                                 Transmit
                             </button>
                         </div>
@@ -189,38 +205,32 @@
 
     </div>
 
-    <!-- GPAY & PAYTM STYLE SUCCESS ANIMATION OVERLAY MODAL -->
+    <!-- CUSTOM ANIMATED OVERLAY MODAL -->
     <div id="anp-custom-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-gray-900 border border-green-500/40 rounded-[32px] p-7 max-w-sm w-full text-center shadow-2xl animate-modal-pop relative overflow-hidden">
             <div class="absolute -top-12 -right-12 w-32 h-32 bg-green-500/15 rounded-full blur-2xl pointer-events-none"></div>
             
-            <!-- Animated Checkmark Container -->
-            <div id="modal-icon-container" class="my-3 flex justify-center">
-                <!-- Injected dynamically via JS (GPay Tick or Warning Icon) -->
-            </div>
+            <div id="modal-icon-container" class="my-3 flex justify-center"></div>
             
             <h3 id="modal-title" class="text-lg font-black text-white mb-1.5 tracking-tight">Success</h3>
             <p id="modal-text" class="text-xs text-gray-300 mb-6 leading-relaxed px-2">Operation completed successfully.</p>
             
-            <!-- Optional Input for Prompt -->
             <div id="modal-input-container" class="mb-5 hidden">
                 <input type="text" id="modal-prompt-input" class="w-full bg-black/80 border border-green-800/80 rounded-xl px-4 py-3 text-xs text-white outline-none focus:border-green-400 font-mono" placeholder="Enter notes...">
             </div>
 
-            <div id="modal-buttons" class="flex gap-3">
-                <!-- Buttons injected dynamically -->
-            </div>
+            <div id="modal-buttons" class="flex gap-3"></div>
         </div>
     </div>
 
     <footer class="text-center text-[10px] text-gray-600 font-mono mt-8">
-        ANP MONEY ENTERPRISE SERVER v2.4.1 // SECURE CLOUD TELEMETRY
+        ANP MONEY ENTERPRISE SERVER v2.5.0 // REAL-TIME SNAPSHOT TELEMETRY
     </footer>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
-        import { getFirestore, collection, query, where, getDocs, doc, getDoc, updateDoc, increment, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+        import { getFirestore, collection, query, where, getDoc, doc, updateDoc, increment, addDoc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDZb4KcR5Tvw3x_ipR2ocgdUDqh47Arz6M",
@@ -239,6 +249,7 @@
 
         let activeChatUid = null;
         let activeChatEmail = "";
+        let globalChatsMap = {};
 
         // Live Server Clock
         setInterval(() => {
@@ -248,7 +259,7 @@
             if (clockEl) clockEl.innerText = timeString;
         }, 1000);
 
-        // ==================== GPAY / PAYTM STYLE ANIMATED MODALS ====================
+        // ==================== ANIMATED MODALS ====================
         window.showAnpAlert = function(title, message, isSuccess = true) {
             return new Promise((resolve) => {
                 const modal = document.getElementById("anp-custom-modal");
@@ -259,7 +270,6 @@
                 const iconContainer = document.getElementById("modal-icon-container");
 
                 if (isSuccess) {
-                    // Paytm / GPay Style Animated Tick
                     iconContainer.innerHTML = `
                         <div class="w-20 h-20 bg-green-500/15 border border-green-500/40 rounded-full flex items-center justify-center gpay-circle shadow-[0_0_30px_rgba(34,197,94,0.3)]">
                             <svg class="w-10 h-10 text-green-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
@@ -277,7 +287,7 @@
 
                 const btnContainer = document.getElementById("modal-buttons");
                 btnContainer.innerHTML = `
-                    <button id="modal-ok-btn" class="w-full py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-2xl text-xs shadow-lg transition-all active:scale-95">
+                    <button id="modal-ok-btn" class="w-full py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-2xl text-xs shadow-lg tactile-btn">
                         Acknowledge
                     </button>
                 `;
@@ -306,8 +316,8 @@
 
                 const btnContainer = document.getElementById("modal-buttons");
                 btnContainer.innerHTML = `
-                    <button id="modal-cancel-btn" class="flex-1 py-3.5 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold rounded-2xl text-xs transition-all active:scale-95">Abort</button>
-                    <button id="modal-confirm-btn" class="flex-1 py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-2xl text-xs shadow-lg transition-all active:scale-95">Confirm</button>
+                    <button id="modal-cancel-btn" class="flex-1 py-3.5 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold rounded-2xl text-xs tactile-btn">Abort</button>
+                    <button id="modal-confirm-btn" class="flex-1 py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-2xl text-xs shadow-lg tactile-btn">Confirm</button>
                 `;
 
                 modal.classList.remove("hidden");
@@ -342,8 +352,8 @@
 
                 const btnContainer = document.getElementById("modal-buttons");
                 btnContainer.innerHTML = `
-                    <button id="modal-cancel-btn" class="flex-1 py-3.5 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold rounded-2xl text-xs transition-all active:scale-95">Cancel</button>
-                    <button id="modal-submit-btn" class="flex-1 py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-2xl text-xs shadow-lg transition-all active:scale-95">Submit</button>
+                    <button id="modal-cancel-btn" class="flex-1 py-3.5 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold rounded-2xl text-xs tactile-btn">Cancel</button>
+                    <button id="modal-submit-btn" class="flex-1 py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-2xl text-xs shadow-lg tactile-btn">Submit</button>
                 `;
 
                 modal.classList.remove("hidden");
@@ -396,8 +406,8 @@
                 }
             }
 
-            loadPendingDeposits();
-            loadWithdrawalRequests();
+            initAdminDepositsListener();
+            initAdminWithdrawalsListener();
             initAdminChatListener();
         }
 
@@ -415,27 +425,135 @@
             const wdrSec = document.getElementById("section-withdrawals");
             const ccSec = document.getElementById("section-customercare");
 
-            depBtn.className = "px-4 py-2.5 bg-gray-800/80 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all active:scale-95";
-            wdrBtn.className = "px-4 py-2.5 bg-gray-800/80 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all active:scale-95";
-            ccBtn.className = "px-4 py-2.5 bg-gray-800/80 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all active:scale-95";
+            depBtn.className = "px-4 py-2.5 bg-gray-800/80 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all tactile-btn";
+            wdrBtn.className = "px-4 py-2.5 bg-gray-800/80 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all tactile-btn";
+            ccBtn.className = "px-4 py-2.5 bg-gray-800/80 hover:bg-gray-700 text-gray-300 font-bold rounded-xl text-xs transition-all tactile-btn";
 
             depSec.classList.add("hidden");
             wdrSec.classList.add("hidden");
             ccSec.classList.add("hidden");
 
             if (tab === 'deposits') {
-                depBtn.className = "px-4 py-2.5 bg-green-600 text-white font-bold rounded-xl text-xs transition-all shadow-md active:scale-95";
+                depBtn.className = "px-4 py-2.5 bg-green-600 text-white font-bold rounded-xl text-xs transition-all shadow-md tactile-btn";
                 depSec.classList.remove("hidden");
             } else if (tab === 'withdrawals') {
-                wdrBtn.className = "px-4 py-2.5 bg-green-600 text-white font-bold rounded-xl text-xs transition-all shadow-md active:scale-95";
+                wdrBtn.className = "px-4 py-2.5 bg-green-600 text-white font-bold rounded-xl text-xs transition-all shadow-md tactile-btn";
                 wdrSec.classList.remove("hidden");
             } else if (tab === 'customercare') {
-                ccBtn.className = "px-4 py-2.5 bg-green-600 text-white font-bold rounded-xl text-xs transition-all shadow-md active:scale-95";
+                ccBtn.className = "px-4 py-2.5 bg-green-600 text-white font-bold rounded-xl text-xs transition-all shadow-md tactile-btn";
                 ccSec.classList.remove("hidden");
             }
         }
 
-        // ==================== LIVE SUPPORT CHAT LOGIC ====================
+        // ==================== REAL-TIME DEPOSITS LISTENER ====================
+        function initAdminDepositsListener() {
+            const container = document.getElementById("admin-deposit-list");
+            const q = query(collection(db, "deposits"), where("status", "==", "pending"));
+
+            onSnapshot(q, (snapshot) => {
+                container.innerHTML = "";
+                if (snapshot.empty) {
+                    container.innerHTML = `
+                        <div class="text-center py-16 text-gray-500 text-xs font-mono animate-msg">
+                            <i class="fas fa-check-circle text-3xl text-green-600 mb-2"></i>
+                            <p>All deposit payment queues cleared!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                snapshot.forEach((docSnap) => {
+                    const deposit = docSnap.data();
+                    const depositId = docSnap.id;
+                    const dateStr = deposit.createdAt ? new Date(deposit.createdAt).toLocaleString('en-IN') : 'Recent';
+
+                    const card = `
+                        <div class="bg-black/50 border border-green-900/40 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 animate-msg">
+                            <div>
+                                <div class="flex items-center gap-2 mb-1.5">
+                                    <span class="text-xs font-mono font-bold text-white">${deposit.email || 'Partner'}</span>
+                                    <span class="bg-yellow-500/20 text-yellow-300 text-[9px] font-mono font-bold px-2 py-0.5 rounded-full border border-yellow-500/30">PENDING</span>
+                                </div>
+                                <p class="text-xs text-gray-300">Package Amount: <span class="font-extrabold text-green-400 font-mono">₹${(deposit.amount || 0).toLocaleString()}</span></p>
+                                <p class="text-xs text-gray-300">UTR Code: <span class="font-mono text-yellow-300 font-bold bg-black/80 px-2 py-0.5 rounded border border-yellow-500/20">${deposit.utr}</span></p>
+                                <p class="text-[10px] text-gray-500 font-mono mt-1">${dateStr}</p>
+                            </div>
+                            <div class="flex flex-col gap-2 w-full sm:w-auto">
+                                <button onclick="approveDeposit('${depositId}', '${deposit.uid}', ${deposit.amount})" class="px-5 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl text-xs shadow-lg tactile-btn">
+                                    <i class="fas fa-check mr-1"></i> Verify & Activate
+                                </button>
+                                <button onclick="rejectDeposit('${depositId}')" class="px-5 py-2 bg-red-950/60 hover:bg-red-900 text-red-300 font-bold rounded-xl text-xs border border-red-800/40 tactile-btn">
+                                    <i class="fas fa-trash mr-1"></i> Purge Request
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += card;
+                });
+            }, (error) => {
+                console.error("Deposits listener error:", error);
+            });
+        }
+
+        // ==================== REAL-TIME WITHDRAWALS LISTENER ====================
+        function initAdminWithdrawalsListener() {
+            const container = document.getElementById("admin-withdrawal-list");
+            const q = query(collection(db, "withdrawals"), where("status", "in", ["pending", "verified"]));
+
+            onSnapshot(q, (snapshot) => {
+                container.innerHTML = "";
+                if (snapshot.empty) {
+                    container.innerHTML = `
+                        <div class="text-center py-16 text-gray-500 text-xs font-mono animate-msg">
+                            <i class="fas fa-check-circle text-3xl text-green-600 mb-2"></i>
+                            <p>All withdrawal payout queues cleared!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                snapshot.forEach((docSnap) => {
+                    const wdr = docSnap.data();
+                    const wdrId = docSnap.id;
+                    const dateStr = wdr.createdAt ? new Date(wdr.createdAt).toLocaleString('en-IN') : 'Recent';
+                    const isVerified = wdr.status === "verified";
+
+                    const card = `
+                        <div class="bg-black/50 border border-green-900/40 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 animate-msg">
+                            <div>
+                                <div class="flex items-center gap-2 mb-1.5">
+                                    <span class="text-xs font-mono font-bold text-white">${wdr.email || 'Partner'}</span>
+                                    <span class="${isVerified ? 'bg-blue-500/20 text-blue-300 border-blue-500/30' : 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30'} text-[9px] font-mono font-bold px-2 py-0.5 rounded-full border uppercase">${wdr.status}</span>
+                                </div>
+                                <p class="text-xs text-gray-300">Amount: <span class="font-extrabold text-green-400 font-mono">₹${(wdr.amount || 0).toLocaleString()}</span></p>
+                                <p class="text-xs text-gray-300">Bank A/C: <span class="font-mono text-white font-bold">${wdr.bankAccount}</span></p>
+                                <p class="text-xs text-gray-300">IFSC: <span class="font-mono text-white font-bold">${wdr.ifsc || 'N/A'}</span></p>
+                                <p class="text-[10px] text-gray-500 font-mono mt-1">${dateStr}</p>
+                            </div>
+                            <div class="flex flex-col gap-2 w-full sm:w-auto">
+                                ${!isVerified ? `
+                                    <button onclick="verifyWithdrawal('${wdrId}')" class="px-5 py-2.5 bg-blue-600 text-white font-bold rounded-xl text-xs shadow tactile-btn">
+                                        <i class="fas fa-check mr-1"></i> Verify Details
+                                    </button>
+                                ` : `
+                                    <button onclick="payWithdrawal('${wdrId}', '${wdr.uid}', ${wdr.amount})" class="px-5 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl text-xs shadow-lg tactile-btn">
+                                        <i class="fas fa-rupee-sign mr-1"></i> Release Payout
+                                    </button>
+                                `}
+                                <button onclick="rejectWithdrawal('${wdrId}')" class="px-5 py-2 bg-red-950/60 hover:bg-red-900 text-red-300 font-bold rounded-xl text-xs border border-red-800/40 tactile-btn">
+                                    <i class="fas fa-trash mr-1"></i> Purge Request
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += card;
+                });
+            }, (error) => {
+                console.error("Withdrawals listener error:", error);
+            });
+        }
+
+        // ==================== LIVE SUPPORT CHAT LOGIC WITH EDIT/DELETE ====================
         function initAdminChatListener() {
             const q = query(collection(db, "support_chats"));
             
@@ -444,15 +562,17 @@
                 
                 snapshot.forEach((docSnap) => {
                     const data = docSnap.data();
+                    const msgId = docSnap.id;
                     if (!usersMap[data.uid]) {
                         usersMap[data.uid] = {
                             email: data.email || "Partner",
                             messages: []
                         };
                     }
-                    usersMap[data.uid].messages.push(data);
+                    usersMap[data.uid].messages.push({ id: msgId, ...data });
                 });
 
+                globalChatsMap = usersMap;
                 const usersListDiv = document.getElementById("admin-chat-users");
                 usersListDiv.innerHTML = "";
 
@@ -467,7 +587,7 @@
                     const lastMsg = userObj.messages[userObj.messages.length - 1]?.message || "New message";
                     
                     const btn = document.createElement("div");
-                    btn.className = `p-3 rounded-xl cursor-pointer border transition-all ${activeChatUid === uid ? 'bg-green-950/60 border-green-500 text-white shadow-md' : 'bg-black/30 border-green-900/30 text-gray-300 hover:bg-green-900/20'}`;
+                    btn.className = `p-3 rounded-xl cursor-pointer border transition-all animate-msg ${activeChatUid === uid ? 'bg-green-950/60 border-green-500 text-white shadow-md' : 'bg-black/30 border-green-900/30 text-gray-300 hover:bg-green-900/20'}`;
                     btn.innerHTML = `
                         <div class="text-[11px] font-mono font-bold truncate text-green-300">${userObj.email}</div>
                         <div class="text-[10px] text-gray-400 truncate mt-1">${lastMsg}</div>
@@ -502,10 +622,17 @@
                 const isUser = msg.sender === 'user';
                 
                 const div = document.createElement("div");
-                div.className = `p-3 rounded-2xl text-xs max-w-[85%] shadow-sm ${isUser ? 'bg-gray-800/90 text-white mr-auto rounded-tl-sm border border-gray-700/50' : 'bg-gradient-to-r from-green-600 to-emerald-600 text-white ml-auto rounded-tr-sm shadow-md'}`;
+                div.className = `p-3 rounded-2xl text-xs max-w-[85%] shadow-sm animate-msg relative group ${isUser ? 'bg-gray-800/90 text-white mr-auto rounded-tl-sm border border-gray-700/50' : 'bg-gradient-to-r from-green-600 to-emerald-600 text-white ml-auto rounded-tr-sm shadow-md'}`;
+                
                 div.innerHTML = `
-                    <div class="text-[9px] text-green-200 font-mono font-bold mb-1">${isUser ? email : 'ANP Support Server'}</div>
-                    ${msg.message}
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-[9px] text-green-200 font-mono font-bold">${isUser ? email : 'ANP Support Server'}</span>
+                        <div class="flex items-center gap-1.5 opacity-80 hover:opacity-100">
+                            <button onclick="editChatMessage('${msg.id}', '${encodeURIComponent(msg.message)}')" class="text-[10px] text-green-200 hover:text-white px-1" title="Edit Message"><i class="fas fa-edit"></i></button>
+                            <button onclick="deleteChatMessage('${msg.id}')" class="text-[10px] text-red-300 hover:text-red-100 px-1" title="Delete Message"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <div class="break-words">${msg.message}</div>
                     <div class="text-[8px] text-gray-200 text-right font-mono mt-1">${timeStr}</div>
                 `;
                 chatBox.appendChild(div);
@@ -517,7 +644,7 @@
             const input = document.getElementById("admin-reply-input");
             const text = input.value.trim();
             if (!text || !activeChatUid) {
-                showAnpAlert("Notice", "Please select a partner session from the telemetry sidebar first.", false);
+                await showAnpAlert("Notice", "Please select a partner session from the telemetry sidebar first.", false);
                 return;
             }
 
@@ -531,7 +658,32 @@
                 });
                 input.value = "";
             } catch (e) {
-                showAnpAlert("Error", "Transmission failed: " + e.message, false);
+                await showAnpAlert("Error", "Transmission failed: " + e.message, false);
+            }
+        }
+
+        window.editChatMessage = async function(msgId, encodedMsg) {
+            const decodedMsg = decodeURIComponent(encodedMsg);
+            const newText = await showAnpPrompt("Edit Support Message", "Modify message payload:", decodedMsg);
+            if (newText === null || newText.trim() === "") return;
+
+            try {
+                await updateDoc(doc(db, "support_chats", msgId), {
+                    message: newText.trim()
+                });
+            } catch (e) {
+                await showAnpAlert("Error", "Failed to update message: " + e.message, false);
+            }
+        }
+
+        window.deleteChatMessage = async function(msgId) {
+            const confirmed = await showAnpConfirm("Purge Message", "Are you sure you want to delete this chat message from the database?");
+            if (!confirmed) return;
+
+            try {
+                await deleteDoc(doc(db, "support_chats", msgId));
+            } catch (e) {
+                await showAnpAlert("Error", "Failed to delete message: " + e.message, false);
             }
         }
 
@@ -541,125 +693,7 @@
             }
         }
 
-        // ==================== DEPOSITS & WITHDRAWALS LOGIC ====================
-        async function loadPendingDeposits() {
-            const container = document.getElementById("admin-deposit-list");
-            container.innerHTML = `<div class="text-center py-12 text-gray-500 text-xs font-mono">Querying database...</div>`;
-
-            try {
-                const q = query(collection(db, "deposits"), where("status", "==", "pending"));
-                const querySnapshot = await getDocs(q);
-
-                container.innerHTML = "";
-
-                if (querySnapshot.empty) {
-                    container.innerHTML = `
-                        <div class="text-center py-16 text-gray-500 text-xs font-mono">
-                            <i class="fas fa-check-circle text-3xl text-green-600 mb-2"></i>
-                            <p>All deposit payment queues cleared!</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                querySnapshot.forEach((docSnap) => {
-                    const deposit = docSnap.data();
-                    const depositId = docSnap.id;
-                    const dateStr = deposit.createdAt ? new Date(deposit.createdAt).toLocaleString('en-IN') : 'Recent';
-
-                    const card = `
-                        <div class="bg-black/50 border border-green-900/40 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                            <div>
-                                <div class="flex items-center gap-2 mb-1.5">
-                                    <span class="text-xs font-mono font-bold text-white">${deposit.email || 'Partner'}</span>
-                                    <span class="bg-yellow-500/20 text-yellow-300 text-[9px] font-mono font-bold px-2 py-0.5 rounded-full border border-yellow-500/30">PENDING</span>
-                                </div>
-                                <p class="text-xs text-gray-300">Package Amount: <span class="font-extrabold text-green-400 font-mono">₹${(deposit.amount || 0).toLocaleString()}</span></p>
-                                <p class="text-xs text-gray-300">UTR Code: <span class="font-mono text-yellow-300 font-bold bg-black/80 px-2 py-0.5 rounded border border-yellow-500/20">${deposit.utr}</span></p>
-                                <p class="text-[10px] text-gray-500 font-mono mt-1">${dateStr}</p>
-                            </div>
-                            <div class="flex flex-col gap-2 w-full sm:w-auto">
-                                <button onclick="approveDeposit('${depositId}', '${deposit.uid}', ${deposit.amount})" class="px-5 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl text-xs shadow-lg transition-all active:scale-95">
-                                    <i class="fas fa-check mr-1"></i> Verify & Activate
-                                </button>
-                                <button onclick="rejectDeposit('${depositId}')" class="px-5 py-2 bg-red-950/60 hover:bg-red-900 text-red-300 font-bold rounded-xl text-xs border border-red-800/40 transition-all active:scale-95">
-                                    <i class="fas fa-trash mr-1"></i> Purge Request
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                    container.innerHTML += card;
-                });
-
-            } catch (error) {
-                console.error("Error loading deposits:", error);
-                container.innerHTML = `<p class="text-red-400 text-xs text-center py-4 font-mono">Error: ${error.message}</p>`;
-            }
-        }
-
-        async function loadWithdrawalRequests() {
-            const container = document.getElementById("admin-withdrawal-list");
-            container.innerHTML = `<div class="text-center py-12 text-gray-500 text-xs font-mono">Querying database...</div>`;
-
-            try {
-                const q = query(collection(db, "withdrawals"), where("status", "in", ["pending", "verified"]));
-                const querySnapshot = await getDocs(q);
-
-                container.innerHTML = "";
-
-                if (querySnapshot.empty) {
-                    container.innerHTML = `
-                        <div class="text-center py-16 text-gray-500 text-xs font-mono">
-                            <i class="fas fa-check-circle text-3xl text-green-600 mb-2"></i>
-                            <p>All withdrawal payout queues cleared!</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                querySnapshot.forEach((docSnap) => {
-                    const wdr = docSnap.data();
-                    const wdrId = docSnap.id;
-                    const dateStr = wdr.createdAt ? new Date(wdr.createdAt).toLocaleString('en-IN') : 'Recent';
-                    const isVerified = wdr.status === "verified";
-
-                    const card = `
-                        <div class="bg-black/50 border border-green-900/40 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                            <div>
-                                <div class="flex items-center gap-2 mb-1.5">
-                                    <span class="text-xs font-mono font-bold text-white">${wdr.email || 'Partner'}</span>
-                                    <span class="${isVerified ? 'bg-blue-500/20 text-blue-300 border-blue-500/30' : 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30'} text-[9px] font-mono font-bold px-2 py-0.5 rounded-full border uppercase">${wdr.status}</span>
-                                </div>
-                                <p class="text-xs text-gray-300">Amount: <span class="font-extrabold text-green-400 font-mono">₹${(wdr.amount || 0).toLocaleString()}</span></p>
-                                <p class="text-xs text-gray-300">Bank A/C: <span class="font-mono text-white font-bold">${wdr.bankAccount}</span></p>
-                                <p class="text-xs text-gray-300">IFSC: <span class="font-mono text-white font-bold">${wdr.ifsc || 'N/A'}</span></p>
-                                <p class="text-[10px] text-gray-500 font-mono mt-1">${dateStr}</p>
-                            </div>
-                            <div class="flex flex-col gap-2 w-full sm:w-auto">
-                                ${!isVerified ? `
-                                    <button onclick="verifyWithdrawal('${wdrId}')" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs shadow transition-all active:scale-95">
-                                        <i class="fas fa-check mr-1"></i> Verify Details
-                                    </button>
-                                ` : `
-                                    <button onclick="payWithdrawal('${wdrId}', '${wdr.uid}', ${wdr.amount})" class="px-5 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl text-xs shadow-lg transition-all active:scale-95">
-                                        <i class="fas fa-rupee-sign mr-1"></i> Release Payout
-                                    </button>
-                                `}
-                                <button onclick="rejectWithdrawal('${wdrId}')" class="px-5 py-2 bg-red-950/60 hover:bg-red-900 text-red-300 font-bold rounded-xl text-xs border border-red-800/40 transition-all active:scale-95">
-                                    <i class="fas fa-trash mr-1"></i> Purge Request
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                    container.innerHTML += card;
-                });
-
-            } catch (error) {
-                console.error("Error loading withdrawals:", error);
-                container.innerHTML = `<p class="text-red-400 text-xs text-center py-4 font-mono">Error: ${error.message}</p>`;
-            }
-        }
-
+        // ==================== DEPOSIT / WITHDRAWAL ACTIONS ====================
         window.rejectDeposit = async function(depositId) {
             const note = await showAnpPrompt("Purge Deposit", "Enter audit note for deposit rejection:", "False UTR reference or payment not received.");
             if (note === null) return;
@@ -670,7 +704,6 @@
                     adminNote: note || "Request rejected by admin."
                 });
                 await showAnpAlert("Purged", "Deposit request purged successfully.", true);
-                loadPendingDeposits();
             } catch (error) {
                 await showAnpAlert("Error", "Error purging deposit: " + error.message, false);
             }
@@ -686,7 +719,6 @@
                     adminNote: note || "Withdrawal rejected by admin."
                 });
                 await showAnpAlert("Purged", "Withdrawal request purged successfully.", true);
-                loadWithdrawalRequests();
             } catch (error) {
                 await showAnpAlert("Error", "Error purging withdrawal: " + error.message, false);
             }
@@ -698,7 +730,6 @@
                     status: "verified"
                 });
                 await showAnpAlert("Verified", "Banking credentials verified successfully!", true);
-                loadWithdrawalRequests();
             } catch (error) {
                 await showAnpAlert("Error", "Error verifying withdrawal: " + error.message, false);
             }
@@ -719,7 +750,6 @@
                 });
 
                 await showAnpAlert("Payout Released", `Successfully transferred ₹${amount} to partner account!`, true);
-                loadWithdrawalRequests();
             } catch (error) {
                 await showAnpAlert("Error", "Payout release failed: " + error.message, false);
             }
@@ -783,7 +813,6 @@
                 });
 
                 await showAnpAlert("Activation Complete", `Partner tier ${vipLevel} activated successfully!`, true);
-                loadPendingDeposits();
             } catch (error) {
                 await showAnpAlert("Error", "Activation failed: " + error.message, false);
             }
