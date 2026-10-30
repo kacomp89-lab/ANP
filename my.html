@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ANP MONEY - My Profile</title>
+    <title>ANP MONEY - Partner Profile</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0a1f12 0%, #000000 100%);
+            background: #020b05;
+            color: #e2e8f0;
             -webkit-tap-highlight-color: transparent;
             min-height: 100vh;
             min-height: 100dvh;
@@ -21,165 +22,253 @@
             align-items: center;
             justify-content: center;
             overflow-x: hidden;
+            position: relative;
+        }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* Ambient Floating Cyber Orbs */
+        .orb-1 {
+            position: absolute; top: -10%; left: -10%; width: 350px; height: 350px;
+            background: radial-gradient(circle, rgba(16,185,129,0.2) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%; animation: floatOrb 8s infinite alternate ease-in-out; pointer-events: none;
+        }
+        .orb-2 {
+            position: absolute; bottom: -10%; right: -10%; width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(5,150,105,0.15) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%; animation: floatOrb 10s infinite alternate-reverse ease-in-out; pointer-events: none;
+        }
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, 40px) scale(1.1); }
+        }
+
+        .glass-card {
+            background: rgba(10, 24, 15, 0.75);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+        /* Tactile Button & Ripple Physics */
+        .tactile-btn {
+            position: relative; overflow: hidden; transform: translateZ(0);
+            transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s ease, filter 0.15s ease;
+            cursor: pointer; -webkit-user-select: none; user-select: none;
+        }
+        .tactile-btn:hover { filter: brightness(1.08); }
+        .tactile-btn:active { transform: scale(0.93) translateY(1px) !important; box-shadow: 0 2px 8px rgba(34, 197, 94, 0.25) !important; }
+
+        .ripple {
+            position: absolute; background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 70%);
+            border-radius: 50%; transform: scale(0); animation: rippleEffect 0.55s cubic-bezier(0.4, 0, 0.2, 1) forwards; pointer-events: none;
+        }
+        @keyframes rippleEffect {
+            0% { transform: scale(0); opacity: 0.8; }
+            100% { transform: scale(4.5); opacity: 0; }
+        }
+
+        @keyframes scaleUpModal {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-modal-pop { animation: scaleUpModal 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        @keyframes circleScale {
+            0% { transform: scale(0); opacity: 0; }
+            60% { transform: scale(1.12); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes checkmarkDraw {
+            0% { stroke-dashoffset: 48; }
+            100% { stroke-dashoffset: 0; }
+        }
+        .gpay-circle { animation: circleScale 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .gpay-check { stroke-dasharray: 48; stroke-dashoffset: 48; animation: checkmarkDraw 0.4s 0.25s ease-in-out forwards; }
+
+        .app-container {
+            width: 100%; max-width: 430px; height: 100dvh; background: #07130a;
+            position: relative; display: flex; flex-direction: column; overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+        }
+        @media (min-width: 640px) {
+            .app-container { height: 880px; max-height: 92vh; border-radius: 36px; border: 8px solid rgba(255,255,255,0.12); }
         }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .bg-wave-pattern {
-            background: linear-gradient(to bottom, #5cb45c, #3f8e43);
-        }
-        .app-container {
-            width: 100%;
-            max-width: 430px;
-            height: 100dvh;
-            background: white;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-        }
-        @media (min-width: 640px) {
-            .app-container {
-                height: 880px;
-                max-height: 92vh;
-                border-radius: 36px;
-                border: 8px solid rgba(255, 255, 255, 0.12);
-            }
-        }
     </style>
 </head>
 <body>
 
+    <div class="orb-1"></div>
+    <div class="orb-2"></div>
+
     <div class="app-container">
         
         <!-- Header Profile Summary -->
-        <header class="bg-wave-pattern pt-8 px-6 pb-8 text-white relative">
+        <header class="bg-gradient-to-r from-green-600 to-emerald-700 pt-6 px-6 pb-6 text-white relative flex-shrink-0 shadow-lg">
             <div class="flex items-center justify-between mb-4">
-                <h1 class="text-lg font-black tracking-tight">My Profile</h1>
-                <button onclick="handleLogout()" class="px-3 py-1.5 bg-red-600/80 hover:bg-red-600 text-white rounded-xl text-xs font-bold transition-all shadow">
+                <h1 class="text-sm font-black tracking-tight">Partner Profile</h1>
+                <button onclick="handleLogout()" class="px-3 py-1.5 bg-red-950/60 hover:bg-red-900 text-red-300 rounded-xl text-xs font-bold border border-red-800/40 transition-all tactile-btn">
                     <i class="fas fa-sign-out-alt mr-1"></i> Log Out
                 </button>
             </div>
             
-            <div class="flex items-center gap-4 mt-4">
-                <div class="w-14 h-14 bg-white text-green-700 rounded-full flex items-center justify-center text-2xl font-black shadow-md" id="profile-initial">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 bg-white/20 backdrop-blur-md text-white rounded-2xl flex items-center justify-center text-2xl font-black shadow-inner border border-white/20" id="profile-initial">
                     A
                 </div>
-                <div>
-                    <h2 class="text-base font-bold" id="profile-name">Loading...</h2>
-                    <p class="text-xs text-green-100" id="profile-email">--</p>
-                    <span class="inline-block mt-1 bg-green-700/60 text-green-100 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full" id="profile-level">VIP1</span>
+                <div class="flex-1">
+                    <div class="flex items-center gap-2">
+                        <h2 class="text-base font-bold text-white truncate" id="profile-name">Loading...</h2>
+                        <button onclick="openEditUsernameModal()" class="text-green-200 hover:text-white text-xs transition-colors tactile-btn p-1" title="Edit Username">
+                            <i class="fas fa-pen"></i>
+                        </button>
+                    </div>
+                    <p class="text-xs text-green-100 font-mono truncate" id="profile-email">--</p>
+                    <span class="inline-block mt-1 bg-black/30 border border-white/20 text-green-300 text-[10px] font-mono font-extrabold px-2.5 py-0.5 rounded-full" id="profile-level">VIP1</span>
                 </div>
             </div>
         </header>
 
         <!-- Main Content -->
-        <main class="flex-1 bg-white rounded-t-[24px] -mt-4 relative z-10 px-5 pt-6 pb-24 overflow-y-auto hide-scrollbar">
+        <main class="flex-1 overflow-y-auto p-4 flex flex-col gap-4 hide-scrollbar pb-[110px]">
             
             <!-- Account Overview Cards -->
-            <div class="grid grid-cols-2 gap-3 mb-6">
-                <div class="bg-green-50 border border-green-100 rounded-2xl p-4 text-center shadow-sm">
-                    <span class="text-[11px] text-gray-500 block mb-1 font-medium">Available Balance</span>
-                    <span class="text-lg font-black text-green-800" id="profile-balance">₹0.00</span>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="glass-card rounded-2xl p-4 text-center">
+                    <span class="text-[10px] text-gray-400 block mb-1 font-mono uppercase">Available Balance</span>
+                    <span class="text-lg font-black text-green-400 font-mono" id="profile-balance">₹0.00</span>
                 </div>
-                <div class="bg-emerald-50 border border-emerald-100 rounded-2xl p-4 text-center shadow-sm">
-                    <span class="text-[11px] text-gray-500 block mb-1 font-medium">Total Revenue</span>
-                    <span class="text-lg font-black text-emerald-800" id="profile-revenue">₹0.00</span>
+                <div class="glass-card rounded-2xl p-4 text-center">
+                    <span class="text-[10px] text-gray-400 block mb-1 font-mono uppercase">Total Revenue</span>
+                    <span class="text-lg font-black text-emerald-300 font-mono" id="profile-revenue">₹0.00</span>
                 </div>
             </div>
 
             <!-- Referral Code Card -->
-            <div class="bg-gradient-to-br from-green-50 to-emerald-100 border border-green-200 rounded-2xl p-4 mb-6 shadow-sm">
-                <h3 class="text-xs font-bold text-green-800 mb-2 flex items-center gap-2">
-                    <i class="fas fa-share-alt text-green-600"></i> Your Referral Code
+            <div class="glass-card rounded-3xl p-5 relative overflow-hidden">
+                <div class="absolute -right-8 -bottom-8 w-28 h-28 bg-green-500/20 rounded-full blur-xl pointer-events-none"></div>
+                <h3 class="text-xs font-bold text-green-300 mb-1 flex items-center gap-2 uppercase tracking-wide">
+                    <i class="fas fa-share-alt"></i> Your Referral Code
                 </h3>
-                <p class="text-[10px] text-green-700 mb-3 leading-relaxed">Share this code with friends. When they register and recharge a VIP pack, you earn cashback!</p>
+                <p class="text-[10px] text-gray-300 mb-3 leading-relaxed">Share this code with friends. When they register and recharge a VIP pack, you earn cashback!</p>
                 
-                <div class="flex items-center justify-between bg-white border border-green-300 rounded-xl px-3 py-2 shadow-inner">
-                    <span id="display-ref-code" class="font-mono font-bold text-sm text-green-900 tracking-wider">Loading...</span>
-                    <button onclick="copyReferralCode()" class="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-bold shadow">
+                <div class="flex items-center justify-between bg-black/50 border border-white/10 rounded-2xl px-4 py-2.5 shadow-inner">
+                    <span id="display-ref-code" class="font-mono font-bold text-sm text-green-300 tracking-wider">Loading...</span>
+                    <button onclick="copyReferralCode()" class="px-3.5 py-1.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl text-xs font-bold shadow tactile-btn">
                         <i class="fas fa-copy mr-1"></i> Copy
                     </button>
                 </div>
             </div>
 
             <!-- Saved Bank Account Section -->
-            <div class="bg-gray-50 border border-gray-100 rounded-2xl p-4 mb-6 shadow-sm">
-                <h3 class="text-xs font-bold text-gray-800 mb-3 flex items-center gap-2">
-                    <i class="fas fa-university text-green-600"></i> Saved Bank Account Details
+            <div class="glass-card rounded-3xl p-5">
+                <h3 class="text-xs font-bold text-green-300 mb-3 flex items-center gap-2 uppercase tracking-wide">
+                    <i class="fas fa-university"></i> Saved Bank Account Details
                 </h3>
                 <div id="bank-info-box">
-                    <p class="text-xs text-gray-400">Loading bank details...</p>
+                    <p class="text-xs text-gray-400 font-mono">Loading bank details...</p>
                 </div>
             </div>
 
             <!-- Quick Links -->
             <div class="flex flex-col gap-2.5">
-                <button onclick="window.location.href='delivery.html'" class="w-full py-3 px-4 bg-gray-50 hover:bg-gray-100 text-gray-800 font-semibold rounded-xl text-xs flex justify-between items-center border border-gray-100 transition-all">
-                    <span class="flex items-center gap-2"><i class="fas fa-history text-green-600"></i> Transaction History</span>
-                    <i class="fas fa-chevron-right text-gray-400"></i>
+                <button onclick="window.location.href='delivery.html'" class="glass-card py-3.5 px-4 text-gray-200 font-semibold rounded-2xl text-xs flex justify-between items-center tactile-btn">
+                    <span class="flex items-center gap-2.5"><i class="fas fa-history text-green-400"></i> Transaction History</span>
+                    <i class="fas fa-chevron-right text-gray-500 text-[10px]"></i>
                 </button>
-                <button onclick="window.location.href='index.html'" class="w-full py-3 px-4 bg-gray-50 hover:bg-gray-100 text-gray-800 font-semibold rounded-xl text-xs flex justify-between items-center border border-gray-100 transition-all">
-                    <span class="flex items-center gap-2"><i class="fas fa-home text-green-600"></i> Back to Home Dashboard</span>
-                    <i class="fas fa-chevron-right text-gray-400"></i>
+                <button onclick="window.location.href='index.html'" class="glass-card py-3.5 px-4 text-gray-200 font-semibold rounded-2xl text-xs flex justify-between items-center tactile-btn">
+                    <span class="flex items-center gap-2.5"><i class="fas fa-home text-green-400"></i> Back to Home Dashboard</span>
+                    <i class="fas fa-chevron-right text-gray-500 text-[10px]"></i>
                 </button>
             </div>
 
         </main>
 
-        <!-- Edit Bank Modal -->
-        <div id="edit-bank-modal" class="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center hidden px-4 backdrop-blur-md">
-            <div class="bg-gray-900 border border-green-900 rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl text-white">
-                <h3 class="text-lg font-bold mb-1">Edit Bank Account</h3>
-                <p class="text-[11px] text-gray-400 mb-4">Update your valid payout details below:</p>
+        <!-- Edit Username Modal -->
+        <div id="edit-username-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+            <div class="bg-gray-900 border border-green-500/40 rounded-[36px] p-7 max-w-sm w-full text-center shadow-2xl animate-modal-pop relative overflow-hidden">
+                <div class="absolute -top-12 -right-12 w-32 h-32 bg-green-500/15 rounded-full blur-2xl pointer-events-none"></div>
+                <h3 class="text-base font-black text-white mb-1">Edit Display Name</h3>
+                <p class="text-xs text-gray-400 mb-5">Enter your updated partner name below:</p>
                 
-                <div class="flex flex-col gap-3 text-left mb-4">
+                <div class="mb-5 text-left">
+                    <input type="text" id="edit-username-input" placeholder="Enter Full Name" class="w-full bg-black/80 border border-green-800 rounded-2xl px-4 py-3.5 text-xs text-white outline-none focus:border-green-400 font-mono shadow-inner">
+                </div>
+
+                <div class="flex flex-col gap-2.5">
+                    <button onclick="saveUsername()" class="w-full py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-2xl text-xs shadow-lg tactile-btn">Save Username</button>
+                    <button onclick="closeEditUsernameModal()" class="w-full py-2.5 bg-transparent text-gray-400 hover:text-white rounded-xl text-xs tactile-btn">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Bank Modal -->
+        <div id="edit-bank-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+            <div class="bg-gray-900 border border-green-500/40 rounded-[36px] p-7 max-w-sm w-full text-center shadow-2xl animate-modal-pop relative overflow-hidden">
+                <div class="absolute -top-12 -right-12 w-32 h-32 bg-green-500/15 rounded-full blur-2xl pointer-events-none"></div>
+                <h3 class="text-base font-black text-white mb-1">Edit Bank Account</h3>
+                <p class="text-xs text-gray-400 mb-5">Update your valid payout details below:</p>
+                
+                <div class="flex flex-col gap-3 text-left mb-5">
                     <div>
-                        <label class="text-[10px] text-green-300 font-semibold mb-1 block">Bank Account Number (9-18 digits)</label>
-                        <input type="text" id="edit-account-num" placeholder="Enter Account Number" class="w-full bg-black/50 border border-green-800 rounded-xl px-3 py-2.5 text-xs text-white outline-none focus:border-green-400">
+                        <label class="text-[10px] text-green-300 font-mono font-semibold mb-1 block uppercase">Account Number (9-18 digits)</label>
+                        <input type="text" id="edit-account-num" placeholder="Enter Account Number" class="w-full bg-black/80 border border-green-800 rounded-2xl px-4 py-3 text-xs text-white outline-none focus:border-green-400 font-mono shadow-inner">
                     </div>
                     <div>
-                        <label class="text-[10px] text-green-300 font-semibold mb-1 block">IFSC Code (e.g. SBIN0001234)</label>
-                        <input type="text" id="edit-ifsc" placeholder="Enter IFSC Code" class="w-full bg-black/50 border border-green-800 rounded-xl px-3 py-2.5 text-xs text-white outline-none focus:border-green-400 uppercase">
+                        <label class="text-[10px] text-green-300 font-mono font-semibold mb-1 block uppercase">IFSC Code (e.g. SBIN0001234)</label>
+                        <input type="text" id="edit-ifsc" placeholder="Enter IFSC Code" class="w-full bg-black/80 border border-green-800 rounded-2xl px-4 py-3 text-xs text-white outline-none focus:border-green-400 uppercase font-mono shadow-inner">
                     </div>
                 </div>
 
-                <div class="flex flex-col gap-2">
-                    <button onclick="saveBankDetails()" class="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl text-xs shadow-lg">Save Changes</button>
-                    <button onclick="closeEditBankModal()" class="w-full py-2 bg-transparent text-gray-400 rounded-xl text-[11px]">Cancel</button>
+                <div class="flex flex-col gap-2.5">
+                    <button onclick="saveBankDetails()" class="w-full py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-2xl text-xs shadow-lg tactile-btn">Save Changes</button>
+                    <button onclick="closeEditBankModal()" class="w-full py-2.5 bg-transparent text-gray-400 hover:text-white rounded-xl text-xs tactile-btn">Cancel</button>
                 </div>
             </div>
         </div>
 
         <!-- Bottom Navigation Bar -->
-        <nav class="absolute bottom-0 w-full bg-white border-t border-gray-100 flex justify-between items-center px-6 pt-2 pb-5 z-40">
-            <button onclick="window.location.href='index.html'" class="flex flex-col items-center text-gray-400 group hover:text-green-600">
+        <nav class="absolute bottom-0 w-full bg-gray-950/90 backdrop-blur-xl border-t border-white/10 flex justify-between items-center px-6 pt-2 pb-5 z-40 shadow-2xl">
+            <button onclick="window.location.href='index.html'" class="flex flex-col items-center text-gray-400 hover:text-green-400 transition-colors">
                 <i class="fas fa-home text-lg mb-1"></i>
                 <span class="text-[10px] font-medium">Home</span>
             </button>
-            <button onclick="window.location.href='delivery.html'" class="flex flex-col items-center text-gray-400 group hover:text-green-600">
+            <button onclick="window.location.href='delivery.html'" class="flex flex-col items-center text-gray-400 hover:text-green-400 transition-colors">
                 <i class="fas fa-box text-lg mb-1"></i>
                 <span class="text-[10px] font-medium">Delivery</span>
             </button>
             <div class="relative -top-6">
-                <button onclick="window.location.href='referral.html'" class="w-14 h-14 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white border-4 border-white shadow-[0_5px_15px_rgba(74,222,128,0.4)]">
+                <button onclick="window.location.href='referral.html'" class="w-14 h-14 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white border-4 border-[#07130a] shadow-[0_5px_20px_rgba(34,197,94,0.5)] tactile-btn">
                     <i class="fas fa-bicycle text-2xl"></i>
                 </button>
             </div>
-            <button onclick="window.location.href='map.html'" class="flex flex-col items-center text-gray-400 group hover:text-green-600">
+            <button onclick="window.location.href='map.html'" class="flex flex-col items-center text-gray-400 hover:text-green-400 transition-colors">
                 <i class="fas fa-map-marked-alt text-lg mb-1"></i>
                 <span class="text-[10px] font-medium">Map</span>
             </button>
-            <button onclick="window.location.href='my.html'" class="flex flex-col items-center text-green-600 group">
+            <button onclick="window.location.href='my.html'" class="flex flex-col items-center text-green-400 group">
                 <i class="fas fa-user text-lg mb-1"></i>
-                <span class="text-[10px] font-medium">My</span>
+                <span class="text-[10px] font-bold">My</span>
             </button>
         </nav>
     </div>
 
+    <!-- CUSTOM ANIMATED MODAL SYSTEM -->
+    <div id="anp-custom-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-gray-900 border border-green-500/40 rounded-[36px] p-7 max-w-sm w-full text-center shadow-2xl animate-modal-pop relative overflow-hidden">
+            <div class="absolute -top-12 -right-12 w-32 h-32 bg-green-500/15 rounded-full blur-2xl pointer-events-none"></div>
+            <div id="modal-icon-container" class="my-3 flex justify-center"></div>
+            <h3 id="modal-title" class="text-lg font-black text-white mb-1.5 tracking-tight">Notice</h3>
+            <p id="modal-text" class="text-xs text-gray-300 mb-6 leading-relaxed px-2">Message goes here.</p>
+            <div id="modal-buttons"></div>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -199,6 +288,24 @@
         let userDocRef = null;
         let currentUserData = null;
 
+        window.showAnpAlert = function(title, message, isSuccess = true) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById("anp-custom-modal");
+                document.getElementById("modal-title").innerText = title;
+                document.getElementById("modal-text").innerText = message;
+                const iconContainer = document.getElementById("modal-icon-container");
+                if (isSuccess) {
+                    iconContainer.innerHTML = `<div class="w-20 h-20 bg-green-500/15 border border-green-500/40 rounded-full flex items-center justify-center gpay-circle shadow-[0_0_30px_rgba(34,197,94,0.3)]"><svg class="w-10 h-10 text-green-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path class="gpay-check" stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg></div>`;
+                } else {
+                    iconContainer.innerHTML = `<div class="w-20 h-20 bg-red-500/15 border border-red-500/40 rounded-full flex items-center justify-center gpay-circle shadow-[0_0_30px_rgba(239,68,68,0.3)]"><i class="fas fa-exclamation-triangle text-red-400 text-2xl"></i></div>`;
+                }
+                const btnContainer = document.getElementById("modal-buttons");
+                btnContainer.innerHTML = `<button id="modal-ok-btn" class="w-full py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-2xl text-xs shadow-lg tactile-btn">Acknowledge</button>`;
+                modal.classList.remove("hidden");
+                document.getElementById("modal-ok-btn").onclick = () => { modal.classList.add("hidden"); resolve(true); };
+            });
+        };
+
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
                 window.location.href = 'ANP.HTML';
@@ -212,7 +319,7 @@
                 const snap = await getDoc(userDocRef);
                 if (snap.exists()) {
                     currentUserData = snap.data();
-                    const name = currentUserData.fullName || "Partner";
+                    const name = currentUserData.fullName || user.displayName || "Partner";
                     document.getElementById("profile-name").innerText = name;
                     document.getElementById("profile-initial").innerText = name.charAt(0).toUpperCase();
                     document.getElementById("profile-email").innerText = user.email;
@@ -237,7 +344,7 @@
         window.copyReferralCode = function() {
             const code = document.getElementById("display-ref-code").innerText;
             navigator.clipboard.writeText(code).then(() => {
-                alert("Referral code copied to clipboard: " + code);
+                showAnpAlert("Copied", "Referral code copied to clipboard: " + code, true);
             });
         }
 
@@ -245,22 +352,22 @@
             const box = document.getElementById("bank-info-box");
             if (currentUserData && currentUserData.bankAccount) {
                 box.innerHTML = `
-                    <div class="flex justify-between items-center bg-white border border-gray-100 rounded-xl p-3 shadow-sm">
+                    <div class="flex justify-between items-center bg-black/40 border border-white/10 rounded-2xl p-3.5 shadow-inner">
                         <div>
-                            <p class="text-[11px] text-gray-500 font-semibold mb-0.5">Account Number: <span class="text-gray-900 font-mono font-bold">${currentUserData.bankAccount}</span></p>
-                            <p class="text-[11px] text-gray-500 font-semibold">IFSC Code: <span class="text-gray-900 font-mono font-bold">${currentUserData.ifsc || 'N/A'}</span></p>
+                            <p class="text-[11px] text-gray-300 font-semibold mb-1">A/C: <span class="text-white font-mono font-bold">${currentUserData.bankAccount}</span></p>
+                            <p class="text-[11px] text-gray-300 font-semibold">IFSC: <span class="text-white font-mono font-bold">${currentUserData.ifsc || 'N/A'}</span></p>
                         </div>
-                        <div class="flex gap-1.5">
-                            <button onclick="openEditBankModal()" class="px-2.5 py-1 bg-blue-600 text-white rounded-lg text-[10px] font-bold shadow">Edit</button>
-                            <button onclick="deleteBankDetails()" class="px-2.5 py-1 bg-red-600 text-white rounded-lg text-[10px] font-bold shadow">Delete</button>
+                        <div class="flex gap-2">
+                            <button onclick="openEditBankModal()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-[10px] font-bold shadow tactile-btn">Edit</button>
+                            <button onclick="deleteBankDetails()" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-[10px] font-bold shadow tactile-btn">Delete</button>
                         </div>
                     </div>
                 `;
             } else {
                 box.innerHTML = `
-                    <div class="text-center py-3">
-                        <p class="text-xs text-gray-400 mb-2">No bank account linked yet.</p>
-                        <button onclick="openEditBankModal()" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl text-xs font-bold shadow">
+                    <div class="text-center py-4">
+                        <p class="text-xs text-gray-400 mb-3 font-mono">No bank account linked yet.</p>
+                        <button onclick="openEditBankModal()" class="px-5 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl text-xs font-bold shadow-lg tactile-btn">
                             <i class="fas fa-plus mr-1"></i> Add Bank Details
                         </button>
                     </div>
@@ -268,6 +375,42 @@
             }
         }
 
+        // Edit Username Modal Control
+        window.openEditUsernameModal = function() {
+            if (currentUserData) {
+                document.getElementById("edit-username-input").value = currentUserData.fullName || "";
+            }
+            document.getElementById("edit-username-modal").classList.remove("hidden");
+        }
+
+        window.closeEditUsernameModal = function() {
+            document.getElementById("edit-username-modal").classList.add("hidden");
+        }
+
+        window.saveUsername = async function() {
+            const newName = document.getElementById("edit-username-input").value.trim();
+            if (!newName) {
+                showAnpAlert("Error", "Username cannot be empty.", false);
+                return;
+            }
+
+            try {
+                await updateDoc(userDocRef, { fullName: newName });
+                if (currentUser) {
+                    await updateProfile(currentUser, { displayName: newName });
+                }
+                currentUserData.fullName = newName;
+                document.getElementById("profile-name").innerText = newName;
+                document.getElementById("profile-initial").innerText = newName.charAt(0).toUpperCase();
+
+                closeEditUsernameModal();
+                showAnpAlert("Success", "Username updated successfully!", true);
+            } catch (e) {
+                showAnpAlert("Error", "Error updating username: " + e.message, false);
+            }
+        }
+
+        // Bank Modal Control
         window.openEditBankModal = function() {
             if (currentUserData) {
                 document.getElementById("edit-account-num").value = currentUserData.bankAccount || "";
@@ -288,11 +431,11 @@
             const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
 
             if (!accountRegex.test(accNum)) {
-                alert("Invalid Bank Account Number! Please enter a valid 9 to 18 digit account number.");
+                showAnpAlert("Invalid Input", "Please enter a valid 9 to 18 digit bank account number.", false);
                 return;
             }
             if (!ifscRegex.test(ifscCode)) {
-                alert("Invalid IFSC Code! Format should be 4 letters, '0', and 6 alphanumeric chars (e.g. SBIN0001234).");
+                showAnpAlert("Invalid IFSC", "Format should be 4 letters, '0', and 6 alphanumeric chars (e.g. SBIN0001234).", false);
                 return;
             }
 
@@ -307,14 +450,31 @@
 
                 closeEditBankModal();
                 renderBankDetails();
-                alert("Bank details updated successfully!");
+                showAnpAlert("Success", "Bank details updated successfully!", true);
             } catch (e) {
-                alert("Error updating bank details: " + e.message);
+                showAnpAlert("Error", "Error updating bank details: " + e.message, false);
             }
         }
 
         window.deleteBankDetails = async function() {
-            if (!confirm("Are you sure you want to delete your saved bank account?")) return;
+            // Using custom confirm modal logic
+            const confirmed = await new Promise((resolve) => {
+                const modal = document.getElementById("anp-custom-modal");
+                document.getElementById("modal-title").innerText = "Delete Bank Details";
+                document.getElementById("modal-text").innerText = "Are you sure you want to delete your saved bank account?";
+                document.getElementById("modal-icon-container").innerHTML = `<div class="w-16 h-16 bg-amber-500/15 border border-amber-500/40 rounded-2xl flex items-center justify-center text-amber-400 text-xl"><i class="fas fa-exclamation-triangle"></i></div>`;
+                document.getElementById("modal-buttons").innerHTML = `
+                    <div class="flex gap-2.5">
+                        <button id="modal-cancel-btn" class="flex-1 py-3 bg-gray-800 text-gray-300 font-bold rounded-xl text-xs tactile-btn">Cancel</button>
+                        <button id="modal-confirm-btn" class="flex-1 py-3 bg-red-600 text-white font-bold rounded-xl text-xs shadow-lg tactile-btn">Delete</button>
+                    </div>
+                `;
+                modal.classList.remove("hidden");
+                document.getElementById("modal-cancel-btn").onclick = () => { modal.classList.add("hidden"); resolve(false); };
+                document.getElementById("modal-confirm-btn").onclick = () => { modal.classList.add("hidden"); resolve(true); };
+            });
+
+            if (!confirmed) return;
 
             try {
                 await updateDoc(userDocRef, {
@@ -326,18 +486,52 @@
                 currentUserData.ifsc = null;
 
                 renderBankDetails();
-                alert("Bank details deleted successfully.");
+                showAnpAlert("Deleted", "Bank details deleted successfully.", true);
             } catch (e) {
-                alert("Error deleting bank details: " + e.message);
+                showAnpAlert("Error", "Error deleting bank details: " + e.message, false);
             }
         }
 
         window.handleLogout = async function() {
-            if (confirm("Are you sure you want to log out?")) {
-                await signOut(auth);
-                window.location.href = 'index.html';
-            }
+            const confirmed = await new Promise((resolve) => {
+                const modal = document.getElementById("anp-custom-modal");
+                document.getElementById("modal-title").innerText = "Log Out";
+                document.getElementById("modal-text").innerText = "Are you sure you want to sign out of your account?";
+                document.getElementById("modal-icon-container").innerHTML = `<div class="w-16 h-16 bg-red-500/15 border border-red-500/40 rounded-2xl flex items-center justify-center text-red-400 text-xl"><i class="fas fa-sign-out-alt"></i></div>`;
+                document.getElementById("modal-buttons").innerHTML = `
+                    <div class="flex gap-2.5">
+                        <button id="modal-cancel-btn" class="flex-1 py-3 bg-gray-800 text-gray-300 font-bold rounded-xl text-xs tactile-btn">Cancel</button>
+                        <button id="modal-confirm-btn" class="flex-1 py-3 bg-red-600 text-white font-bold rounded-xl text-xs shadow-lg tactile-btn">Log Out</button>
+                    </div>
+                `;
+                modal.classList.remove("hidden");
+                document.getElementById("modal-cancel-btn").onclick = () => { modal.classList.add("hidden"); resolve(false); };
+                document.getElementById("modal-confirm-btn").onclick = () => { modal.classList.add("hidden"); resolve(true); };
+            });
+
+            if (!confirmed) return;
+
+            await signOut(auth);
+            window.location.href = 'ANP.HTML';
         }
+
+        // Universal Tactile Ripple Effect Listener
+        document.addEventListener('click', function (e) {
+            const target = e.target.closest('.tactile-btn');
+            if (!target) return;
+            const existingRipple = target.querySelector('.ripple');
+            if (existingRipple) existingRipple.remove();
+            const circle = document.createElement('span');
+            const rect = target.getBoundingClientRect();
+            const diameter = Math.max(rect.width, rect.height);
+            const radius = diameter / 2;
+            circle.style.width = circle.style.height = `${diameter}px`;
+            circle.style.left = `${e.clientX - rect.left - radius}px`;
+            circle.style.top = `${e.clientY - rect.top - radius}px`;
+            circle.classList.add('ripple');
+            target.appendChild(circle);
+            setTimeout(() => circle.remove(), 600);
+        });
     </script>
 </body>
 </html>
