@@ -26,26 +26,14 @@
 
         /* Ambient Floating Cyber Orbs */
         .orb-1 {
-            position: absolute;
-            top: -10%;
-            left: -10%;
-            width: 350px;
-            height: 350px;
+            position: absolute; top: -10%; left: -10%; width: 350px; height: 350px;
             background: radial-gradient(circle, rgba(16,185,129,0.2) 0%, rgba(0,0,0,0) 70%);
-            border-radius: 50%;
-            animation: floatOrb 8s infinite alternate ease-in-out;
-            pointer-events: none;
+            border-radius: 50%; animation: floatOrb 8s infinite alternate ease-in-out; pointer-events: none;
         }
         .orb-2 {
-            position: absolute;
-            bottom: -10%;
-            right: -10%;
-            width: 400px;
-            height: 400px;
+            position: absolute; bottom: -10%; right: -10%; width: 400px; height: 400px;
             background: radial-gradient(circle, rgba(5,150,105,0.15) 0%, rgba(0,0,0,0) 70%);
-            border-radius: 50%;
-            animation: floatOrb 10s infinite alternate-reverse ease-in-out;
-            pointer-events: none;
+            border-radius: 50%; animation: floatOrb 10s infinite alternate-reverse ease-in-out; pointer-events: none;
         }
         @keyframes floatOrb {
             0% { transform: translate(0, 0) scale(1); }
@@ -72,22 +60,34 @@
         .animate-logo { animation: slideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .animate-form { animation: slideUp 0.6s 0.15s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
+        /* Tactile Button & Ripple Physics */
+        .tactile-btn {
+            position: relative; overflow: hidden; transform: translateZ(0);
+            transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s ease, filter 0.15s ease;
+            cursor: pointer; -webkit-user-select: none; user-select: none;
+        }
+        .tactile-btn:hover { filter: brightness(1.08); }
+        .tactile-btn:active { transform: scale(0.93) translateY(1px) !important; box-shadow: 0 2px 8px rgba(34, 197, 94, 0.25) !important; }
+
+        .ripple {
+            position: absolute; background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 70%);
+            border-radius: 50%; transform: scale(0); animation: rippleEffect 0.55s cubic-bezier(0.4, 0, 0.2, 1) forwards; pointer-events: none;
+        }
+        @keyframes rippleEffect {
+            0% { transform: scale(0); opacity: 0.8; }
+            100% { transform: scale(4.5); opacity: 0; }
+        }
+
         /* Shimmer Sheen on Primary Button */
         @keyframes shimmerBtn {
             0% { transform: translateX(-100%); }
             100% { transform: translateX(100%); }
         }
-        .btn-shimmer {
-            position: relative;
-            overflow: hidden;
-        }
+        .btn-shimmer { position: relative; overflow: hidden; }
         .btn-shimmer::after {
-            content: '';
-            position: absolute;
-            inset: 0;
+            content: ''; position: absolute; inset: 0;
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transform: translateX(-100%);
-            animation: shimmerBtn 3s infinite;
+            transform: translateX(-100%); animation: shimmerBtn 3s infinite;
         }
 
         /* GPay / Paytm Tick Animation */
@@ -103,12 +103,13 @@
         .gpay-circle { animation: circleScale 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         .gpay-check { stroke-dasharray: 48; stroke-dashoffset: 48; animation: checkmarkDraw 0.4s 0.25s ease-in-out forwards; }
 
-        .app-container {
-            width: 100%;
-            max-width: 420px;
-            padding: 20px;
-            z-index: 10;
+        @keyframes scaleUpModal {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
         }
+        .animate-modal-pop { animation: scaleUpModal 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        .app-container { width: 100%; max-width: 420px; padding: 20px; z-index: 10; }
     </style>
 </head>
 <body>
@@ -148,12 +149,12 @@
             <!-- Unverified warning container -->
             <div id="verification-warning-box" class="hidden mb-4 bg-amber-500/15 border border-amber-500/40 rounded-2xl p-4 text-center animate-form">
                 <p class="text-[11px] text-amber-300 font-medium mb-2.5 leading-relaxed">Your email is not verified yet! Please check your inbox or spam folder.</p>
-                <button onclick="resendVerificationEmail()" class="px-4 py-2 bg-amber-400 hover:bg-amber-500 text-gray-950 font-bold rounded-xl text-[10px] transition-all shadow-md active:scale-95">
+                <button onclick="resendVerificationEmail()" class="px-4 py-2 bg-amber-400 hover:bg-amber-500 text-gray-950 font-bold rounded-xl text-[10px] transition-all shadow-md tactile-btn">
                     Resend Verification Link
                 </button>
             </div>
 
-            <button id="login-btn" onclick="handleLogin()" class="w-full py-4 bg-gradient-to-r from-green-500 via-emerald-600 to-green-600 hover:from-green-600 hover:to-emerald-700 text-white font-black rounded-2xl text-xs shadow-[0_10px_25px_rgba(34,197,94,0.4)] mb-4 transition-all active:scale-95 flex items-center justify-center btn-shimmer animate-form">
+            <button id="login-btn" onclick="handleLogin()" class="w-full py-4 bg-gradient-to-r from-green-500 via-emerald-600 to-green-600 text-white font-black rounded-2xl text-xs shadow-[0_10px_25px_rgba(34,197,94,0.4)] mb-4 tactile-btn btn-shimmer animate-form flex items-center justify-center">
                 Log In
             </button>
 
@@ -161,16 +162,13 @@
         </div>
     </div>
 
-    <!-- CUSTOM HIGH-GUI ANIMATED MODAL SYSTEM -->
+    <!-- CUSTOM ANIMATED MODAL SYSTEM -->
     <div id="anp-custom-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-gray-900 border border-green-500/40 rounded-[36px] p-7 max-w-sm w-full text-center shadow-2xl animate-modal-pop relative overflow-hidden">
             <div class="absolute -top-12 -right-12 w-32 h-32 bg-green-500/15 rounded-full blur-2xl pointer-events-none"></div>
-            
             <div id="modal-icon-container" class="my-3 flex justify-center"></div>
-            
             <h3 id="modal-title" class="text-lg font-black text-white mb-1.5 tracking-tight">Notice</h3>
             <p id="modal-text" class="text-xs text-gray-300 mb-6 leading-relaxed px-2">Message goes here.</p>
-            
             <div id="modal-buttons"></div>
         </div>
     </div>
@@ -197,37 +195,16 @@
                 const modal = document.getElementById("anp-custom-modal");
                 document.getElementById("modal-title").innerText = title;
                 document.getElementById("modal-text").innerText = message;
-
                 const iconContainer = document.getElementById("modal-icon-container");
-
                 if (isSuccess) {
-                    iconContainer.innerHTML = `
-                        <div class="w-20 h-20 bg-green-500/15 border border-green-500/40 rounded-full flex items-center justify-center gpay-circle shadow-[0_0_30px_rgba(34,197,94,0.3)]">
-                            <svg class="w-10 h-10 text-green-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                                <path class="gpay-check" stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                        </div>
-                    `;
+                    iconContainer.innerHTML = `<div class="w-20 h-20 bg-green-500/15 border border-green-500/40 rounded-full flex items-center justify-center gpay-circle shadow-[0_0_30px_rgba(34,197,94,0.3)]"><svg class="w-10 h-10 text-green-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path class="gpay-check" stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg></div>`;
                 } else {
-                    iconContainer.innerHTML = `
-                        <div class="w-20 h-20 bg-red-500/15 border border-red-500/40 rounded-full flex items-center justify-center gpay-circle shadow-[0_0_30px_rgba(239,68,68,0.3)]">
-                            <i class="fas fa-exclamation-triangle text-red-400 text-2xl"></i>
-                        </div>
-                    `;
+                    iconContainer.innerHTML = `<div class="w-20 h-20 bg-red-500/15 border border-red-500/40 rounded-full flex items-center justify-center gpay-circle shadow-[0_0_30px_rgba(239,68,68,0.3)]"><i class="fas fa-exclamation-triangle text-red-400 text-2xl"></i></div>`;
                 }
-
                 const btnContainer = document.getElementById("modal-buttons");
-                btnContainer.innerHTML = `
-                    <button id="modal-ok-btn" class="w-full py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-2xl text-xs shadow-lg transition-all active:scale-95">
-                        Acknowledge
-                    </button>
-                `;
-
+                btnContainer.innerHTML = `<button id="modal-ok-btn" class="w-full py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-2xl text-xs shadow-lg tactile-btn">Acknowledge</button>`;
                 modal.classList.remove("hidden");
-                document.getElementById("modal-ok-btn").onclick = () => {
-                    modal.classList.add("hidden");
-                    resolve(true);
-                };
+                document.getElementById("modal-ok-btn").onclick = () => { modal.classList.add("hidden"); resolve(true); };
             });
         };
 
@@ -296,6 +273,23 @@
                 await showAnpAlert("Error", "Error sending verification email: " + e.message, false);
             }
         }
+
+        document.addEventListener('click', function (e) {
+            const target = e.target.closest('.tactile-btn');
+            if (!target) return;
+            const existingRipple = target.querySelector('.ripple');
+            if (existingRipple) existingRipple.remove();
+            const circle = document.createElement('span');
+            const rect = target.getBoundingClientRect();
+            const diameter = Math.max(rect.width, rect.height);
+            const radius = diameter / 2;
+            circle.style.width = circle.style.height = `${diameter}px`;
+            circle.style.left = `${e.clientX - rect.left - radius}px`;
+            circle.style.top = `${e.clientY - rect.top - radius}px`;
+            circle.classList.add('ripple');
+            target.appendChild(circle);
+            setTimeout(() => circle.remove(), 600);
+        });
     </script>
 </body>
 </html>
